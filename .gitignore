@@ -1,0 +1,8 @@
+# data (obsahuje volne odpovedi predplatitelstva - necommitovat)
+data/raw/*.csv
+data/processed/
+
+__pycache__/
+*.pyc
+.DS_Store
+.venv/

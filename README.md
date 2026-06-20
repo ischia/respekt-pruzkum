@@ -1,0 +1,137 @@
+# Respekt – předplatitelský průzkum: datový model a pipeline
+
+Reprodukovatelné zpracování předplatitelského dotazníku Respektu (export ze SurveyHero).
+Pipeline normalizuje znečištěné uzavřené otázky, vytahuje nové proměnné z volného textu
+(s důsledným **odečtením již zaškrtnutých**, aby se nic nepočítalo dvakrát) a koduje
+čtyři otevřené otázky do tematické taxonomie.
+
+Zpracováno genericky neutrální češtinou; původní znění odpovědí a možností je zachováno doslovně.
+
+---
+
+## Struktura repa
+
+```
+respekt-pruzkum/
+├── README.md                 ← tento soubor (datový model)
+├── requirements.txt
+├── run_all.py                ← spustí celou pipeline
+├── data/
+│   ├── raw/                  ← sem patří export SurveyHeroResponses*.csv (necommituje se)
+│   └── processed/            ← generované výstupy (necommituje se)
+└── src/
+    ├── prekodovani.py        ← uzavřené otázky → nové proměnné
+    └── koduj_otevrene.py     ← otevřené otázky → taxonomie + kódování
+```
+
+## Jak spustit
+
+```bash
+python -m venv .venv && source .venv/bin/activate     # volitelné
+pip install -r requirements.txt
+python run_all.py
+```
+
+`run_all.py` automaticky vezme **nejnovější** `data/raw/SurveyHeroResponses*.csv`
+(řazeno podle názvu, takže nový export jen vlož do `data/raw/`) a zapíše výstupy do `data/processed/`.
+
+---
+
+## Datový model
+
+Zdroj: SurveyHero CSV. Pipeline filtruje na `Status == 'Completed'`.
+V aktuálním exportu (2026-06-20) to je **2 139** dokončených odpovědí, **162** sloupců.
+Baterie s výběrem více možností jsou kódované hodnotou `x` / prázdno.
+
+> **Upozornění:** sloupce se v pipeline adresují podle **pozice** (indexu), protože SurveyHero
+> nedává stabilní názvy. Pokud se v novém exportu změní pořadí nebo přibude/ubude otázka,
+> je třeba indexy v obou skriptech zkontrolovat.
+
+### Metadata (sloupce 0–10)
+`ID`, časy, `Status`, `Collector`, `Language`, `IP`, `Device`, `{mwg_rnd}`, `{url}`, `{userid}`.
+
+### Uzavřené otázky – jedna odpověď
+Délka předplatného; věk; pohlaví; vzdělání; příjem; dvě škály 1–5 (spokojenost s doručováním,
+pravděpodobnost setrvání); baterie spokojenosti (7 oblastí); baterie preferované délky formátů (4);
+úvahy o zrušení; frekvence návštěv webu a aplikace; zapojení do podcastů; dříve čtený tištěný časopis aj.
+
+### Baterie – výběr více možností
+Akvizice; co přimělo pořídit; co lidé hledají; důvody platby; forma čtení; co přimělo přejít na digitál;
+využití digitálního přístupu; cíl na homepage; okruhy; situace čtení; oblíbenost aplikace; co v aplikaci chybí;
+bariéry; oblíbené podcasty. Většina má pole „Jiné/Jinak, doplňte".
+
+### Otevřené otázky
+Pole „Jiné, doplňte" napříč bateriemi (11×) + samostatné otevřené otázky.
+**Čtyři velké otevřené otázky** zpracovává `koduj_otevrene.py` zvlášť (viz Taxonomie níže):
+poslech v aplikaci (153), zdroje kromě Respektu (154), v čem výjimečný (155), co vadí/zlepšit (156).
+
+---
+
+## Nové proměnné (`prekodovani.py`)
+
+37 nových sloupců; detail a počty v `data/processed/respekt_codebook_nove.csv`.
+Obohacený dataset (původní + nové sloupce) je `respekt_obohaceno.csv`.
+
+**Řídící pravidlo – nenadhodnocovat:** každá příznaková proměnná je boolean na úrovni
+respondující osoby = `zaškrtnuto NEBO zmíněno v textu`. Osoba se započítá nejvýše jednou.
+
+**A) Normalizace znečištěných „uzavřených" otázek**
+`pracovni_status_clean` (6 čistých kategorií + zpětvzatá skupina **Pracující důchod**;
+kombinace → první uvedený status), `duchodce` (flag, jakákoli penze),
+`podcast_platforma_clean` (sloučení dlouhého ocasu třetích aplikací do „Jiná podcastová aplikace").
+
+**B) Nové binární příznaky z textu** (žádný existující checkbox)
+`pouziva_audioteku`, `predplatne_darek`, `cte_tisk_i_digital` (korekce „nepřešel/a, čtu obojí"
+u otázky na přechod – ⅓ tamních textových odpovědí!), `situace_jidlo`, `situace_cekani`,
+`situace_prochazka`, `situace_kavarna`, `styk_pres_zname_rodinu`, `zajem_krizovka`, `aplikace_nic_nechybi`.
+
+**C) Obohacení existujících možností** – původní „jak zaškrtnuto" je zachováno; varianta `_vc_text`
+přidává jen text navíc (po odečtení překryvu): `audio_umele_vc_text`, `tech_problemy_vc_text`,
+`styk_soc_site_vc_text`.
+
+**D) Ordinální → numerické** (strukturální příprava pro korelace): délka předplatného, věk, vzdělání,
+příjem („Nechci odpovídat" = chybějící), frekvence web/app, pravděpodobnost setrvání, úvahy o zrušení,
+zapojení do podcastů, baterie spokojenosti (Spokojen=1/Nespokojen=0/Nevím=chybějící),
+baterie délky (delší=+1/kratší=−1/Nevím=chybějící).
+
+---
+
+## Taxonomie otevřených otázek (`koduj_otevrene.py`)
+
+Pravidlová multi-label klasifikace (klíčová slova) zakotvená ve čtení vzorků.
+Výstupy: `respekt_otevrene_taxonomie.xlsx` (list na otázku: téma, n, %, doslovné příklady)
+a `respekt_otevrene_kodovano.csv` (boolean příznaky na respondující osobu).
+
+- **154 – zdroje:** zpracováno jako **jmenované entity** (médium + typ zdroje), ne jako vágní témata.
+  Nejčastější „jiný" zdroj je Deník N. Typy: veřejnoprávní, domácí zpravodajství, domácí tisk/komentář,
+  alternativní/investigativní, zahraniční, slovenské, podcast, influencer/osobnost, sociální sítě, newsletter.
+- **155 – chvála (pozitivní valence):** hloubka/kontext, šíře témat, kvalita psaní, autoři/redakce,
+  nezávislost, důvěra/vyváženost, investigativa, hodnotové souznění, forma, nepodbízivost, tradice.
+- **156 – výtky/náměty (negativní/konstruktivní):** nic nevadí, web/aplikace/UX, obsah/chybějící témata,
+  audio/AI (smíšená valence), délka článků, jednostrannost/bias, grafika/obálka, přehlednost/archiv,
+  vyhledávání, doručení, cena, reklamy, anglicismy.
+- **153 – poslech v aplikaci:** **není to bug-report** – převažuje „proč jinou platformu" (agregace všech
+  podcastů na jednom místě, zvyklost) a spokojenost; technické problémy jsou menšina.
+
+---
+
+## Klíčové principy a upozornění
+
+- **De-duplikace / nenadhodnocování:** příznaky se počítají na úrovni osoby (logické NEBO), ne jako
+  součet zaškrtnutí + zmínek. U obohacení existujících možností je čistý přírůstek = jen text bez překryvu.
+- **Oddělení valence:** chvála (155) a výtky (156) se nekódují společně – stejné téma (např. hodnoty/světonázor)
+  zní v 155 pozitivně, v 156 negativně. Sloučení by vyrobilo falešné signály.
+- **Frekvence z otevřených otázek jsou přibližné** – zachycují jasné formulace; nuance a překlepy mohou unikat.
+- **Poziční indexy sloupců** – viz upozornění výše; po novém exportu ověřit.
+- **Čeština** – výstupní popisy genericky neutrální; původní znění odpovědí a možností doslovné.
+
+## Výstupy (`data/processed/`)
+
+| soubor | obsah |
+|---|---|
+| `respekt_obohaceno.csv` | původní data + 37 nových sloupců |
+| `respekt_codebook_nove.csv` | seznam nových proměnných (skupina, typ, n) |
+| `respekt_otevrene_taxonomie.xlsx` | taxonomie 4 otevřených otázek (četnosti, příklady) |
+| `respekt_otevrene_kodovano.csv` | boolean kódování otevřených otázek na respondující osobu |
+
+> Pozn.: `*.xlsx` ukládá procenta jako vzorce; hodnoty se dopočítají při otevření v Excelu/LibreOffice.
