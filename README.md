@@ -21,7 +21,8 @@ respekt-pruzkum/
 │   └── processed/            ← generované výstupy (necommituje se)
 └── src/
     ├── prekodovani.py        ← uzavřené otázky → nové proměnné
-    └── koduj_otevrene.py     ← otevřené otázky → taxonomie + kódování
+    ├── koduj_otevrene.py     ← otevřené otázky → taxonomie + kódování
+    └── spoj_dataset.py       ← spojí oba výstupy přes ID → analytický dataset
 ```
 
 ## Jak spustit
@@ -150,9 +151,10 @@ a `respekt_otevrene_kodovano.csv` (boolean příznaky na respondující osobu).
 
 | soubor | obsah |
 |---|---|
-| `respekt_obohaceno.csv` | původní data + 37 nových sloupců |
+| `respekt_obohaceno.csv` | původní data + 59 nových sloupců |
 | `respekt_codebook_nove.csv` | seznam nových proměnných (skupina, typ, n) |
 | `respekt_otevrene_taxonomie.xlsx` | taxonomie 4 otevřených otázek (četnosti, příklady) |
 | `respekt_otevrene_kodovano.csv` | boolean kódování otevřených otázek na respondující osobu |
+| `respekt_analyticky.csv` | **spojený dataset** (obohaceno + kódování otevřených přes `ID`) – 1 řádek/respondent, 294 sloupců; základ pro křížové analýzy |
 
 > Pozn.: `*.xlsx` ukládá procenta jako vzorce; hodnoty se dopočítají při otevření v Excelu/LibreOffice.

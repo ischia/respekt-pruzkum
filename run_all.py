@@ -7,7 +7,7 @@ import subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-STEPS = ['src/prekodovani.py', 'src/koduj_otevrene.py']
+STEPS = ['src/prekodovani.py', 'src/koduj_otevrene.py', 'src/spoj_dataset.py']
 
 for s in STEPS:
     print(f'\n>>> {s}')
