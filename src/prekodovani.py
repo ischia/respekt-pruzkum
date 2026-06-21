@@ -131,9 +131,9 @@ new['podcast_platforma_clean'] = df.iloc[:, 152].map(classify_platform)
 # ===================================================================
 # B) NOVE BINARNI PRIZNAKY Z TEXTU (de-dup napric poli = boolean/osoba)
 # ===================================================================
-DAR = r'\bdar(ek|ku|kem|em|oval|ovan|kova)|jako dar|dostal\w*\s\w*\s?dar|darem'
+DAR = r'\bdar(?:ek|ku|kem|em|oval|ovan|kova)|jako dar|dostal\w*\s\w*\s?dar|darem'
 NEPRESEL = (r'nepres|mam oboj|ctu oboj|\boboje\b|\boboji\b|i tisten|stale.{0,12}tisten'
-            r'|porad.{0,12}tisten|tistenou.{0,8}verzi|neprejdu|nechci.{0,12}(digital|papir|tisk)'
+            r'|porad.{0,12}tisten|tistenou.{0,8}verzi|neprejdu|nechci.{0,12}(?:digital|papir|tisk)'
             r'|odebiram i tisten|kombinuji')
 JIDLO = r'snidan|\bjidl|\bobed|svacin|u jidla|pri jidle'
 CEKANI = r'cekan|cekam|nekde cek|\bcekat'
@@ -141,7 +141,7 @@ RODINA = r'rodin|znam[e]|\bznam[yaei]|pratel|kamarad|manzel|partner|svagr'
 PROCHAZKA = r'prochazk|se psem|\bvenku|venceni|na zahrad'
 KAVARNA = r'kavarn'
 KRIZOVKA = r'krizovk'
-NIC = r'^nic\b|nic mi nechyb|nechybi nic|jsem spokoj|vse (ok|funguje)|vyhovuje mi vse|nic me nenapad|^nic$'
+NIC = r'^nic\b|nic mi nechyb|nechybi nic|jsem spokoj|vse (?:ok|funguje)|vyhovuje mi vse|nic me nenapad|^nic$'
 
 new['pouziva_audioteku']      = text_hit([52,152,104,153,60], r'audiotek')
 new['predplatne_darek']       = text_hit([28,19,44], DAR)
@@ -249,7 +249,7 @@ for nm, src, detail in log:
 
 print('\n===== D) ORDINALY (pocet validnich / prumer) =====')
 for c in ['delka_predplatneho_ord','vek_ord','vzdelani_ord','prijem_ord','frekvence_web_ord',
-          'frekvence_app_ord','pravdep_setrvani_ord','uvazoval_zruseni_ord','podcasty_zapojeni_ord']:
+          'frekvence_app_ord','doruceni_ord','pravdep_setrvani_ord','uvazoval_zruseni_ord','podcasty_zapojeni_ord']:
     s = pd.to_numeric(new[c], errors='coerce')
     print(f'  {c:26s} | n={int(s.notna().sum()):4d} | mean={s.mean():.2f}')
 print(f'\nCelkem novych sloupcu: {new.shape[1]}')

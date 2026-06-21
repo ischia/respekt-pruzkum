@@ -53,7 +53,7 @@ TAX = {
  '156': {  # Co vadi / zlepsit - VYTKY/NAMETY (negativni/konstruktivni)
   'Nic nevadi / spokojenost': r'^nic\b|nic mi nevad|nevadi nic|jsem spokoj|jsme spokoj|\bvse ok\b|nenapada|nemam co vyt|nemam vyhrad|nemam pripomink|\bhappy\b|^nevim$|^nic$',
   'Web / aplikace / UX / technika': r'\bweb|aplikac|\bapp\b|rozhrani|technic|nefunguj|pomal|nacit|zapomina|kde jsem|listovat|posunovat|uzivatelsk|chyb',
-  'Vyhledavani': r'vyhledav|hledat (clanek|autor|stare)|filtrov|dle autor',
+  'Vyhledavani': r'vyhledav|hledat (?:clanek|autor|stare)|filtrov|dle autor',
   'Audio / AI hlas (smisene)': r'\baudio|namluv|\bhlas|umel|\bai\b|nadech|robot|chybne cteni|audioverz',
   'Obsah / chybejici temata': r'kultur|\bsport|ekonom|region|\bveda|recenz|\brubrik|vic clank|chybi tema|obsahov|\btipy',
   'Grafika / obalka / ilustrace': r'grafik|obalk|titulni stran|reisenauer|raisenauer|ilustrac|obrazek|kreslen',
@@ -69,14 +69,21 @@ TAX = {
  '153': {  # Poslech v aplikaci - REFRAME: hl. proc jina platforma + problemy
   'Nezkousel / neposloucha v app': r'nezkous|nepouzivam aplikac|neposloucham|nevyuzivam|jen ctu|neslysel|^ne[.,]?$|^nezkousel|^nezkousela|nepreferuj',
   'Jina platforma / zvyklost': r'zvykl|\bzvyk|spotify|apple|youtube|podcast addict|pocket cast|antennapod|jine prostredi|jiny prehravac|jina aplikace|obecn\w* aplikac|preferuji web',
-  'Duvod: vse na jednom miste (agregace)': r'na jednom miste|vsechny podcasty|vsechny na jednom|ruzn\w* zdroj|ruzn\w* podcasty|do fronty|\bfronta|i (ty )?jine|vidim nabidku|nabidku na jednom',
-  'Duvod: sledovani prehraneho': r'co jsem (uz )?slysel|uz slysel|prehran|oznacen|navazuje|kde jsem skoncil|zaznamen',
-  'Funguje dobre / spokojen': r'funguje (dobre|to)|bez problem|v poradku|spokojen|je to super|je to ok|je to dobre|vyhovuje',
+  'Duvod: vse na jednom miste (agregace)': r'na jednom miste|vsechny podcasty|vsechny na jednom|ruzn\w* zdroj|ruzn\w* podcasty|do fronty|\bfronta|i (?:ty )?jine|vidim nabidku|nabidku na jednom',
+  'Duvod: sledovani prehraneho': r'co jsem (?:uz )?slysel|uz slysel|prehran|oznacen|navazuje|kde jsem skoncil|zaznamen',
+  # Pozitivni hodnoceni MUSI byt o aplikaci Respektu: lookahead na pozitivni jadro
+  # (uzke - bez holeho "vyhovuje"/"spokojen", ktere chytalo i chvalu Spotify/Apple)
+  # + negativni lookahead vyrazujici negace (nevyhovuje, nebyl/nejsem spokojen, prestal).
+  'Funguje dobre / spokojen':
+      r'^(?!.*(?:nevyhovuj|nespokojen|nebyl\w*[\s\w]{0,8}spokojen|nejsem spokojen|prestal))'
+      r'(?=.*(?:funguje (?:to |mi )?(?:dobre|skvele|bezvadne|v pohode)|je to super|je to ok'
+      r'|je to (?:fajn|dobre|v pohode)|bez problemu?|jsem (?:velmi |maximalne )?spokojen'
+      r'|v podstate mi vyhovuje|vyhovuje mi (?:v aplikaci|aplikace|appka|poslech)))',
   'Vytka: ovladani / prehlednost': r'prehledn|ovlada|rozhrani|navigac|tlacit|nemuzu najit|neprehledn',
   'CarPlay / Auto / Bluetooth': r'carplay|android auto|bluetooth|v aute|reproduk',
   'Technicky problem (prehravani/pozice)': r'\bnelze|\bnejde|nefunguj|\bchyba|nenacita|nespusti|spadne|zasekne|\bposun|\bskace|preskak|vraci|od zacatku|na pozadi|zamc|vypne|zastav|prerus|ztrac|nepamatuje',
   'Kvalita AI hlasu': r'\bhlas|umel|\bai\b|\brobot|monoton|prizvuk|vyslov|cte spatne',
-  'Posloucha jen audioverze clanku': r'audioverz|prepis clanku|nactene clanky|audio clank|nestiham cist|nestihnu (precist|cist)',
+  'Posloucha jen audioverze clanku': r'audioverz|prepis clanku|nactene clanky|audio clank|nestiham cist|nestihnu (?:precist|cist)',
  },
 }
 QCOL = {'155': 155, '156': 156, '153': 153}
