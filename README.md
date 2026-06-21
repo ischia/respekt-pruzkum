@@ -69,8 +69,8 @@ poslech v aplikaci (153), zdroje kromě Respektu (154), v čem výjimečný (155
 
 ## Nové proměnné (`prekodovani.py`)
 
-48 nových sloupců (37 obecných + 6 konverzních z col 28 + 5 bariérových z col 137); detail a počty
-v `data/processed/respekt_codebook_nove.csv`. Obohacený dataset je `respekt_obohaceno.csv`.
+51 nových sloupců (37 obecných + 6 konverzních z col 28 + 5 bariérových z col 137 + 3 digitální z col 60);
+detail a počty v `data/processed/respekt_codebook_nove.csv`. Obohacený dataset je `respekt_obohaceno.csv`.
 
 **Řídící pravidlo – nenadhodnocovat:** každá příznaková proměnná je boolean na úrovni
 respondující osoby = `zaškrtnuto NEBO zmíněno v textu`. Osoba se započítá nejvýše jednou.
@@ -92,6 +92,10 @@ Pokrytí volného textu vzrostlo ze 7 % na 55 % (zbytek jsou jednorázové odpov
 
 **B3) Bariérové motivy z volného textu „Setkal/a jste se s bariérami" (col 137)** – témata bez checkboxu
 v baterii bariér: `bariera_vyhledavani` (13), `bariera_obsah` (11), `bariera_epub` (6).
+
+**B4) Přechod na digitál z volného textu „Co vás přimělo přejít na digitál" (col 60)** – pole dominují lidé,
+kteří nepřešli (pokrývá `cte_tisk_i_digital`); nové příznaky kódují *důvody/způsob užití*: `preferuje_tisk` (15),
+`digital_doplnek` (20), `tisk_pro_rodinu` (12). Pokrytí pole 35 % → 45 %.
 
 **C) Obohacení existujících možností** – původní „jak zaškrtnuto" je zachováno; varianta `_vc_text`
 přidává jen text navíc (po odečtení překryvu): `audio_umele_vc_text`, `tech_problemy_vc_text`,

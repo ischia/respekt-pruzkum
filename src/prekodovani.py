@@ -201,6 +201,26 @@ new['bariera_obsah']       = text_hit([137], BAR_OBSAH)
 new['bariera_epub']        = text_hit([137], BAR_EPUB)
 
 # ===================================================================
+# B4) PRECHOD NA DIGITAL (col 60 "Co vas primelo prejit na digital" - volny text)
+# Pole dominuji lide, kteri NEPRESLI (ctou tisk/oboji) = uz pokryva cte_tisk_i_digital.
+# Nove kodujeme DUVODY a zpusob uziti, ktere checkbox baterie nema. Boolean, jen col 60.
+# ===================================================================
+PREF_TISK = (r'radeji.{0,12}(?:papir|tisten|casopis)|preferuj\w*.{0,12}(?:papir|tisten)'
+             r'|prednost.{0,14}(?:papir|tisten)|nechci se.{0,14}vzdat|nechci.{0,10}vzdat'
+             r'|fyzicky v ruce|\bv ruce|od (?:displeje|obrazovky)|odpocin\w*.{0,14}(?:displej|obrazov)'
+             r'|aniz bych.{0,14}(?:telefon|tablet)|ritual|kafe a respekt'
+             r'|milu\w*.{0,14}(?:papir|tisten|casopis|rano)|haptik|vyhybat.{0,12}digital|koukani do comp')
+DIGITAL_DOPLNEK = (r'doplnek|doplnkov|jako bonus|bonus navic|navic k (?:papir|tisten)'
+                   r'|rozsiren\w* tisten|na cestach|na ceste|s sebou|sebou mam|kdyz nejsem doma'
+                   r'|mimo domov|prolistuj|v praci|o prestavk')
+TISK_RODINA = (r'posila\w*|rodicum|mamince|manzel\w*|partner\w*|pritelkyn\w*|deti.{0,8}okupuj'
+               r'|sdil\w*.{0,18}(?:rodin|pritel|manzel|partner|rodic)')
+
+new['preferuje_tisk']   = text_hit([60], PREF_TISK)
+new['digital_doplnek']  = text_hit([60], DIGITAL_DOPLNEK)
+new['tisk_pro_rodinu']  = text_hit([60], TISK_RODINA)
+
+# ===================================================================
 # C) OBOHACENI EXISTUJICICH MOZNOSTI (puvodni box zachovan; pridavame _vc_text)
 # ===================================================================
 AIAUDIO = (r'\bai\b|umel|nadech|robot|strojov|neprirozen|namluv|\bhlas|vyslovnost'
@@ -278,6 +298,8 @@ for c in ['konv_kvalita_obsah','konv_dlouholety_ctenar','konv_duvera','konv_preh
     GROUP[c]='B2_konverze_col28'
 for c in ['bariera_vyhledavani','bariera_obsah','bariera_epub']:
     GROUP[c]='B3_bariery_col137'
+for c in ['preferuje_tisk','digital_doplnek','tisk_pro_rodinu']:
+    GROUP[c]='B4_digital_col60'
 for c in ['audio_umele_vc_text','tech_problemy_vc_text','styk_soc_site_vc_text','doruceni_vc_text','cas_delka_vc_text']: GROUP[c]='C_obohaceni'
 cb = []
 for c in new.columns:
@@ -308,6 +330,10 @@ for c in ['konv_kvalita_obsah','konv_dlouholety_ctenar','konv_duvera','konv_preh
 
 print('\n===== B3) BARIEROVE VLAJKY col 137 (pocet osob = TRUE) =====')
 for c in ['bariera_vyhledavani','bariera_obsah','bariera_epub']:
+    print(f'  {c:26s} = {int(new[c].sum())}')
+
+print('\n===== B4) PRECHOD NA DIGITAL col 60 (pocet osob = TRUE) =====')
+for c in ['preferuje_tisk','digital_doplnek','tisk_pro_rodinu']:
     print(f'  {c:26s} = {int(new[c].sum())}')
 
 print('\n===== C) OBOHACENI (de-dup overeni) =====')
