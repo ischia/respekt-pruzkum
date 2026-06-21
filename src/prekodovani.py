@@ -249,6 +249,19 @@ new['app_personalizace']  = text_hit([95], APP_PERSON)
 new['app_odliseni_tisk']  = text_hit([95], APP_TISKWEB)
 
 # ===================================================================
+# B6) CIL NA HOMEPAGE (col 73 "S jakym cilem na homepage prichazite" - text)
+# Klicove zjisteni: homepage casto NENI vstupni bod. Temata bez checkboxu.
+# Boolean na osobu, jen col 73.
+# ===================================================================
+HP_VSTUP = (r'newsletter|\bmail\b|mailov|emailu|e-mail|z mailu|do e-mailu|facebook|\bfb\b|\big\b'
+            r'|instagram|socialn|na sitich|ze (?:soc|site)|na sit\b|promovan|\brss|qr kod')
+HP_NECHODI = (r'nechodim|nechodi\b|temer nechodim|nepouzivam|vyuzivam malo|jen kdyz nemam'
+              r'|spise doplnkov|moc tam nechodim')
+
+new['homepage_vstup_odkaz'] = text_hit([73], HP_VSTUP)
+new['homepage_nechodi']     = text_hit([73], HP_NECHODI)
+
+# ===================================================================
 # C) OBOHACENI EXISTUJICICH MOZNOSTI (puvodni box zachovan; pridavame _vc_text)
 # ===================================================================
 AIAUDIO = (r'\bai\b|umel|nadech|robot|strojov|neprirozen|namluv|\bhlas|vyslovnost'
@@ -330,6 +343,8 @@ for c in ['preferuje_tisk','digital_doplnek','tisk_pro_rodinu']:
     GROUP[c]='B4_digital_col60'
 for c in ['app_prehlednost','app_pristupnost','app_vykon','app_audio_ovladani','app_personalizace','app_odliseni_tisk']:
     GROUP[c]='B5_aplikace_col95'
+for c in ['homepage_vstup_odkaz','homepage_nechodi']:
+    GROUP[c]='B6_homepage_col73'
 for c in ['audio_umele_vc_text','tech_problemy_vc_text','styk_soc_site_vc_text','doruceni_vc_text','cas_delka_vc_text']: GROUP[c]='C_obohaceni'
 cb = []
 for c in new.columns:
@@ -368,6 +383,10 @@ for c in ['preferuje_tisk','digital_doplnek','tisk_pro_rodinu']:
 
 print('\n===== B5) CO CHYBI V APLIKACI col 95 (pocet osob = TRUE) =====')
 for c in ['app_prehlednost','app_pristupnost','app_vykon','app_audio_ovladani','app_personalizace','app_odliseni_tisk']:
+    print(f'  {c:26s} = {int(new[c].sum())}')
+
+print('\n===== B6) CIL NA HOMEPAGE col 73 (pocet osob = TRUE) =====')
+for c in ['homepage_vstup_odkaz','homepage_nechodi']:
     print(f'  {c:26s} = {int(new[c].sum())}')
 
 print('\n===== C) OBOHACENI (de-dup overeni) =====')

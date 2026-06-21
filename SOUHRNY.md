@@ -120,3 +120,26 @@ Lepší offline režim 93 · Častější notifikace 41.
   k věkovému profilu čtenářstva.
 - Opakovaná **audio přání**: vypnout autoplay, pauzy mezi články, přehrát celé vydání najednou.
 - Niche, ale konkrétní: čtenáři chtějí **poznat, který článek vyjde v tištěné verzi** (aby ho nečetli digitálně).
+
+---
+
+## Q73 — „S jakým hlavním cílem na domovskou stránku přicházíte?" (cíl na homepage)
+
+70 volných textů, dosud bez příznaku. Pole je malé; checkboxy pokrývají hlavní cíle. Nové příznaky
+zachycují dvě věci, které checkboxy minuly — a které spolu tvoří jeden silný závěr.
+
+**Existující checkboxy (kontext):** Hledám nové zajímavé čtení 593 · Prolistovat vydání/archiv 580 ·
+Zjistit co se děje 494 · Audioverze/podcast 485 · Konkrétní článek 271 · Správa předplatného 170.
+
+**Nové příznaky:**
+
+| příznak | n | co zachycuje |
+|---|---|---|
+| `homepage_vstup_odkaz` | 15 | přichází přes externí odkaz: newsletter/mail, sociální sítě, RSS, QR z tisku |
+| `homepage_nechodi` | 8 | na homepage prakticky nechodí (jde rovnou na audio, RSS, čte papír) |
+
+**Klíčová zjištění:**
+- **Homepage často není vstupní bod.** Část čtenářů sem nepřichází přímo — dorazí přes newsletter,
+  sociální sítě, RSS nebo QR kód z tištěného čísla (15), nebo homepage prakticky nepoužívá (8).
+- Implikace: **distribuce přes newsletter a sítě je reálná vstupní brána** k obsahu, ne jen doplněk.
+

@@ -69,8 +69,8 @@ poslech v aplikaci (153), zdroje kromě Respektu (154), v čem výjimečný (155
 
 ## Nové proměnné (`prekodovani.py`)
 
-57 nových sloupců (37 obecných + 6 konverzních z col 28 + 5 bariérových z col 137 + 3 digitální z col 60
-+ 6 aplikačních z col 95); detail a počty v `data/processed/respekt_codebook_nove.csv`.
+59 nových sloupců (37 obecných + 6 konverzních z col 28 + 5 bariérových z col 137 + 3 digitální z col 60
++ 6 aplikačních z col 95 + 2 z col 73); detail a počty v `data/processed/respekt_codebook_nove.csv`.
 Obohacený dataset je `respekt_obohaceno.csv`.
 
 **Řídící pravidlo – nenadhodnocovat:** každá příznaková proměnná je boolean na úrovni
@@ -102,6 +102,9 @@ kteří nepřešli (pokrývá `cte_tisk_i_digital`); nové příznaky kódují *
 checkboxu (vyhledávání je už checkbox box 88, proto se nekóduje znovu): `app_prehlednost` (12),
 `app_pristupnost` (10, velikost písma/obrázků), `app_vykon` (10), `app_audio_ovladani` (6),
 `app_personalizace` (6), `app_odliseni_tisk` (5, který článek vyjde v tištěné).
+
+**B6) Cíl na homepage z volného textu „S jakým cílem na homepage přicházíte" (col 73)** – homepage často
+není vstupní bod: `homepage_vstup_odkaz` (15, přes newsletter/sítě/RSS/QR), `homepage_nechodi` (8).
 
 **C) Obohacení existujících možností** – původní „jak zaškrtnuto" je zachováno; varianta `_vc_text`
 přidává jen text navíc (po odečtení překryvu): `audio_umele_vc_text`, `tech_problemy_vc_text`,
