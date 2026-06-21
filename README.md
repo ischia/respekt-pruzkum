@@ -69,7 +69,7 @@ poslech v aplikaci (153), zdroje kromě Respektu (154), v čem výjimečný (155
 
 ## Nové proměnné (`prekodovani.py`)
 
-43 nových sloupců (37 obecných + 6 konverzních motivů z col 28); detail a počty
+48 nových sloupců (37 obecných + 6 konverzních z col 28 + 5 bariérových z col 137); detail a počty
 v `data/processed/respekt_codebook_nove.csv`. Obohacený dataset je `respekt_obohaceno.csv`.
 
 **Řídící pravidlo – nenadhodnocovat:** každá příznaková proměnná je boolean na úrovni
@@ -90,9 +90,12 @@ v baterii (cols 21–27) nemají checkbox, takže jde o čistý přírůstek: `k
 `konv_dlouholety_ctenar` (96), `konv_prehled` (39), `konv_duvera` (36), `konv_pohodli` (18), `konv_zahranici` (15).
 Pokrytí volného textu vzrostlo ze 7 % na 55 % (zbytek jsou jednorázové odpovědi / „nevzpomínám si").
 
+**B3) Bariérové motivy z volného textu „Setkal/a jste se s bariérami" (col 137)** – témata bez checkboxu
+v baterii bariér: `bariera_vyhledavani` (13), `bariera_obsah` (11), `bariera_epub` (6).
+
 **C) Obohacení existujících možností** – původní „jak zaškrtnuto" je zachováno; varianta `_vc_text`
 přidává jen text navíc (po odečtení překryvu): `audio_umele_vc_text`, `tech_problemy_vc_text`,
-`styk_soc_site_vc_text`.
+`styk_soc_site_vc_text`, `doruceni_vc_text`, `cas_delka_vc_text` (z col 137; recall audio/tech rozšířen).
 
 **D) Ordinální → numerické** (strukturální příprava pro korelace): délka předplatného, věk, vzdělání,
 příjem („Nechci odpovídat" = chybějící), frekvence web/app, pravděpodobnost setrvání, úvahy o zrušení,

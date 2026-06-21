@@ -185,11 +185,34 @@ new['konv_pohodli']           = text_hit([28], KONV_POHODLI)
 new['konv_zahranici']         = text_hit([28], KONV_ZAHRANICI)
 
 # ===================================================================
+# B3) BARIEROVE VLAJKY (col 137 "Setkal/a jste se s barierami" - volny text)
+# Temata, ktera v baterii barier (cols 129-135) NEMAJI checkbox => ciste vlajky.
+# (Audio/tech/doruceni/cas se resi obohacenim boxu nize.) Boolean na osobu, jen col 137.
+# ===================================================================
+BAR_VYHLEDAVANI = (r'vyhledav|dohleda|(?:najit|hledat|vyhled)\w*.{0,15}star|starsi clan'
+                   r'|chyb\w* archiv|v archivu')
+BAR_OBSAH       = (r'kultur|hudb|\bvegan|jednostran|malo (?:clank|o )|vic (?:clank|o )'
+                   r'|chybi (?:mi )?tema|zrusili|vynechal|moc o |prilis (?:social|politik)'
+                   r'|povzbud|pozitivn')
+BAR_EPUB        = r'epub|kindle|ctecka|amazon'
+
+new['bariera_vyhledavani'] = text_hit([137], BAR_VYHLEDAVANI)
+new['bariera_obsah']       = text_hit([137], BAR_OBSAH)
+new['bariera_epub']        = text_hit([137], BAR_EPUB)
+
+# ===================================================================
 # C) OBOHACENI EXISTUJICICH MOZNOSTI (puvodni box zachovan; pridavame _vc_text)
 # ===================================================================
-AIAUDIO = r'\bai\b|umel|nadech|robot|strojov|neprirozen'
-TECH = r'zamrz|nefunguj|nenacita|spadne|chyb\w* aplikac|technick|nejde|nelze'
+AIAUDIO = (r'\bai\b|umel|nadech|robot|strojov|neprirozen|namluv|\bhlas|vyslovnost'
+           r'|predcitani|prizvuk|chybne cteni|cte (?:spatne|chybne)')
+TECH = (r'zamrz|nefunguj|nenacita|spadne|chyb\w* aplikac|technick|nejde|nelze'
+        r'|zasekne|nespusti|prestane (?:hrat|prehrav)|token|prihlas|nevypocitateln')
 SOC = r'bluesky|mastodon|facebook|twitter|instagram|socialn|\bsit'
+DORUCENI = (r'doruc|schrank|\bposta|\bpozde|nedosl|nepris\w*.{0,12}(?:cas|schrank)|obal|promoc'
+            r'|urgov|zpozd|chodi.{0,18}(?:pozde|stred|ctvrt|nepravid)|opozd|dodani|dosla')
+CASDELKA = (r'moc dlouh|prilis dlouh|(?:clank|text|reportaz|cislo|podcast|vydani)\w*.{0,12}dlouh'
+            r'|dlouh\w*.{0,12}(?:clank|text|reportaz|podcast)|nestih|nedostatek casu|nemam cas'
+            r'|mnozstv|moc (?:textu|obsahu|clanku|casto)|casove bariery')
 
 def enrich(name, box_col, cols, pattern):
     orig = ticked(box_col)
@@ -201,6 +224,8 @@ def enrich(name, box_col, cols, pattern):
 enrich('audio_umele_vc_text', 131, [137], AIAUDIO)
 enrich('tech_problemy_vc_text', 129, [137], TECH)
 enrich('styk_soc_site_vc_text', 17, [19], SOC)
+enrich('doruceni_vc_text', 135, [137], DORUCENI)
+enrich('cas_delka_vc_text', 132, [137], CASDELKA)
 
 # ===================================================================
 # D) ORDINALNI -> NUMERICKE
@@ -251,7 +276,9 @@ for c in ['pouziva_audioteku','predplatne_darek','cte_tisk_i_digital','situace_j
     GROUP[c]='B_priznak_text'
 for c in ['konv_kvalita_obsah','konv_dlouholety_ctenar','konv_duvera','konv_prehled','konv_pohodli','konv_zahranici']:
     GROUP[c]='B2_konverze_col28'
-for c in ['audio_umele_vc_text','tech_problemy_vc_text','styk_soc_site_vc_text']: GROUP[c]='C_obohaceni'
+for c in ['bariera_vyhledavani','bariera_obsah','bariera_epub']:
+    GROUP[c]='B3_bariery_col137'
+for c in ['audio_umele_vc_text','tech_problemy_vc_text','styk_soc_site_vc_text','doruceni_vc_text','cas_delka_vc_text']: GROUP[c]='C_obohaceni'
 cb = []
 for c in new.columns:
     s = new[c]
@@ -277,6 +304,10 @@ for c in ['pouziva_audioteku','predplatne_darek','cte_tisk_i_digital','situace_j
 
 print('\n===== B2) KONVERZNI MOTIVY col 28 (pocet osob = TRUE) =====')
 for c in ['konv_kvalita_obsah','konv_dlouholety_ctenar','konv_duvera','konv_prehled','konv_pohodli','konv_zahranici']:
+    print(f'  {c:26s} = {int(new[c].sum())}')
+
+print('\n===== B3) BARIEROVE VLAJKY col 137 (pocet osob = TRUE) =====')
+for c in ['bariera_vyhledavani','bariera_obsah','bariera_epub']:
     print(f'  {c:26s} = {int(new[c].sum())}')
 
 print('\n===== C) OBOHACENI (de-dup overeni) =====')
