@@ -141,7 +141,10 @@ RODINA = r'rodin|znam[e]|\bznam[yaei]|pratel|kamarad|manzel|partner|svagr'
 PROCHAZKA = r'prochazk|se psem|\bvenku|venceni|na zahrad'
 KAVARNA = r'kavarn'
 KRIZOVKA = r'krizovk'
-NIC = r'^nic\b|nic mi nechyb|nechybi nic|jsem spokoj|vse (?:ok|funguje)|vyhovuje mi vse|nic me nenapad|^nic$'
+NIC = (r'^nic\b|nic mi nechyb|nechybi nic|jsem spokoj|vse (?:ok|funguje)|vyhovuje mi vse'
+       r'|nic me nenapad|^nic$|asi nic|nic (?:zasadn|podstatn|dulezit|vyrazn)|nepostrad'
+       r'|(?<!ne)dostacuj|je to dobr|(?:app|apka|aplikace) (?:je )?dobr'
+       r'|(?<!ne)vyhovuje mi (?:apka|aplikac|aktualni)|nenapada\w*.{0,14}(?:vylepsen|zlepsen|vyrazn)')
 
 new['pouziva_audioteku']      = text_hit([52,152,104,153,60], r'audiotek')
 new['predplatne_darek']       = text_hit([28,19,44], DAR)
