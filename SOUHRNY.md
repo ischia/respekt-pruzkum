@@ -90,3 +90,33 @@ Praktické (zahraničí, nestíhám fyzicky) 298 · Ekologické důvody 200 · C
   **haptika** a **únava z obrazovky** jsou reálné kotvy retence, ne jen setrvačnost.
 - Digitál je pro mnohé **doplněk**, ne náhrada (papír doma, digitál/audio na cestách).
 - **„Tištěné posílám rodičům"** je opakovaný vzorec — relevantní pro dárkové předplatné i retenci.
+
+---
+
+## Q95 — „Co vám nejvíce chybí v mobilní aplikaci?" (chybějící funkce)
+
+144 volných textů. Pole obsahuje hodně „nic nechybí" (pokrývá `aplikace_nic_nechybi`); vyhledávání je
+samostatný checkbox (box 88, 229) — text k němu přidá jen +2, proto se znovu nekóduje.
+
+**Existující checkboxy (kontext):** Výraznější odlišení přečteného 251 · Vyhledávání 229 ·
+Otevírat ze soc. sítí 126 · Vlastní audio playlist 120 · CarPlay/Android Auto 118 ·
+Lepší offline režim 93 · Častější notifikace 41.
+
+**Nové příznaky (z volného textu, žádný neměl checkbox):**
+
+| příznak | n | co zachycuje |
+|---|---|---|
+| `app_prehlednost` | 12 | nepřehlednost, menu, navigace, návrat zpět, „předělat" |
+| `app_pristupnost` | 10 | velikost písma/fontů, zoom obrázků, popisky, čtení bez brýlí |
+| `app_vykon` | 10 | pomalost, sekání, stabilita, načítání, spotřeba dat, bugy |
+| `app_audio_ovladani` | 6 | vypnout autoplay, pauzy mezi články, celé vydání, pozice/délka |
+| `app_personalizace` | 6 | filtrování rubrik, sekce, nepřečtené nahoře, synchronizace |
+| `app_odliseni_tisk` | 5 | rozlišit, který článek vyjde v tištěné / je jen na webu |
+
+**Klíčová zjištění:**
+- Tři nejčastější stížnosti jsou **přehlednost UI** (12), **přístupnost** (velikost písma/obrázků, 10)
+  a **výkon/stabilita** (10) — UX/technická triáda, kterou baterie checkboxů vůbec nenabízela.
+- **Přístupnost** (zvětšení písma, čtení bez brýlí) je silný a snadno řešitelný signál vzhledem
+  k věkovému profilu čtenářstva.
+- Opakovaná **audio přání**: vypnout autoplay, pauzy mezi články, přehrát celé vydání najednou.
+- Niche, ale konkrétní: čtenáři chtějí **poznat, který článek vyjde v tištěné verzi** (aby ho nečetli digitálně).

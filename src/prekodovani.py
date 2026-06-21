@@ -221,6 +221,34 @@ new['digital_doplnek']  = text_hit([60], DIGITAL_DOPLNEK)
 new['tisk_pro_rodinu']  = text_hit([60], TISK_RODINA)
 
 # ===================================================================
+# B5) CO CHYBI V APLIKACI (col 95 "Co vam nejvice chybi v mobilni aplikaci" - text)
+# Temata bez checkboxu v baterii (cols 88-94). "Nic nechybi" pokryva
+# aplikace_nic_nechybi; vyhledavani uz JE checkbox (box 88, +2 navic) -> nekodujeme
+# znovu. Boolean na osobu, jen col 95.
+# ===================================================================
+APP_PREHLED = (r'neprehledn|prehledn|\bui\b|uzivatelsk\w* rozhrani|\bmenu|navigac|orientac'
+               r'|tridit|usporad|\blista|ovladaci prvk|vraceni|zpet (?:mus|na)|titulni stran'
+               r'|amatersk|predelat')
+APP_PRISTUP = (r'zvets\w*|velikost (?:pism|font|text)|\bfont|pism\w* (?:moc )?mal|vetsi pism'
+               r'|\bzoom|priblizit|posouvat (?:obraz|foto|fot)|popis\w*.{0,10}(?:fot|obraz)'
+               r'|brejl|bryl|kontrastnejs')
+APP_VYKON   = (r'pomal|trhan|\bseka|zasek|stabilit|spadne|plynul|\bcach|prodlev|spotreb\w* dat'
+               r'|\bbug|nestabil|dlouho (?:se )?nacit|nacit\w* (?:dlouho|pomal)')
+APP_AUDIO   = (r'autoplay|automatick\w* (?:spust|prehr)|\bpauz|cele vydani (?:naj|nelze|chyb)'
+               r'|nelze pustit cele|po jednom clanku|nerozjede|skok\w* (?:vzad|vpred)|po skoku'
+               r'|nepamatuje|mazat staz|stazene cisl|celkov\w* delk|jak daleko')
+APP_PERSON  = r'personaliz|filtr|rubrik|\bsekc|neprecten\w* nad|synchroniz|vlastni (?:playlist|vyber)'
+APP_TISKWEB = (r'(?:vyjde|bude|je) v tisten|v tistene|nen\w* v tisten|jen\w* na webu|jenom na webu'
+               r'|nemam i clanky|ktere jsou (?:jen )?(?:mimo|na webu)')
+
+new['app_prehlednost']    = text_hit([95], APP_PREHLED)
+new['app_pristupnost']    = text_hit([95], APP_PRISTUP)
+new['app_vykon']          = text_hit([95], APP_VYKON)
+new['app_audio_ovladani'] = text_hit([95], APP_AUDIO)
+new['app_personalizace']  = text_hit([95], APP_PERSON)
+new['app_odliseni_tisk']  = text_hit([95], APP_TISKWEB)
+
+# ===================================================================
 # C) OBOHACENI EXISTUJICICH MOZNOSTI (puvodni box zachovan; pridavame _vc_text)
 # ===================================================================
 AIAUDIO = (r'\bai\b|umel|nadech|robot|strojov|neprirozen|namluv|\bhlas|vyslovnost'
@@ -300,6 +328,8 @@ for c in ['bariera_vyhledavani','bariera_obsah','bariera_epub']:
     GROUP[c]='B3_bariery_col137'
 for c in ['preferuje_tisk','digital_doplnek','tisk_pro_rodinu']:
     GROUP[c]='B4_digital_col60'
+for c in ['app_prehlednost','app_pristupnost','app_vykon','app_audio_ovladani','app_personalizace','app_odliseni_tisk']:
+    GROUP[c]='B5_aplikace_col95'
 for c in ['audio_umele_vc_text','tech_problemy_vc_text','styk_soc_site_vc_text','doruceni_vc_text','cas_delka_vc_text']: GROUP[c]='C_obohaceni'
 cb = []
 for c in new.columns:
@@ -334,6 +364,10 @@ for c in ['bariera_vyhledavani','bariera_obsah','bariera_epub']:
 
 print('\n===== B4) PRECHOD NA DIGITAL col 60 (pocet osob = TRUE) =====')
 for c in ['preferuje_tisk','digital_doplnek','tisk_pro_rodinu']:
+    print(f'  {c:26s} = {int(new[c].sum())}')
+
+print('\n===== B5) CO CHYBI V APLIKACI col 95 (pocet osob = TRUE) =====')
+for c in ['app_prehlednost','app_pristupnost','app_vykon','app_audio_ovladani','app_personalizace','app_odliseni_tisk']:
     print(f'  {c:26s} = {int(new[c].sum())}')
 
 print('\n===== C) OBOHACENI (de-dup overeni) =====')
