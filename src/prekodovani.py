@@ -155,6 +155,36 @@ new['zajem_krizovka']         = text_hit([28,35,95,137,52,44], KRIZOVKA)
 new['aplikace_nic_nechybi']   = text_hit([95], NIC)
 
 # ===================================================================
+# B2) KONVERZNI MOTIVY (col 28 "Co vas primelo poridit predplatne" - volny text)
+# Temata, ktera v baterii (cols 21-27) NEMAJI checkbox: kvalita/obsah, zvyk/
+# dlouholety vztah, duvera, prehled, pohodli doruceni, zivot v zahranici.
+# => cisty pridavek, zadny prekryv k odecteni. Darek pokryva predplatne_darek.
+# Boolean na osobu, jen z col 28 (motiv patri k teto otazce).
+# ===================================================================
+KONV_KVALITA = (r'kvalit|novinarin|novinarsk|zurnalist|profesional|urovn|poctiv|seriozn'
+                r'|pestrost|rozmanit|mix temat|spektrum|zajimav|skvel\w* obsah|dobr\w* obsah|obsah')
+KONV_ZVYK    = (r'od (?:jeho )?(?:zacatku|vzniku|pocatku|sameho)|od 9\d|od devadesat|od roku'
+                r'|leta (?:ctu|ho ctu)|ctu (?:uz |ho )?od|cetl\w* (?:uz )?od|kupoval|kupovala'
+                r'|(?:ve|na) stanku|zvykl|prirozen|dlouholet|dlouhodobe (?:ctu|cteme|odebir)'
+                r'|odebir\w* od|jiz od|znam\w* respekt|ma\w* (?:ho )?rad|mel\w* (?:respekt |ho )?rad'
+                r'|laska k respekt|odedavna|vzdycky')
+KONV_DUVERA  = (r'duver|verohodn|overen|spolehliv|nezkreslen|pravdiv|necenzur|nezauja'
+                r'|objektiv|nestrann|spravn\w* informac|\bfakta')
+KONV_PREHLED = (r'prehled|souhrn|shrn\w+|byt v obraze|v obraze|informovan'
+                r'|prisun.{0,18}informac|pravideln\w* prisun|tydenik|tydenni')
+KONV_POHODLI = (r'do schrank|ve schrance|nemus\w* (?:myslet|shanet|kupovat)'
+                r'|nemuset (?:myslet|shanet|kupovat)|nechtelo se mi.{0,18}kupovat|neshanet'
+                r'|jistota.{0,18}(?:dostane|schrank)|prakticte|kazdy tyden.{0,15}schrank')
+KONV_ZAHRANICI = r'zahranic|nebydlim v cr|ziji v (?:zahranic|cizin)|mimo cr|v cizine|nezij\w* v cr'
+
+new['konv_kvalita_obsah']     = text_hit([28], KONV_KVALITA)
+new['konv_dlouholety_ctenar'] = text_hit([28], KONV_ZVYK)
+new['konv_duvera']            = text_hit([28], KONV_DUVERA)
+new['konv_prehled']           = text_hit([28], KONV_PREHLED)
+new['konv_pohodli']           = text_hit([28], KONV_POHODLI)
+new['konv_zahranici']         = text_hit([28], KONV_ZAHRANICI)
+
+# ===================================================================
 # C) OBOHACENI EXISTUJICICH MOZNOSTI (puvodni box zachovan; pridavame _vc_text)
 # ===================================================================
 AIAUDIO = r'\bai\b|umel|nadech|robot|strojov|neprirozen'
@@ -219,6 +249,8 @@ for c in ['pracovni_status_clean','duchodce','podcast_platforma_clean']: GROUP[c
 for c in ['pouziva_audioteku','predplatne_darek','cte_tisk_i_digital','situace_jidlo','situace_cekani',
           'situace_prochazka','situace_kavarna','styk_pres_zname_rodinu','zajem_krizovka','aplikace_nic_nechybi']:
     GROUP[c]='B_priznak_text'
+for c in ['konv_kvalita_obsah','konv_dlouholety_ctenar','konv_duvera','konv_prehled','konv_pohodli','konv_zahranici']:
+    GROUP[c]='B2_konverze_col28'
 for c in ['audio_umele_vc_text','tech_problemy_vc_text','styk_soc_site_vc_text']: GROUP[c]='C_obohaceni'
 cb = []
 for c in new.columns:
@@ -241,6 +273,10 @@ print('\n===== B) NOVE PRIZNAKY (pocet osob = TRUE) =====')
 for c in ['pouziva_audioteku','predplatne_darek','cte_tisk_i_digital','situace_jidlo',
           'situace_cekani','situace_prochazka','situace_kavarna','styk_pres_zname_rodinu',
           'zajem_krizovka','aplikace_nic_nechybi']:
+    print(f'  {c:26s} = {int(new[c].sum())}')
+
+print('\n===== B2) KONVERZNI MOTIVY col 28 (pocet osob = TRUE) =====')
+for c in ['konv_kvalita_obsah','konv_dlouholety_ctenar','konv_duvera','konv_prehled','konv_pohodli','konv_zahranici']:
     print(f'  {c:26s} = {int(new[c].sum())}')
 
 print('\n===== C) OBOHACENI (de-dup overeni) =====')

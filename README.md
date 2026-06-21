@@ -69,8 +69,8 @@ poslech v aplikaci (153), zdroje kromě Respektu (154), v čem výjimečný (155
 
 ## Nové proměnné (`prekodovani.py`)
 
-37 nových sloupců; detail a počty v `data/processed/respekt_codebook_nove.csv`.
-Obohacený dataset (původní + nové sloupce) je `respekt_obohaceno.csv`.
+43 nových sloupců (37 obecných + 6 konverzních motivů z col 28); detail a počty
+v `data/processed/respekt_codebook_nove.csv`. Obohacený dataset je `respekt_obohaceno.csv`.
 
 **Řídící pravidlo – nenadhodnocovat:** každá příznaková proměnná je boolean na úrovni
 respondující osoby = `zaškrtnuto NEBO zmíněno v textu`. Osoba se započítá nejvýše jednou.
@@ -84,6 +84,11 @@ kombinace → první uvedený status), `duchodce` (flag, jakákoli penze),
 `pouziva_audioteku`, `predplatne_darek`, `cte_tisk_i_digital` (korekce „nepřešel/a, čtu obojí"
 u otázky na přechod – ⅓ tamních textových odpovědí!), `situace_jidlo`, `situace_cekani`,
 `situace_prochazka`, `situace_kavarna`, `styk_pres_zname_rodinu`, `zajem_krizovka`, `aplikace_nic_nechybi`.
+
+**B2) Konverzní motivy z volného textu „Co vás přimělo pořídit předplatné" (col 28)** – témata, která
+v baterii (cols 21–27) nemají checkbox, takže jde o čistý přírůstek: `konv_kvalita_obsah` (151),
+`konv_dlouholety_ctenar` (96), `konv_prehled` (39), `konv_duvera` (36), `konv_pohodli` (18), `konv_zahranici` (15).
+Pokrytí volného textu vzrostlo ze 7 % na 55 % (zbytek jsou jednorázové odpovědi / „nevzpomínám si").
 
 **C) Obohacení existujících možností** – původní „jak zaškrtnuto" je zachováno; varianta `_vc_text`
 přidává jen text navíc (po odečtení překryvu): `audio_umele_vc_text`, `tech_problemy_vc_text`,
