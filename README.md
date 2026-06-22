@@ -129,9 +129,10 @@ a `respekt_otevrene_kodovano.csv` (boolean příznaky na respondující osobu).
   alternativní/investigativní, zahraniční, slovenské, podcast, influencer/osobnost, sociální sítě, newsletter.
 - **155 – chvála (pozitivní valence):** hloubka/kontext, šíře témat, kvalita psaní, autoři/redakce,
   nezávislost, důvěra/vyváženost, investigativa, hodnotové souznění, forma, nepodbízivost, tradice.
-- **156 – výtky/náměty (negativní/konstruktivní):** nic nevadí, web/aplikace/UX, obsah/chybějící témata,
-  audio/AI (smíšená valence), délka článků, jednostrannost/bias, grafika/obálka, přehlednost/archiv,
-  vyhledávání, doručení, cena, reklamy, anglicismy.
+- **156 – výtky/náměty (negativní/konstruktivní), 16 témat po retaxu:** nic nevadí; *web/app rozděleno na*
+  web/navigace, aplikace/technika (s odečtem specifik), vyhledávání, přehlednost/archiv; audio/AI (smíšená
+  valence); *obsah rozdělen na* kulturní rubrika, chybějící oblasti, tón/víc pozitivního; grafika/obálka,
+  jednostrannost/bias, délka článků, četnost, doručení, cena, reklamy.
 - **153 – poslech v aplikaci:** **není to bug-report** – převažuje „proč jinou platformu" (agregace všech
   podcastů na jednom místě, zvyklost) a spokojenost; technické problémy jsou menšina.
 

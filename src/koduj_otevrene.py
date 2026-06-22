@@ -50,21 +50,29 @@ TAX = {
   'Nepodbizivost, odvaha': r'nepodbiz|odvah|odvazn|kritick|\btabu|jde proti|neboji|provokativ',
   'Tradice, znacka': r'tradic|dlouholet|\bznacka|historie|leta ctu|pres \d+ let',
  },
- '156': {  # Co vadi / zlepsit - VYTKY/NAMETY (negativni/konstruktivni)
+ '156': {  # Co vadi / zlepsit - VYTKY/NAMETY. Siroka temata Web/app a Obsah rozdelena (TODO 1a/1c).
   'Nic nevadi / spokojenost': r'^nic\b|nic mi nevad|nevadi nic|jsem spokoj|jsme spokoj|\bvse ok\b|nenapada|nemam co vyt|nemam vyhrad|nemam pripomink|\bhappy\b|^nevim$|^nic$',
-  'Web / aplikace / UX / technika': r'\bweb|aplikac|\bapp\b|rozhrani|technic|nefunguj|pomal|nacit|zapomina|kde jsem|listovat|posunovat|uzivatelsk|chyb',
+  # --- byvale siroke "Web/aplikace/UX/technika" rozdeleno na 4 (vyhledavani a prehlednost uz byly samostatne) ---
+  'Web / navigace': r'\bweb|listovat|posunovat|mezi clanky|na webu|prochazet|navigac',
+  'Aplikace / technika (UX, bugy, vykon)': (
+      r'aplikac|\bapp\b|appka|rozhrani|uzivatelsk|ovlada|zamrz(?!el)|zaseka|sekani|\bseka\b'
+      r'|spadl|spadne|nefunguj|nestabil|pomal|kde jsem (?:skoncil|prestal)|vybij\w* bater|spotreb\w* dat'
+      r'|technick\w* (?:probl|aspekt|zalezitost|chyb|vec|stranka|podmink|reseni|stav|zavad)',
+      r'vyhledav|prehledn|\barchiv|filtrov|hledat star'),
   'Vyhledavani': r'vyhledav|hledat (?:clanek|autor|stare)|filtrov|dle autor',
-  'Audio / AI hlas (smisene)': r'\baudio|namluv|\bhlas|umel|\bai\b|nadech|robot|chybne cteni|audioverz',
-  'Obsah / chybejici temata': r'kultur|\bsport|ekonom|region|\bveda|recenz|\brubrik|vic clank|chybi tema|obsahov|\btipy',
-  'Grafika / obalka / ilustrace': r'grafik|obalk|titulni stran|reisenauer|raisenauer|ilustrac|obrazek|kreslen',
-  'Jednostrannost / bias / aktivismus': r'jednostr|\blevic|liberal|aktivis|\bwoke|zaujat|ideolog|propag|gender|feminist|korektn|arogan|protistran|naladeni',
-  'Delka clanku (moc dlouhe)': r'\bdlouh|\bdelka|zkrat|kratsi|strucnej|rozvlacn|moc textu',
-  'Cetnost / vice obsahu, podcastu': r'cetnost|casteji|jen tyden|aktualizac|frekvenc|\bdenne|vic podcast|malo podcast|vic clank|malo clank',
   'Prehlednost / archiv / orientace': r'prehledn|\barchiv|razeni|orientac|struktur|hledat star',
+  'Audio / AI hlas (smisene)': r'\baudio|namluv|\bhlas|umel|\bai\b|nadech|robot|chybne cteni|audioverz',
+  # --- byvale siroke "Obsah / chybejici temata" rozdeleno na 3 ---
+  'Kulturni rubrika': r'kultur|recenz|\btipy',
+  'Chybejici oblasti': r'ekonom|\bsport|region|\bveda|domaci tema',
+  'Ton / vice pozitivniho': r'pozitivn|nadej|depres|optimis|beznadej',
+  'Grafika / obalka / ilustrace': r'grafik|obalk|titulni stran|reisenauer|raisenauer|riesenauer|ilustrac|obrazek|kreslen|kresb',
+  'Jednostrannost / bias / aktivismus': r'jednostr|\blevic|liberal|aktivis|\bwoke|zaujat|ideolog|propag|gender|feminist|korektn|arogan|protistran|naladeni|tendencn',
+  'Delka clanku (moc dlouhe)': r'\bdlouh|\bdelka|zkrat|kratsi|strucnej|rozvlacn|moc textu',
+  'Cetnost / vice obsahu, podcastu': r'cetnost|casteji|jen tyden|aktualizac|frekvenc|\bdenne|vic podcast|malo podcast|vic clank|malo clank|kazdodenn',
   'Doruceni tisku': r'doruc|nechodi|\bpozde|schrank|\bposta|\bvcas',
   'Cena / paywall': r'\bcena|\bdrah|\bdraz|paywall|levnej|\bstoji|penez',
   'Reklamy': r'reklam',
-  'Jazyk / anglicismy': r'anglicism|anglicizm|cizi slov|prejat slov',
  },
  '153': {  # Poslech v aplikaci - REFRAME: hl. proc jina platforma + problemy
   'Nezkousel / neposloucha v app': r'nezkous|nepouzivam aplikac|neposloucham|nevyuzivam|jen ctu|neslysel|^ne[.,]?$|^nezkousel|^nezkousela|nepreferuj',
@@ -133,7 +141,14 @@ for qkey, themes in TAX.items():
     has = raw.str.strip() != ''; Nt = int(has.sum())
     rows = []
     for theme, pat in themes.items():
-        m = nv.str.contains(re.compile(pat)) & has
+        # pat muze byt retezec, nebo dvojice (include, exclude) pro MECE odecet
+        # specifictejsiho tematu (princip de-dup: sirsi kos nepocita to, co ma
+        # vlastni uzsi tema – napr. Aplikace/technika neobsahuje Vyhledavani).
+        if isinstance(pat, tuple):
+            inc, exc = pat
+            m = nv.str.contains(re.compile(inc)) & ~nv.str.contains(re.compile(exc)) & has
+        else:
+            m = nv.str.contains(re.compile(pat)) & has
         idx = list(raw.index[m]); n = len(idx)
         ex = [clean(raw.iloc[i]) for i in idx[:2]]
         coded[f'{qkey}_{slug(theme)}'] = m.values

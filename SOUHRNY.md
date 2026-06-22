@@ -143,3 +143,41 @@ Zjistit co se děje 494 · Audioverze/podcast 485 · Konkrétní článek 271 ·
   sociální sítě, RSS nebo QR kód z tištěného čísla (15), nebo homepage prakticky nepoužívá (8).
 - Implikace: **distribuce přes newsletter a sítě je reálná vstupní brána** k obsahu, ne jen doplněk.
 
+---
+
+## Q156 — „Co vám na Respektu nejvíce vadí a co by měl zlepšit?" (výtky / náměty)
+
+1307 volných odpovědí. **Otevřená otázka po retaxonomizaci** (rozdělena dvě příliš široká témata, valence
+oddělená od chvály Q155) → 16 témat. Příznaky jsou multi-label (jedna odpověď může nést víc témat).
+
+| téma | n | poznámka |
+|---|---|---|
+| Nic nevadí / spokojenost | 288 | |
+| Audio / AI hlas | 102 | smíšené – část AI kritizuje, část akceptuje |
+| Kulturní rubrika | 85 | nejčastější obsahová výtka |
+| Aplikace / technika (UX, bugy, výkon) | 82 | bez vyhledávání/přehlednosti (ty zvlášť) |
+| Délka článků (moc dlouhé) | 67 | |
+| Jednostrannost / bias / aktivismus | 64 | |
+| Web / navigace | 44 | |
+| Grafika / obálka / ilustrace | 39 | hodně „chybí Reisenauer" |
+| Přehlednost / archiv / orientace | 36 | |
+| Vyhledávání | 32 | nejkonkrétnější funkční mezera |
+| Chybějící oblasti (ekonomika, sport, věda, region) | 32 | |
+| Doručení tisku | 29 | |
+| Tón / víc pozitivního | 28 | „depresivní", chybí naděje |
+| Četnost / víc obsahu | 22 | |
+| Reklamy | 21 | |
+| Cena / paywall | 11 | |
+
+**Co změnila retaxonomizace:** staré „Web/aplikace/UX/technika" (220) bylo nafouknuté – přes holé „chybí"
+pohlcovalo ~69 *obsahových* výtek (chybí Reisenauer, kultura, optimismus). Po rozdělení jdou správně do
+grafiky/kultury/tónu a platforma se rozpadla na Aplikace/technika + Web + samostatné Vyhledávání + Přehlednost
+(s odečtem, aby se nepočítaly dvakrát). Staré „Obsah" (133) → Kulturní rubrika (85) + Chybějící oblasti + Tón.
+
+**Klíčová zjištění:**
+- **Redakce:** dominují kulturní rubrika (85), vnímaná jednostrannost/aktivismus (64), depresivní tón /
+  chybí pozitivní zprávy (28); opakovaný námět délka článků (67).
+- **Aplikace/produkt:** platformní problémy (82) + vyhledávání (32) + přehlednost (36) = velký balík;
+  vyhledávání je nejkonkrétnější funkční požadavek.
+- **Audio/AI (102)** je velké a smíšené – vazby na věk/formát půjdou dotáhnout přes spojený dataset.
+
