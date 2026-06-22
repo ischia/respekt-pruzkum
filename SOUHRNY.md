@@ -181,3 +181,36 @@ grafiky/kultury/tónu a platforma se rozpadla na Aplikace/technika + Web + samos
   vyhledávání je nejkonkrétnější funkční požadavek.
 - **Audio/AI (102)** je velké a smíšené – vazby na věk/formát půjdou dotáhnout přes spojený dataset.
 
+---
+
+## Q155 — „V čem je podle vás Respekt výjimečný oproti jiným médiím?" (chvála)
+
+1534 volných odpovědí. **Otevřená otázka po retaxonomizaci** (rozdělena dvě široká témata) → 13 témat.
+Pozitivní valence, oddělená od výtek (Q156). Multi-label.
+
+| téma | n |
+|---|---|
+| Šíře a výběr témat | 461 |
+| Hloubka, kontext, souvislosti | 385 |
+| Kvalita psaní, jazyk, úroveň | 370 |
+| Autoři, osobnosti, redakce | 304 |
+| Důvěra, věrohodnost, fakta | 194 |
+| Nezávislost | 180 |
+| Hodnotové souznění, světonázor | 173 |
+| Vyváženost, objektivita, nestrannost | 170 |
+| Investigativa, reportáže | 87 |
+| Tradice, značka | 67 |
+| Překlady, zahraniční obsah | 66 |
+| Nepodbízivost, odvaha | 55 |
+| Forma (bez reklam, audio, epub) | 20 |
+
+**Co změnila retaxonomizace:** staré „Důvěra/věrohodnost/vyváženost" (325) → **Důvěra/fakta** (194,
+ověřenost, serióznost) + **Vyváženost/objektivita** (170, různé úhly, nestrannost) – dva odlišné důvody
+chvály. Z „Formy" vytažen **Překlady/zahraniční obsah** (66) – kurátorství textů z Atlantic, NYT apod.
+
+**Klíčová zjištění:**
+- Jádro značky: **šíře témat** (461), **hloubka/kontext** (385), **kvalita psaní** (370).
+- **Hodnotové souznění** (173) zní v chvále pozitivně (sdílený světonázor) – tatáž osa se v Q156 objevuje
+  jako „jednostrannost/bias" (64) u jiné skupiny. Stejné téma, opačná valence (proto je nemícháme).
+- **Překlady/zahraniční obsah** (66) – konkrétní, propagovatelná přednost (akvizice/marketing).
+

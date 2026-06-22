@@ -127,8 +127,9 @@ a `respekt_otevrene_kodovano.csv` (boolean příznaky na respondující osobu).
 - **154 – zdroje:** zpracováno jako **jmenované entity** (médium + typ zdroje), ne jako vágní témata.
   Nejčastější „jiný" zdroj je Deník N. Typy: veřejnoprávní, domácí zpravodajství, domácí tisk/komentář,
   alternativní/investigativní, zahraniční, slovenské, podcast, influencer/osobnost, sociální sítě, newsletter.
-- **155 – chvála (pozitivní valence):** hloubka/kontext, šíře témat, kvalita psaní, autoři/redakce,
-  nezávislost, důvěra/vyváženost, investigativa, hodnotové souznění, forma, nepodbízivost, tradice.
+- **155 – chvála (pozitivní valence), 13 témat po retaxu:** šíře témat, hloubka/kontext, kvalita psaní,
+  autoři/redakce, nezávislost, *(rozděleno)* důvěra/věrohodnost/fakta + vyváženost/objektivita/nestrannost,
+  investigativa, hodnotové souznění, *(vytaženo)* překlady/zahraniční obsah, forma, nepodbízivost, tradice.
 - **156 – výtky/náměty (negativní/konstruktivní), 16 témat po retaxu:** nic nevadí; *web/app rozděleno na*
   web/navigace, aplikace/technika (s odečtem specifik), vyhledávání, přehlednost/archiv; audio/AI (smíšená
   valence); *obsah rozdělen na* kulturní rubrika, chybějící oblasti, tón/víc pozitivního; grafika/obálka,

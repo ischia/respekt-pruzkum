@@ -43,10 +43,14 @@ TAX = {
   'Kvalita psani, jazyk, uroven': r'kvalit|jazyk|\bstyl|psani|cestin|gramat|literar|napsan|uroven|profesional|preciz',
   'Autori, osobnosti, redakce': r'autor|osobnost|redaktor|redakc|novinar|pisatel|kundra|spurny|erudic|\btym\b',
   'Nezavislost': r'nezavisl|bez vlivu|\bsvobod|oligarch|nepatri|neslouzi',
-  'Duvera, verohodnost, vyvazenost': r'duver|verohodn|overen|\bfakt|pravd|serioz|presnost|objektiv|vyvazen|nestrann',
+  # byvale siroke "Duvera, verohodnost, vyvazenost" (325) rozdeleno na 2 (TODO 1a):
+  'Duvera, verohodnost, fakta': r'duver|verohodn|overen|\bfakt|pravd|serioz|presnost|spolehliv',
+  'Vyvazenost, objektivita, nestrannost': r'vyvazen|objektiv|nestrann|obe strany|vsechny strany|ruzne (?:uhly|pohled|nazor)|vsechny uhly',
   'Investigativa, reportaze': r'investigat|reportaz|\bterenu|na miste|odhal|\bkauz',
   'Hodnotove souzneni, svetonazor': r'liberal|\bhodnot|svetonazor|vnimani sveta|videni sveta|ztotoznuj|souzn|progresiv|stejny pohled|naladen',
-  'Forma (bez reklam, audio, preklady)': r'bez reklam|\baudio|namluv|preklad|zahranicni media|spoluprac|mezi novinami|\bepub',
+  # z "Formy" vytazeny preklady/zahranicni obsah jako samostatne tema (TODO 1a):
+  'Preklady, zahranicni obsah': r'preklad|zahranicni\w* (?:media|clank|texty|zpravodaj)|ze zahranic\w* medii|prejima\w* (?:ze zahranic|clanky)|spoluprac\w*.{0,22}(?:atlantic|nyt|economist|guardian|new yorker|times)|vyber prekladu',
+  'Forma (bez reklam, audio, epub)': r'bez reklam|\baudio|namluv|mezi novinami|\bepub|\bformat|papirov\w* (?:verze|forma|vydani)',
   'Nepodbizivost, odvaha': r'nepodbiz|odvah|odvazn|kritick|\btabu|jde proti|neboji|provokativ',
   'Tradice, znacka': r'tradic|dlouholet|\bznacka|historie|leta ctu|pres \d+ let',
  },
