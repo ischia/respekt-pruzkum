@@ -2,6 +2,9 @@
 data/raw/*.csv
 data/processed/
 
+# odvozeny agregat pro dashboard (generuje se z dat, necommitovat)
+dashboard/data.json
+
 __pycache__/
 *.pyc
 .DS_Store

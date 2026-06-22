@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Respekt – průzkum předplatitelů (prototyp)</title>
+<style>
+  :root{
+    --bg:#faf9f7; --card:#fff; --ink:#1a1a1a; --muted:#6b6b6b; --line:#e7e4df;
+    --track:#ece9e4; --chip:#f0ede8; --accent:#e2342f;
+    --A:#e2342f; --B:#2f6fe2; --C:#15a05a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{padding:16px 24px 12px;border-bottom:1px solid var(--line);background:var(--card)}
+  h1{margin:0;font-size:18px;letter-spacing:-.2px}
+  h1 .r{color:var(--accent)}
+  .sub{color:var(--muted);font-size:12.5px;margin-top:3px;max-width:920px}
+  .wrap{display:flex;align-items:flex-start}
+  aside{width:300px;flex:0 0 300px;padding:14px 16px 50px;position:sticky;top:0;
+    height:100vh;overflow:auto;border-right:1px solid var(--line);background:var(--card)}
+  main{flex:1;padding:14px 22px 70px;min-width:0}
+  .ftitle{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);
+    margin:16px 0 7px;font-weight:700}
+  .ftitle:first-child{margin-top:2px}
+
+  /* segment tabs */
+  .tabs{display:flex;flex-direction:column;gap:5px}
+  .tab{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--line);
+    border-radius:8px;cursor:pointer;background:var(--bg);font-size:12.5px}
+  .tab.active{border-color:#bbb;box-shadow:0 0 0 2px #00000010}
+  .tab .dot{width:11px;height:11px;border-radius:50%;flex:0 0 11px}
+  .tab .nm{font-weight:700}
+  .tab .sz{color:var(--muted);font-size:11px}
+  .tab .sum{color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;flex:1;min-width:0;text-align:right}
+  .tab input{margin:0;cursor:pointer}
+  .tab.off{opacity:.5}
+  .baseline-row{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;cursor:pointer}
+
+  .editor{margin-top:6px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--bg)}
+  .editor .eh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .editor .eh b{font-size:12.5px}
+  .clr{font-size:11.5px;color:var(--accent);cursor:pointer;background:none;border:none;padding:0}
+  .fl{margin:11px 0 4px}
+  .fl .lab{font-size:11.5px;color:#444;display:flex;justify-content:space-between;margin-bottom:4px}
+  .fl .lab b{color:var(--ink)}
+
+  /* dual slider */
+  .dual{position:relative;height:22px}
+  .dual .rail{position:absolute;left:6px;right:6px;top:9px;height:4px;background:#d8d4cd;border-radius:3px}
+  .dual .fill{position:absolute;top:9px;height:4px;background:#999;border-radius:3px}
+  .dual input{position:absolute;left:0;width:100%;top:0;height:22px;margin:0;background:none;
+    pointer-events:none;-webkit-appearance:none;appearance:none}
+  .dual input::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:14px;height:14px;
+    border-radius:50%;background:#fff;border:2px solid #666;cursor:pointer;margin-top:0}
+  .dual input::-moz-range-thumb{pointer-events:auto;width:14px;height:14px;border-radius:50%;
+    background:#fff;border:2px solid #666;cursor:pointer}
+  .dual input::-webkit-slider-runnable-track{background:none;height:22px}
+  .dual input::-moz-range-track{background:none}
+
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .ch{font-size:11.5px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);
+    background:#fff;cursor:pointer;color:#555}
+  .ch.on{background:#333;color:#fff;border-color:#333}
+
+  .opt{display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+  .opt label{display:flex;align-items:center;gap:7px;cursor:pointer}
+
+  /* main */
+  .topbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .scard{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 12px;
+    display:flex;align-items:center;gap:8px;font-size:12.5px}
+  .scard .dot{width:11px;height:11px;border-radius:50%}
+  .scard b{font-size:15px}
+  .legend{font-size:11px;color:var(--muted);margin:0 0 12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin-right:4px}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:11px;
+    padding:13px 16px 9px;margin-bottom:14px}
+  .panel h2{margin:0 0 2px;font-size:14px}
+  .panel .hint{color:var(--muted);font-size:11px;margin:0 0 9px}
+  .panel .cap{font-size:11px;color:#8a6d00;background:#fbf3d6;border:1px solid #efe0a8;
+    border-radius:6px;padding:4px 9px;margin:0 0 9px;cursor:help}
+  .mrow{display:grid;grid-template-columns:182px 1fr 132px;align-items:center;gap:10px;padding:4px 0;
+    border-top:1px solid #f3f1ee}
+  .mrow:first-of-type{border-top:none}
+  .mrow .name{font-size:12.5px;color:#333;display:flex;justify-content:flex-end;align-items:baseline}
+  .mrow .name .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mrow .name .plus,.mrow .name sup.enr{flex:0 0 auto}
+  .bars{display:flex;flex-direction:column;gap:2px;position:relative}
+  .bwrap{position:relative;height:7px;background:var(--track);border-radius:3px;overflow:hidden}
+  .bfill{position:absolute;left:0;top:0;bottom:0;border-radius:3px;transition:width .2s}
+  .baseMark{position:absolute;top:-2px;bottom:-2px;width:2px;background:#00000066;z-index:3}
+  .vals{display:flex;flex-direction:column;gap:1px;align-items:flex-end;font-variant-numeric:tabular-nums}
+  .vals .v{font-size:11.5px;display:flex;align-items:center;gap:5px}
+  .vals .v .d{width:8px;height:8px;border-radius:50%}
+  .vals .v.base{color:var(--muted)}
+  .vals .v .lift{font-size:10px;padding:0 4px;border-radius:4px;margin-left:2px}
+  .lift.up{color:#1f8a4c;background:#1f8a4c18}
+  .lift.down{color:#c0392b;background:#c0392b18}
+  .mrow.low{opacity:.42}
+  .plus{color:#1f8a4c;font-weight:800;font-size:12px;margin-left:3px}
+  h2 .plus{font-size:13px}
+  sup.enr{color:#b8860b;font-size:9px;font-weight:700;margin-left:1px}
+  .mrow.drill .name{cursor:pointer}
+  .mrow.drill:hover .name{text-decoration:underline;text-decoration-color:#bbb}
+  .mrow.drill .name::before{content:"🔍";font-size:9px;opacity:0;margin-right:4px}
+  .mrow.drill:hover .name::before{opacity:.5}
+  code{background:var(--chip);padding:1px 4px;border-radius:4px;font-size:11.5px}
+
+  .share{margin-top:10px;width:100%;padding:7px;border:1px solid var(--line);border-radius:8px;
+    background:#fff;cursor:pointer;font-size:12.5px;color:#333}
+  .share:hover{background:var(--bg)}
+
+  /* drilldown modal */
+  .overlay{position:fixed;inset:0;background:#0006;display:none;z-index:50;align-items:flex-start;
+    justify-content:center;padding:46px 16px}
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:12px;max-width:760px;width:100%;max-height:84vh;
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px #00000030}
+  .modal .mh{padding:14px 18px;border-bottom:1px solid var(--line)}
+  .modal .mh h3{margin:0;font-size:15px}
+  .modal .mh .q{color:var(--muted);font-size:12px;margin-top:2px}
+  .modal .mh .x{float:right;cursor:pointer;border:none;background:none;font-size:20px;color:#999;line-height:1}
+  .scopes{display:flex;gap:6px;padding:10px 18px 4px;flex-wrap:wrap}
+  .scopes button{font-size:12px;padding:4px 11px;border-radius:18px;border:1px solid var(--line);
+    background:#fff;cursor:pointer}
+  .scopes button.on{color:#fff}
+  .mcount{padding:2px 18px 8px;color:var(--muted);font-size:12px}
+  .mlist{overflow:auto;padding:0 18px 16px}
+  .mlist .ans{padding:8px 0;border-top:1px solid #f1efec;font-size:13px;line-height:1.5;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="r">Respekt</span> · průzkum předplatitelů <span style="color:var(--muted);font-weight:400;font-size:13px">— prototyp dashboardu</span></h1>
+  <div class="sub">Definuj vlevo až tři segmenty (A/B/C) a porovnej je vedle sebe. U každého tématu je podíl osob v segmentu; svislá ryska = celek (baseline). „Řadit podle rozdílu" vynese nahoru témata, kde se segmenty nejvíc liší.</div>
+</header>
+<div class="wrap">
+  <aside>
+    <div class="ftitle">Segmenty</div>
+    <div class="tabs" id="tabs"></div>
+    <label class="baseline-row"><input type="checkbox" id="showBase"> ukázat celek (baseline)</label>
+    <button class="share" id="share">🔗 zkopírovat odkaz na tento pohled</button>
+
+    <div class="editor" id="editor"></div>
+
+    <div class="ftitle">Jmenovatel</div>
+    <div class="opt" id="denomOpt">
+      <label><input type="radio" name="denom" value="all" checked> celý vzorek (N = 2 139)</label>
+      <label><input type="radio" name="denom" value="resp"> jen ti, kdo otázku zodpověděli</label>
+    </div>
+    <div class="ftitle">Řazení</div>
+    <div class="opt" id="sortOpt">
+      <label><input type="radio" name="sort" value="base" checked> podle četnosti</label>
+      <label><input type="radio" name="sort" value="spread"> podle rozdílu mezi segmenty</label>
+    </div>
+  </aside>
+  <main>
+    <div class="topbar" id="topbar"></div>
+    <div class="legend" id="legend"></div>
+    <div id="panels"></div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="mh">
+      <button class="x" id="drillClose">×</button>
+      <h3 id="drillTitle"></h3>
+      <div class="q" id="drillQ"></div>
+    </div>
+    <div class="scopes" id="drillScopes"></div>
+    <div class="mcount" id="drillCount"></div>
+    <div class="mlist" id="drillList"></div>
+  </div>
+</div>
+<script>
+let DATA=null, FI={}, MI=0, RESP={}, ORIGIN={}, INCREMENT={}, TEXTKEY={}, TEXTLAB={};
+const COLORS={A:'#e2342f',B:'#2f6fe2',C:'#15a05a'};
+const segs=[
+  {id:'A',color:COLORS.A,on:true,cons:{}},
+  {id:'B',color:COLORS.B,on:false,cons:{}},
+  {id:'C',color:COLORS.C,on:false,cons:{}},
+];
+let active=0, showBase=false, denom='all', sortMode='base';
+
+fetch('data.json').then(r=>r.json()).then(d=>{DATA=d;init();})
+  .catch(()=>{document.getElementById('panels').innerHTML=
+    '<div class="panel">Nepodařilo se načíst <code>data.json</code>. Spusť přes <code>python3 dashboard/serve.py</code> a otevři http://localhost:8731/.</div>';});
+
+function init(){
+  DATA.filters.forEach((f,i)=>FI[f.key]=i);
+  MI=DATA.filters.length;            // offset prvního metrického sloupce
+  RESP=DATA.respond;
+  ORIGIN=DATA.metric_origin||{}; INCREMENT=DATA.metric_increment||{};
+  TEXTKEY=DATA.metric_textkey||{}; TEXTLAB=DATA.text_labels||{};
+  loadURL();
+  document.getElementById('showBase').onchange=e=>{showBase=e.target.checked;renderPanels();buildTabs();syncURL();};
+  document.querySelectorAll('input[name=denom]').forEach(r=>r.onchange=e=>{denom=e.target.value;renderPanels();syncURL();});
+  document.querySelectorAll('input[name=sort]').forEach(r=>r.onchange=e=>{sortMode=e.target.value;renderPanels();syncURL();});
+  // promítni načtený stav do ovládacích prvků
+  document.getElementById('showBase').checked=showBase;
+  const dr=document.querySelector(`input[name=denom][value="${denom}"]`); if(dr)dr.checked=true;
+  const sr=document.querySelector(`input[name=sort][value="${sortMode}"]`); if(sr)sr.checked=true;
+  // drilldown přes delegaci kliků
+  document.getElementById('panels').addEventListener('click',ev=>{
+    const row=ev.target.closest('.mrow.drill'); if(row) openDrill(row.dataset.mk);
+  });
+  document.getElementById('drillClose').onclick=closeDrill;
+  document.getElementById('overlay').addEventListener('click',ev=>{if(ev.target.id==='overlay')closeDrill();});
+  document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeDrill();});
+  // sdílení
+  document.getElementById('share').onclick=()=>{
+    syncURL();
+    navigator.clipboard.writeText(location.href).then(()=>{
+      const b=document.getElementById('share'), t=b.textContent;
+      b.textContent='✓ zkopírováno do schránky'; setTimeout(()=>b.textContent=t,1600);
+    });
+  };
+  buildTabs(); renderEditor(); renderPanels();
+}
+
+/* ---------- sdílení stavu přes URL ---------- */
+function syncURL(){
+  const st={s:segs.map(s=>({on:s.on,c:s.cons})),b:showBase,d:denom,o:sortMode,a:active};
+  history.replaceState(null,'','#'+encodeURIComponent(JSON.stringify(st)));
+}
+function loadURL(){
+  if(!location.hash||location.hash.length<2) return;
+  try{
+    const st=JSON.parse(decodeURIComponent(location.hash.slice(1)));
+    (st.s||[]).forEach((s,i)=>{if(segs[i]){segs[i].on=!!s.on;segs[i].cons=s.c||{};}});
+    showBase=!!st.b; denom=st.d||'all'; sortMode=st.o||'base'; active=st.a||0;
+  }catch(e){/* ignoruj poškozený hash */}
+}
+
+/* ---------- drilldown ---------- */
+let drill={mk:null,scope:'celek'};
+function drillScopeList(){
+  const arr=[{id:'celek',label:'Celek',color:'#888',test:()=>true}];
+  segs.forEach(s=>{if(s.on)arr.push({id:s.id,label:'Segment '+s.id,color:s.color,test:r=>passes(r,s)});});
+  return arr;
+}
+function openDrill(mk){
+  const tk=TEXTKEY[mk]; if(!tk) return;
+  const sc=drillScopeList();
+  if(!sc.find(x=>x.id===drill.scope)) drill.scope=sc[sc.length>1?1:0].id; // default: 1. segment, jinak celek
+  drill.mk=mk;
+  document.getElementById('drillTitle').innerHTML=DATA.metric_labels[mk]+originMark(mk);
+  document.getElementById('drillQ').textContent='Otázka: '+(TEXTLAB[tk]||tk);
+  renderDrill();
+  document.getElementById('overlay').classList.add('show');
+}
+function closeDrill(){document.getElementById('overlay').classList.remove('show');}
+function renderDrill(){
+  const mk=drill.mk, tk=TEXTKEY[mk];
+  const m=MI+DATA.metric_keys.indexOf(mk);
+  const scopes=drillScopeList();
+  const sc=scopes.find(x=>x.id===drill.scope)||scopes[0];
+  document.getElementById('drillScopes').innerHTML=scopes.map(x=>
+    `<button data-id="${x.id}" class="${x.id===drill.scope?'on':''}" style="${x.id===drill.scope?`background:${x.color};border-color:${x.color}`:''}">${x.label}</button>`).join('');
+  document.querySelectorAll('#drillScopes button').forEach(b=>b.onclick=()=>{drill.scope=b.dataset.id;renderDrill();});
+  const texts=[];
+  DATA.rows.forEach((r,i)=>{ if(r[m]===1 && sc.test(r)){const t=DATA.texts[i][tk]; if(t)texts.push(t);} });
+  document.getElementById('drillCount').textContent=
+    `${texts.length.toLocaleString('cs')} odpovědí v rozsahu „${sc.label}" obsahuje toto téma`;
+  document.getElementById('drillList').innerHTML=
+    texts.map(t=>`<div class="ans">${esc(t)}</div>`).join('')||'<div class="ans" style="color:#999">Žádné odpovědi.</div>';
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+/* ---------- segment passing ---------- */
+function passes(row,seg){
+  for(const fk in seg.cons){
+    const v=row[FI[fk]], c=seg.cons[fk];
+    if(v===null) return false;
+    if(Array.isArray(c)){ if(!c.includes(v)) return false; }
+    else { if(v<c.min||v>c.max) return false; }
+  }
+  return true;
+}
+function segSize(seg){ let n=0; for(const r of DATA.rows) if(passes(r,seg)) n++; return n; }
+function consSummary(seg){
+  const parts=[];
+  for(const fk in seg.cons){
+    const f=DATA.filters.find(x=>x.key===fk), c=seg.cons[fk];
+    if(Array.isArray(c)) parts.push(c.map(i=>f.categories[i]).join('/'));
+    else parts.push(f.categories[c.min]+(c.min===c.max?'':'–'+f.categories[c.max]));
+  }
+  return parts.length?parts.join(' · '):'celý vzorek';
+}
+
+/* ---------- sidebar: tabs + editor ---------- */
+function buildTabs(){
+  const el=document.getElementById('tabs'); el.innerHTML='';
+  segs.forEach((s,i)=>{
+    const t=document.createElement('div');
+    t.className='tab'+(i===active?' active':'')+(s.on?'':' off');
+    const sz=s.on?segSize(s):0;
+    t.innerHTML=`<input type="checkbox" ${s.on?'checked':''}>
+      <span class="dot" style="background:${s.color}"></span>
+      <span class="nm">${s.id}</span>
+      <span class="sz">${s.on?sz.toLocaleString('cs'):'–'}</span>
+      <span class="sum">${consSummary(s)}</span>`;
+    t.querySelector('input').onclick=ev=>{ev.stopPropagation();s.on=ev.target.checked;buildTabs();renderPanels();syncURL();};
+    t.onclick=()=>{active=i;buildTabs();renderEditor();};
+    el.appendChild(t);
+  });
+  document.getElementById('showBase').checked=showBase;
+}
+
+function renderEditor(){
+  const s=segs[active], el=document.getElementById('editor');
+  el.innerHTML=`<div class="eh"><b>Segment ${s.id}</b>
+    <button class="clr">vyčistit</button></div>`;
+  el.querySelector('.clr').onclick=()=>{s.cons={};renderEditor();buildTabs();renderPanels();syncURL();};
+  DATA.filters.forEach(f=>{
+    el.appendChild(f.type==='ordinal'?makeSlider(f,s):makeChips(f,s));
+  });
+}
+
+function makeSlider(f,s){
+  const max=f.categories.length-1;
+  const cur=s.cons[f.key]||{min:0,max:max};
+  const wrap=document.createElement('div'); wrap.className='fl';
+  const lab=document.createElement('div'); lab.className='lab';
+  const labV=()=> (cur.min===0&&cur.max===max)?'vše'
+        :f.categories[cur.min]+(cur.min===cur.max?'':' – '+f.categories[cur.max]);
+  lab.innerHTML=`<span>${f.label}</span><b>${labV()}</b>`;
+  const dual=document.createElement('div'); dual.className='dual';
+  dual.innerHTML=`<div class="rail"></div><div class="fill"></div>
+    <input type="range" min="0" max="${max}" step="1" value="${cur.min}">
+    <input type="range" min="0" max="${max}" step="1" value="${cur.max}">`;
+  const [mn,mx]=dual.querySelectorAll('input');
+  const fill=dual.querySelector('.fill');
+  function commit(){
+    if(cur.min===0&&cur.max===max) delete s.cons[f.key]; else s.cons[f.key]={min:cur.min,max:cur.max};
+  }
+  function paint(){
+    const a=cur.min/max*100, b=cur.max/max*100;
+    fill.style.left=`calc(6px + ${a}% - ${a/100*12}px)`;
+    fill.style.width=`calc(${b-a}% - ${(b-a)/100*12}px + 0px)`;
+    lab.querySelector('b').textContent=labV();
+  }
+  mn.oninput=()=>{cur.min=Math.min(+mn.value,cur.max);mn.value=cur.min;paint();commit();renderPanels();updTab();syncURL();};
+  mx.oninput=()=>{cur.max=Math.max(+mx.value,cur.min);mx.value=cur.max;paint();commit();renderPanels();updTab();syncURL();};
+  function updTab(){ // jen aktualizuj velikost/summary aktivního tabu bez rebuildu sliderů
+    buildTabsSizesOnly();
+  }
+  paint();
+  wrap.appendChild(lab); wrap.appendChild(dual);
+  return wrap;
+}
+
+function makeChips(f,s){
+  const wrap=document.createElement('div'); wrap.className='fl';
+  const lab=document.createElement('div'); lab.className='lab';
+  lab.innerHTML=`<span>${f.label}</span>`;
+  const box=document.createElement('div'); box.className='chips';
+  const sel=new Set(Array.isArray(s.cons[f.key])?s.cons[f.key]:[]);
+  f.categories.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='ch'+(sel.has(i)?' on':''); b.textContent=c;
+    b.onclick=()=>{
+      if(sel.has(i))sel.delete(i); else sel.add(i);
+      b.classList.toggle('on');
+      const arr=[...sel].sort((x,y)=>x-y);
+      if(arr.length===0||arr.length===f.categories.length) delete s.cons[f.key];
+      else s.cons[f.key]=arr;
+      renderPanels(); buildTabsSizesOnly(); syncURL();
+    };
+    box.appendChild(b);
+  });
+  wrap.appendChild(lab); wrap.appendChild(box);
+  return wrap;
+}
+// aktualizace čísel v tabech bez znovupostavení editoru (aby slider nepřeskočil)
+function buildTabsSizesOnly(){
+  document.querySelectorAll('#tabs .tab').forEach((t,i)=>{
+    const s=segs[i];
+    t.querySelector('.sz').textContent=s.on?segSize(s).toLocaleString('cs'):'–';
+    t.querySelector('.sum').textContent=consSummary(s);
+  });
+}
+
+/* ---------- aggregation ---------- */
+function series(){
+  const out=[];
+  if(showBase) out.push({id:'celek',color:'#888',base:true,seg:null});
+  segs.forEach(s=>{ if(s.on) out.push({id:s.id,color:s.color,base:false,seg:s}); });
+  return out;
+}
+function aggregate(ser){
+  // res[mIdx] = array per series [num,den]
+  const M=DATA.metric_keys.length;
+  const res=Array.from({length:M},()=>ser.map(()=>[0,0]));
+  // map metric -> respond col idx (jen pro denom='resp')
+  const mResp=DATA.metric_keys.map(()=>-1);
+  if(denom==='resp'){
+    DATA.metric_groups.forEach(g=>{
+      if(!g.respond) return;
+      const ri=RESP[g.respond];
+      g.metrics.forEach(mk=>{ mResp[DATA.metric_keys.indexOf(mk)]=ri; });
+    });
+  }
+  const inScope=ser.map(()=>false);
+  for(const row of DATA.rows){
+    for(let k=0;k<ser.length;k++) inScope[k]=ser[k].base?true:passes(row,ser[k].seg);
+    for(let m=0;m<M;m++){
+      const v=row[MI+m];
+      if(v===null) continue;
+      if(mResp[m]>=0 && row[mResp[m]]!==1) continue;
+      for(let k=0;k<ser.length;k++){
+        if(!inScope[k]) continue;
+        res[m][k][1]++; if(v) res[m][k][0]++;
+      }
+    }
+  }
+  return {res,mResp};
+}
+
+/* ---------- render ---------- */
+function renderTop(ser){
+  const tb=document.getElementById('topbar');
+  tb.innerHTML=ser.map(s=>{
+    const sz=s.base?DATA.n:segSize(s.seg);
+    const pct=Math.round(sz/DATA.n*100);
+    const sub=s.base?'celý vzorek':consSummary(s.seg);
+    return `<div class="scard"><span class="dot" style="background:${s.color}"></span>
+      <div><b>${sz.toLocaleString('cs')}</b> <span style="color:var(--muted)">/ ${pct} %</span><br>
+      <span style="color:var(--muted);font-size:11px">${s.base?'Celek':'Segment '+s.id} · ${sub}</span></div></div>`;
+  }).join('') || '<div class="scard">Žádný segment není aktivní.</div>';
+}
+function originMark(mk){
+  const o=ORIGIN[mk];
+  if(o==='new') return ' <span class="plus" title="nová možnost dokódovaná z volného textu (nebyla v zaškrtávacích možnostech)">＋</span>';
+  if(o==='enr'){const inc=INCREMENT[mk]||0;
+    return ` <sup class="enr" title="původní zaškrtávací možnost obohacená o ${inc} zmínek z volného textu">+${inc}</sup>`;}
+  return '';
+}
+function renderLegend(){
+  document.getElementById('legend').innerHTML=
+    '<span><i style="background:#888"></i>svislá ryska = celek</span>'+
+    '<span>pruh = % v segmentu</span>'+
+    '<span>lift = poměr segment/celek (jen u 1 segmentu)</span>'+
+    '<span><span class="plus">＋</span> nová možnost z volného textu · <sup class="enr">+n</sup> obohacení původní možnosti o n zmínek · 🔍 klik = znění odpovědí</span>'+
+    '<span style="opacity:.55">vybledlý řádek = méně než 5 osob</span>';
+}
+function renderPanels(){
+  const ser=series();
+  renderTop(ser); renderLegend();
+  if(ser.length===0){document.getElementById('panels').innerHTML='';return;}
+  const {res}=aggregate(ser);
+  const mIdx={}; DATA.metric_keys.forEach((k,i)=>mIdx[k]=i);
+  const baseIdx=ser.findIndex(s=>s.base);
+  const enabled=ser.map((s,i)=>({...s,i})).filter(s=>!s.base);
+  const singleSeg=enabled.length===1;
+  // baseline řada pro lift/řazení: celek pokud je, jinak první segment
+  const refK=baseIdx>=0?baseIdx:(enabled[0]?enabled[0].i:0);
+
+  const html=DATA.metric_groups.map(g=>{
+    const items=g.metrics.map(mk=>{
+      const m=mIdx[mk];
+      const cells=ser.map((s,k)=>{const[n,d]=res[m][k];return {id:s.id,color:s.color,base:s.base,n,d,p:d?n/d:0};});
+      const refP=cells[ (baseIdx>=0?baseIdx : enabled[0]?enabled[0].i:0) ].p;
+      const ep=enabled.map(e=>cells[e.i].p);
+      const spread=ep.length?Math.max(...ep)-Math.min(...ep):0;
+      const maxn=Math.max(0,...enabled.map(e=>cells[e.i].n));
+      return {mk,label:DATA.metric_labels[mk],cells,refP,spread,maxn};
+    });
+    items.sort((a,b)=> sortMode==='spread'? b.spread-a.spread : b.cells[refK].p-a.cells[refK].p);
+    const maxp=Math.max(0.01,...items.flatMap(it=>it.cells.map(c=>c.p)));
+    const rows=items.map(it=>{
+      const bars=enabled.map(e=>{
+        const c=it.cells[e.i];
+        return `<div class="bwrap"><div class="bfill" style="width:${(c.p/maxp*100).toFixed(1)}%;background:${c.color}"></div></div>`;
+      }).join('');
+      const baseMark=baseIdx>=0?`<div class="baseMark" style="left:${(it.cells[baseIdx].p/maxp*100).toFixed(1)}%"></div>`:'';
+      const vals=ser.map((s,k)=>{
+        const c=it.cells[k];
+        let lift='';
+        if(singleSeg && !s.base && baseIdx>=0){
+          const r=it.cells[baseIdx].p; const l=r>0?c.p/r:1;
+          const cls=l>=1.2?'up':(l<=0.8&&r>0?'down':'');
+          if(cls) lift=`<span class="lift ${cls}">${l.toFixed(2).replace('.',',')}×</span>`;
+        }
+        return `<div class="v ${s.base?'base':''}"><span class="d" style="background:${s.color}"></span>${Math.round(c.p*100)} %${lift}</div>`;
+      }).join('');
+      const tip=ser.map((s,k)=>`${s.id}: ${it.cells[k].n}/${it.cells[k].d}`).join(' · ');
+      const canDrill=!!TEXTKEY[it.mk];
+      const mark=originMark(it.mk);
+      return `<div class="mrow${it.maxn<5?' low':''}${canDrill?' drill':''}" data-mk="${it.mk}">
+        <div class="name" title="${it.label} — ${tip}${canDrill?' · klikni pro znění odpovědí':''}"><span class="lbl">${it.label}</span>${mark}</div>
+        <div class="bars">${bars}${baseMark}</div>
+        <div class="vals">${vals}</div></div>`;
+    }).join('');
+    const gplus=g.allnew?' <span class="plus" title="celý panel kódován z volného textu">＋</span>':'';
+    const capNote=g.cap?`<div class="cap" title="V dotazníku byl tvrdý limit na počet zaškrtnutých možností. Původní možnosti jsou proto vynucená priorita (top-${g.cap}), ne plné zastoupení — nelze je napřímo srovnávat s ＋ tématy z volného textu (ta limit neměla). Srovnání segmentů A/B tím ovlivněno není.">⚠ respondenti mohli vybrat max. ${g.cap} možnosti — původní možnosti jsou „top-${g.cap}", ne plné zastoupení (＋ témata z textu limit neměla)</div>`:'';
+    return `<div class="panel"><h2>${g.label}${gplus}</h2><p class="hint">${g.hint}${
+      g.respond&&denom==='resp'?' <b>(jmenovatel = jen respondující)</b>':''}</p>${capNote}${rows}</div>`;
+  }).join('');
+  document.getElementById('panels').innerHTML=html;
+}
+</script>
+</body>
+</html>
