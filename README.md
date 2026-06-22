@@ -134,8 +134,9 @@ a `respekt_otevrene_kodovano.csv` (boolean příznaky na respondující osobu).
   web/navigace, aplikace/technika (s odečtem specifik), vyhledávání, přehlednost/archiv; audio/AI (smíšená
   valence); *obsah rozdělen na* kulturní rubrika, chybějící oblasti, tón/víc pozitivního; grafika/obálka,
   jednostrannost/bias, délka článků, četnost, doručení, cena, reklamy.
-- **153 – poslech v aplikaci:** **není to bug-report** – převažuje „proč jinou platformu" (agregace všech
-  podcastů na jednom místě, zvyklost) a spokojenost; technické problémy jsou menšina.
+- **153 – poslech v aplikaci (10 témat, retax):** **není to bug-report** – převažuje „proč jinou platformu"
+  (nově oddělena *jiná platforma* vs *zvyklost/setrvačnost*; agregace všech podcastů na jednom místě);
+  technické problémy jsou menšina. Zrušeno prázdné „Kvalita AI hlasu" (n=1).
 
 ---
 

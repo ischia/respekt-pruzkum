@@ -80,7 +80,8 @@ TAX = {
  },
  '153': {  # Poslech v aplikaci - REFRAME: hl. proc jina platforma + problemy
   'Nezkousel / neposloucha v app': r'nezkous|nepouzivam aplikac|neposloucham|nevyuzivam|jen ctu|neslysel|^ne[.,]?$|^nezkousel|^nezkousela|nepreferuj',
-  'Jina platforma / zvyklost': r'zvykl|\bzvyk|spotify|apple|youtube|podcast addict|pocket cast|antennapod|jine prostredi|jiny prehravac|jina aplikace|obecn\w* aplikac|preferuji web',
+  'Jina platforma (Spotify/Apple/...)': r'spotify|apple|youtube|podcast addict|pocket ?cast|antennapod|castbox|overcast|jine prostredi|jiny prehravac|jina aplikace|obecn\w* aplikac|preferuji web|na webu posloucham|radeji.{0,10}web',
+  'Zvyklost / setrvacnost': r'\bzvyk|setrvacnost|navyk|ze zvyku',
   'Duvod: vse na jednom miste (agregace)': r'na jednom miste|vsechny podcasty|vsechny na jednom|ruzn\w* zdroj|ruzn\w* podcasty|do fronty|\bfronta|i (?:ty )?jine|vidim nabidku|nabidku na jednom',
   'Duvod: sledovani prehraneho': r'co jsem (?:uz )?slysel|uz slysel|prehran|oznacen|navazuje|kde jsem skoncil|zaznamen',
   # Pozitivni hodnoceni MUSI byt o aplikaci Respektu: lookahead na pozitivni jadro
@@ -94,7 +95,6 @@ TAX = {
   'Vytka: ovladani / prehlednost': r'prehledn|ovlada|rozhrani|navigac|tlacit|nemuzu najit|neprehledn',
   'CarPlay / Auto / Bluetooth': r'carplay|android auto|bluetooth|v aute|reproduk',
   'Technicky problem (prehravani/pozice)': r'\bnelze|\bnejde|nefunguj|\bchyba|nenacita|nespusti|spadne|zasekne|\bposun|\bskace|preskak|vraci|od zacatku|na pozadi|zamc|vypne|zastav|prerus|ztrac|nepamatuje',
-  'Kvalita AI hlasu': r'\bhlas|umel|\bai\b|\brobot|monoton|prizvuk|vyslov|cte spatne',
   'Posloucha jen audioverze clanku': r'audioverz|prepis clanku|nactene clanky|audio clank|nestiham cist|nestihnu (?:precist|cist)',
  },
 }

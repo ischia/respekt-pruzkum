@@ -214,3 +214,30 @@ chvály. Z „Formy" vytažen **Překlady/zahraniční obsah** (66) – kurátor
   jako „jednostrannost/bias" (64) u jiné skupiny. Stejné téma, opačná valence (proto je nemícháme).
 - **Překlady/zahraniční obsah** (66) – konkrétní, propagovatelná přednost (akvizice/marketing).
 
+---
+
+## Q153 — „Zkoušeli jste poslech v aplikaci Respektu? V čem je pro vás méně vhodný?" (poslech v app)
+
+378 volných odpovědí. **Otevřená otázka po retaxonomizaci** (odděleno „zvyklost" od názvu platformy,
+zrušeno prázdné „Kvalita AI hlasu" n=1). **Není to bug-report** – převažuje „proč jinou platformu".
+
+| téma | n |
+|---|---|
+| Jiná platforma (Spotify/Apple/…) | 126 |
+| Nezkoušel / neposlouchá v app | 119 |
+| Důvod: vše na jednom místě (agregace) | 65 |
+| Výtka: ovládání / přehlednost | 36 |
+| Zvyklost / setrvačnost | 30 |
+| Technický problém (přehrávání/pozice) | 21 |
+| CarPlay / Auto / Bluetooth | 18 |
+| Poslouchá jen audioverze článků | 12 |
+| Důvod: sledování přehraného | 11 |
+| Funguje dobře / spokojen | 4 |
+
+**Klíčová zjištění:**
+- Hlavní bariéra appky pro poslech **není v chybách** – lidé už mají **jinou platformu** (126) a **zvyk**
+  (30), hlavně kvůli **agregaci všech podcastů na jednom místě** (65). Tomu se těžko konkuruje.
+- Skutečné technické problémy (21) a výtky k ovládání (36) jsou menšina.
+- **Produkt/akvizice do app:** realističtější než přetahovat ze Spotify je cílit na 119 lidí, co app
+  pro poslech *vůbec nezkusili*.
+

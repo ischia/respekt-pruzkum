@@ -36,6 +36,6 @@ run_all.py              # spouštěč všech tří skriptů
 
 - N = 2 139 dokončených odpovědí, 162 původních sloupců → 221 po obohacení
 - Spojený analytický dataset: `respekt_analyticky.csv` (2 139 × 294) = obohaceno + kódování otevřených otázek přes `ID` (základ pro křížové analýzy)
-- Taxonomie: 13 témat v Q155 (retax hotový), 16 v Q156 (retax hotový), 10 v Q153, 10 zdrojových entit + 10 typů v Q154
-- Prioritní TODO: dokončit retax otevřených otázek po pořadí – zbývá Q153, Q154 (Q156 + Q155 hotovo; TODO.md § 1a)
+- Taxonomie: 13 témat v Q155 (retax), 16 v Q156 (retax), 10 v Q153 (retax), 10 zdrojových entit + 10 typů v Q154
+- Prioritní TODO: dokončit retax otevřených otázek – zbývá Q154 (Q156, Q155, Q153 hotovo; TODO.md § 1a/1d)
 - `koduj_otevrene.py` umí téma jako dvojici `(include, exclude)` = MECE odečet užšího tématu od širšího koše
