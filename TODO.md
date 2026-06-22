@@ -8,6 +8,10 @@ Po každé změně: `python run_all.py` a kontrola počtů + namátkový QA prot
 
 ## 1) Taxonomie otevřených otázek (`src/koduj_otevrene.py`) – refaktor
 
+> ✅ **HOTOVO (2026-06-22):** Q156 a Q155 rozdělena široká témata; Q153 oddělena zvyklost + zrušeno prázdné téma;
+> Q154 zúžen vzor investigativních titulů (§1d). MECE řešeno mechanismem tématu `(include, exclude)`.
+> Souhrny per otázka v `SOUHRNY.md`. Text níže je původní zadání.
+
 ### 1a) Rozdělit příliš široká témata
 
 **156 „Web / aplikace / UX / technika" (220) → 5 témat.** Připravené sub-vzorce:

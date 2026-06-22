@@ -241,3 +241,38 @@ zrušeno prázdné „Kvalita AI hlasu" n=1). **Není to bug-report** – převa
 - **Produkt/akvizice do app:** realističtější než přetahovat ze Spotify je cílit na 119 lidí, co app
   pro poslech *vůbec nezkusili*.
 
+---
+
+## Q154 — „Jaké max. tři informační zdroje (kromě Respektu) sledujete?" (zdroje)
+
+1671 odpovědí. Kódováno jako **jmenované entity** (konkrétní médium + typ zdroje), ne vágní témata.
+Multi-label (až 3 zdroje/osoba). Po retaxu zúžen vzor investigativních titulů (§1d).
+
+**Nejčastější zdroje (n osob):**
+| zdroj | n |
+|---|---|
+| Deník N | 549 |
+| Podcast (obecně i jmenovitě) | 491 |
+| iRozhlas / Český rozhlas | 414 |
+| Seznam Zprávy / Seznam.cz | 403 |
+| ČT / ČT24 | 374 |
+| Aktuálně.cz | 118 |
+| Hospodářské noviny | 116 |
+| Novinky.cz | 81 |
+| Slovenské (SME, Denník N, Aktuality) | 66 |
+| Další zahraniční (FT, WaPo, Politico, Spiegel…) | 56 |
+| BBC | 55 |
+| Hlídací pes / Investigace.cz / Neovlivní / Voxpot | 48 |
+
+**Typy zdrojů (n):** Domácí zpravodajství 983 · Veřejnoprávní 671 · Podcast 491 · Zahraniční 165 ·
+Alternativní/investigativní 108 · Slovenské 66 · Domácí tisk/komentář 63 · Influencer/osobnost 45 ·
+Sociální sítě/video 43 · Newsletter 8.
+
+**Klíčová zjištění:**
+- Nejčastější „jiný" zdroj je **Deník N** (549) – přímý konkurent v segmentu. Pak veřejnoprávní
+  (iRozhlas, ČT) a Seznam.
+- Předplatitelé Respektu jsou **náročné publikum** – běžně kombinují kvalitní domácí + veřejnoprávní
+  + zahraniční zdroje (BBC, Economist, NYT…).
+- §1d fix: „Alternativní/investigativní" zpřesněno (122→108) odstraněním obecného slova „investigace"
+  (dříve počítalo i „Seznam – investigace").
+

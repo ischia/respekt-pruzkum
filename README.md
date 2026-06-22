@@ -127,6 +127,7 @@ a `respekt_otevrene_kodovano.csv` (boolean příznaky na respondující osobu).
 - **154 – zdroje:** zpracováno jako **jmenované entity** (médium + typ zdroje), ne jako vágní témata.
   Nejčastější „jiný" zdroj je Deník N. Typy: veřejnoprávní, domácí zpravodajství, domácí tisk/komentář,
   alternativní/investigativní, zahraniční, slovenské, podcast, influencer/osobnost, sociální sítě, newsletter.
+  *(Retax §1d: vzor investigativních titulů zúžen na názvy – holé „investigace" už nekontaminuje.)*
 - **155 – chvála (pozitivní valence), 13 témat po retaxu:** šíře témat, hloubka/kontext, kvalita psaní,
   autoři/redakce, nezávislost, *(rozděleno)* důvěra/věrohodnost/fakta + vyváženost/objektivita/nestrannost,
   investigativa, hodnotové souznění, *(vytaženo)* překlady/zahraniční obsah, forma, nepodbízivost, tradice.

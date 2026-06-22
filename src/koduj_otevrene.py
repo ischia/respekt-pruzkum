@@ -119,7 +119,7 @@ OUTLETS = [
  ('Forum24', 'Alternativni / investigativni', r'forum ?24'),
  ('A2larm / A2', 'Alternativni / investigativni', r'a2larm|\ba2\b'),
  ('Denik Referendum', 'Alternativni / investigativni', r'referendum'),
- ('Hlidaci pes / Investigace / Neovlivni / Voxpot', 'Alternativni / investigativni', r'hlidaci|investigace|neovlivni|voxpot'),
+ ('Hlidaci pes / Investigace / Neovlivni / Voxpot', 'Alternativni / investigativni', r'hlidaci ?pes|hlidacipes|investigace\.?cz|neovlivni|voxpot'),
  ('DVTV', 'Influencer / osobnost / video', r'\bdvtv'),
  ('New York Times', 'Zahranicni', r'new york times|\bnyt\b'),
  ('The Economist', 'Zahranicni', r'economist'),
