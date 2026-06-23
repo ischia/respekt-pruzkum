@@ -163,7 +163,72 @@ DIST_SPECS = [
         ("Ne, neuvažuji", "Ne, neuvažuji"),
         ("Ano, přechod z tisku do digitálu", "Ano – z tisku do digitálu"),
         ("Ano, přechod z digitálu na tisk", "Ano – z digitálu na tisk")]),
+    ("predpl", "Jak dlouho si předplácíte Respekt?", [
+        ("Kratší dobu než rok", "Kratší dobu než rok"), ("1–5 let", "1–5 let"),
+        ("6–10 let", "6–10 let"), ("11–15 let", "11–15 let"),
+        ("16–20 let", "16–20 let"), ("21 a více let", "21 a více let")]),
+    ("zruseni", "uvazoval_zruseni_ord", [
+        ("0.0", "Ne"), ("1.0", "Spíše ano"), ("2.0", "Ano")]),
+    ("setrvani", "pravdep_setrvani_ord", [
+        ("5.0", "Velmi vysoká"), ("4.0", "Vysoká"), ("3.0", "Střední"),
+        ("2.0", "Nízká"), ("1.0", "Velmi nízká")]),
 ]
+
+# Barevné palety kategorií pro panely typu „rozdělení" (naskládaný pruh).
+# Zelená = pozitivní/silné využití, šedá = žádné/Nevím, červená = negativní.
+GREEN, TEAL, BLUE, AMBER, CORAL, RED, GRAY = (
+    "#639922", "#1D9E75", "#378ADD", "#EF9F27", "#F0997B", "#E24B4A", "#B4B2A9")
+DIST_PALETTE = {
+    "podlisten": [GREEN, TEAL, "#9FE1CB", CORAL, GRAY],
+    "podfreq": [GREEN, "#5DCAA5", GRAY],
+    "podplat": ["#534AB7", TEAL, BLUE, "#5F5E5A", AMBER, RED, CORAL],
+    "doruc": [GREEN, "#9FE1CB", AMBER, CORAL, RED],
+    "ctedrive": [TEAL, GRAY],
+    "changeform": [GRAY, BLUE, AMBER],
+    "predpl": ["#B5D4F4", "#85B7EB", BLUE, "#185FA5", "#0C447C", "#042C53"],
+    "zruseni": [GREEN, AMBER, RED],
+    "setrvani": [TEAL, "#9FE1CB", AMBER, CORAL, RED],
+    "freq": [GREEN, TEAL, "#5DCAA5", "#9FE1CB", GRAY],  # web/app 5 úrovní
+}
+
+# Baterie (matice) – 3 kategorie na řádek. Pořadí řádků = pořadí v dotazníku.
+FREQ_LEVELS = [(4, "Každý den"), (3, "Několikrát za týden"), (2, "Každý týden"),
+               (1, "Několikrát za měsíc"), (0, "Nepoužívám")]
+SPOK_AREAS = [
+    ("mnozstvi", "Množství článků", "Množství článků"),
+    ("delka", "Délka článků", "Délka článků"),
+    ("temata", "Výběr témat", "Výběr témat"),
+    ("vyvazenost", "Vyváženost", "Vyváženost"),
+    ("prehlednost", "Přehlednost", "Přehlednost"),
+    ("reklama", "Množství reklamy", "Množství reklamy"),
+    ("audio", "Kvalita načtení audiočlánků", "Kvalita audia"),
+]
+LEN_FMT = [
+    ("texty", "Texty (kratší zprávy/komentáře vs. reportáže, rozhovory apod.)", "Texty"),
+    ("audioclanky", "Audiočlánky (kratší zprávy/komentáře vs. reportáže, rozhovory apod.)", "Audiočlánky"),
+    ("podcasty", "Podcasty (souhrny a glosy událostí vs. delší rozhovory a diskuze)", "Podcasty"),
+    ("videa", "Videa (souhrny a glosy událostí vs. delší rozhovory a diskuze)", "Videa"),
+]
+SPOK_CATS = [("Spokojen/a", GREEN), ("Nespokojen/a", RED), ("Nevím", GRAY)]
+SPOK_VALS = ["Spokojen/a", "Nespokojen/a", "Nevím"]
+LEN_CATS = [("Spíše delší", TEAL), ("Spíše kratší", BLUE), ("Nevím", GRAY)]
+LEN_VALS = ["Spíše delší", "Spíše kratší", "Nevím"]
+
+
+def matrix_items(prefix, rows, cats):
+    """Položky matice: pro každý řádek × kategorii jeden bool sloupec
+    (mx_<prefix>_<rowid>_<catidx>). Popisek = kategorie (pro tooltip)."""
+    items = []
+    for rid, _, _ in rows:
+        for ci, (clab, _) in enumerate(cats):
+            items.append((f"mx_{prefix}_{rid}_{ci}", clab, "bool", "orig", None, None))
+    return items
+
+
+def matrix_rows(prefix, rows, cats):
+    """Render-metadata: [(popisek řádku, [sloupce kategorií])]."""
+    return [(rlab, [f"mx_{prefix}_{rid}_{ci}" for ci in range(len(cats))])
+            for rid, _, rlab in rows]
 
 
 def _dist_opts(sid):
@@ -171,27 +236,10 @@ def _dist_opts(sid):
 
 # --- Panely = skutečné otázky dotazníku --------------------------------------
 GROUPS = [
-    ("spok", "Jak vnímáte Respekt? (% spokojených)",
-     "Podíl spokojených z těch, kdo měli názor (mimo odpověď Nevím).", None, [
-        o("spok_vyber_temat", "Výběr témat", "spok"),
-        o("spok_mnozstvi_clanku", "Množství článků", "spok"),
-        o("spok_delka_clanku", "Délka článků", "spok"),
-        o("spok_vyvazenost", "Vyváženost", "spok"),
-        o("spok_prehlednost", "Přehlednost", "spok"),
-        o("spok_mnozstvi_reklamy", "Množství reklamy", "spok"),
-        o("spok_kvalita_nacteni_audioc", "Kvalita načtení audia", "spok"),
-     ]),
-
-    ("spoknevim", "Vnímání Respektu — kdo nemá názor (Nevím)",
-     "Podíl odpovědí Nevím z těch, kdo na oblast odpověděli. Signál (ne)využívání / expozice.", None, [
-        o("spoknevim_audio", "Kvalita audia", "bool"),
-        o("spoknevim_reklama", "Množství reklamy", "bool"),
-        o("spoknevim_vyvazenost", "Vyváženost", "bool"),
-        o("spoknevim_prehlednost", "Přehlednost", "bool"),
-        o("spoknevim_mnozstvi", "Množství článků", "bool"),
-        o("spoknevim_delka", "Délka článků", "bool"),
-        o("spoknevim_temata", "Výběr témat", "bool"),
-     ]),
+    ("spok", "Jak vnímáte Respekt v následujících oblastech?",
+     "Rozdělení odpovědí na řádek (součet = 100 % z těch, kdo oblast hodnotili). "
+     "Pruh „Nevím\" = nevyužívá / bez expozice.", None,
+     matrix_items("spok", SPOK_AREAS, SPOK_CATS)),
 
     ("styk", "Jak jste přišel/a do styku s Respektem před předplacením?",
      "Podíl osob. ＋ = dokódováno z „Jinak, doplňte\".", None, [
@@ -386,18 +434,10 @@ GROUPS = [
         o("freq_app_lvl0", "Nepoužívám", "bool"),
      ]),
 
-    ("delkapref", "Která délka formátů vám vyhovuje?",
-     "Podíl spíše delší / spíše kratší z těch, kdo formát hodnotili; "
-     "zbytek do 100 % = Nevím / bez preference.", None, [
-        o("lendelsi_texty", "Texty – spíše delší", "bool"),
-        o("lenkratsi_texty", "Texty – spíše kratší", "bool"),
-        o("lendelsi_audioclanky", "Audiočlánky – spíše delší", "bool"),
-        o("lenkratsi_audioclanky", "Audiočlánky – spíše kratší", "bool"),
-        o("lendelsi_podcasty", "Podcasty – spíše delší", "bool"),
-        o("lenkratsi_podcasty", "Podcasty – spíše kratší", "bool"),
-        o("lendelsi_videa", "Videa – spíše delší", "bool"),
-        o("lenkratsi_videa", "Videa – spíše kratší", "bool"),
-     ]),
+    ("delkapref", "Která kombinace formátů vám osobně vyhovuje nejvíce?",
+     "Rozdělení na řádek (součet = 100 % z těch, kdo formát hodnotili). "
+     "Pruh „Nevím\" = bez preference / formát nevyužívá.", None,
+     matrix_items("len", LEN_FMT, LEN_CATS)),
 
     ("q155", "V čem je podle vás Respekt výjimečný? (otevřená otázka)",
      "Celá taxonomie kódována z volného textu (＋). Multi-label.", "q155", [
@@ -495,10 +535,49 @@ _EXTRA = [
                   "Rozdělení z těch, kdo odpověděli. Součet ≈ 100 %.", None, _dist_items("podlisten"))),
     ("bariery", ("doruc", "Spokojenost s doručováním tištěného Respektu",
                  "Rozdělení 1–5 z odběratelů tisku, kdo odpověděli. Součet ≈ 100 %.", None, _dist_items("doruc"))),
+    ("procplati", ("predpl", "Jak dlouho si předplácíte Respekt?",
+                   "Rozdělení délky předplatného. Součet = 100 %.", None, _dist_items("predpl"))),
+    ("bariery", ("zruseni", "Uvažoval/a jste v poslední době o zrušení předplatného?",
+                 "Rozdělení odpovědí. Součet = 100 %.", None, _dist_items("zruseni"))),
+    ("bariery", ("setrvani", "Jak pravděpodobné je, že zůstanete předplatitelem/kou?",
+                 "Rozdělení odpovědí. Součet = 100 %.", None, _dist_items("setrvani"))),
 ]
 for _after_key, _grp in _EXTRA:
     _idx = next(i for i, g in enumerate(GROUPS) if g[0] == _after_key)
     GROUPS.insert(_idx + 1, _grp)
+
+
+# --- Typ vykreslení panelu + barvy kategorií ---------------------------------
+# "bars"   = vícevýběr (dnešní podíly osob); "dist" = jeden naskládaný pruh
+# (kategorie = metriky); "matrix" = víc řádků, každý jako naskládaný pruh.
+def _dist_cats(sid):
+    return list(zip([lab for _, lab in _dist_opts(sid)], DIST_PALETTE[sid]))
+
+
+PANEL_RENDER = {
+    "spok": {"render": "matrix", "cats": SPOK_CATS,
+             "rows": matrix_rows("spok", SPOK_AREAS, SPOK_CATS)},
+    "delkapref": {"render": "matrix", "cats": LEN_CATS,
+                  "rows": matrix_rows("len", LEN_FMT, LEN_CATS)},
+    "freqweb": {"render": "dist", "cats": list(zip(
+        ["Každý den", "Několikrát za týden", "Každý týden",
+         "Několikrát za měsíc", "Nepoužívám"], DIST_PALETTE["freq"]))},
+    "freqapp": {"render": "dist", "cats": list(zip(
+        ["Každý den", "Několikrát za týden", "Každý týden",
+         "Několikrát za měsíc", "Nepoužívám"], DIST_PALETTE["freq"]))},
+}
+for _sid in ("ctedrive", "changeform", "podplat", "podfreq", "podlisten",
+             "doruc", "predpl", "zruseni", "setrvani"):
+    PANEL_RENDER[_sid] = {"render": "dist", "cats": _dist_cats(_sid)}
+
+# Pořadí panelů = pořadí otázek v dotazníku (demografie zůstává jen jako filtr).
+PANEL_ORDER = [
+    "predpl", "styk", "konv", "hleda", "procplati", "forma", "ctedrive",
+    "digital", "digiaccess", "homepage", "freqweb", "freqapp", "apprado",
+    "appchybi", "changeform", "situace", "zajmy", "delkapref", "spok",
+    "bariery", "doruc", "zruseni", "setrvani", "podlisten", "podcasty",
+    "podfreq", "podplat", "q153", "q154", "q155", "q156",
+]
 
 
 # --- Latentní segmentace (PCA + k-means, kanálová, k=6) ----------------------
@@ -648,29 +727,6 @@ def parse(kind, v):
     raise ValueError(kind)
 
 
-# úrovně frekvence (frekvence_*_ord): hodnota -> label
-FREQ_LEVELS = [(4, "Každý den"), (3, "Několikrát za týden"), (2, "Každý týden"),
-               (1, "Několikrát za měsíc"), (0, "Nepoužívám")]
-
-# baterie vnímání Q120 (id, syrový sloupec, label) – pro podíl „Nevím"
-SPOK_AREAS = [
-    ("mnozstvi", "Množství článků", "Množství článků"),
-    ("delka", "Délka článků", "Délka článků"),
-    ("temata", "Výběr témat", "Výběr témat"),
-    ("vyvazenost", "Vyváženost", "Vyváženost"),
-    ("prehlednost", "Přehlednost", "Přehlednost"),
-    ("reklama", "Množství reklamy", "Množství reklamy"),
-    ("audio", "Kvalita načtení audiočlánků", "Kvalita audia"),
-]
-# baterie délky formátu Q115 (id, syrový sloupec, label)
-LEN_FMT = [
-    ("texty", "Texty (kratší zprávy/komentáře vs. reportáže, rozhovory apod.)", "Texty"),
-    ("audioclanky", "Audiočlánky (kratší zprávy/komentáře vs. reportáže, rozhovory apod.)", "Audiočlánky"),
-    ("podcasty", "Podcasty (souhrny a glosy událostí vs. delší rozhovory a diskuze)", "Podcasty"),
-    ("videa", "Videa (souhrny a glosy událostí vs. delší rozhovory a diskuze)", "Videa"),
-]
-
-
 def main():
     with open(SRC, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
@@ -690,17 +746,20 @@ def main():
             for lv, _ in FREQ_LEVELS:
                 r[f"freq_{ch}_lvl{lv}"] = "" if val is None else (
                     "True" if val == lv else "False")
-        # spokojenost: podíl „Nevím" (jmenovatel = kdo na položku odpověděl)
+        # matice vnímání: 3 vzájemně výlučné kategorie na oblast (jmenovatel = kdo hodnotil)
         for sid, src, _ in SPOK_AREAS:
             v = (r.get(src) or "").strip()
-            r[f"spoknevim_{sid}"] = ("True" if v == "Nevím" else
-                ("False" if v in ("Spokojen/a", "Nespokojen/a") else ""))
-        # délka formátu: spíše delší / spíše kratší (jmenovatel vč. „Nevím")
+            answered = v in SPOK_VALS
+            for ci, cval in enumerate(SPOK_VALS):
+                r[f"mx_spok_{sid}_{ci}"] = ("True" if v == cval else
+                                            ("False" if answered else ""))
+        # matice délky formátu: 3 kategorie na formát (jmenovatel vč. „Nevím")
         for fid, src, _ in LEN_FMT:
             v = (r.get(src) or "").strip()
-            answered = v in ("Spíše delší", "Spíše kratší", "Nevím")
-            r[f"lendelsi_{fid}"] = "True" if v == "Spíše delší" else ("False" if answered else "")
-            r[f"lenkratsi_{fid}"] = "True" if v == "Spíše kratší" else ("False" if answered else "")
+            answered = v in LEN_VALS
+            for ci, cval in enumerate(LEN_VALS):
+                r[f"mx_len_{fid}_{ci}"] = ("True" if v == cval else
+                                           ("False" if answered else ""))
         # jednovýběrové/škálové otázky → rozdělení (jmenovatel = kdo odpověděl)
         for sid, src, opts in DIST_SPECS:
             v = (r.get(src) or "").strip()
@@ -756,12 +815,23 @@ def main():
         # původní zaškrtávací sloupce otázky (orig + původní pole obohacených)
         checkbox_cols = [it[0] for it in items if it[3] == "orig" and it[2] == "check"]
         checkbox_cols += [it[5] for it in items if it[3] == "enr"]
-        groups_out.append({
+        rspec = PANEL_RENDER.get(gk, {"render": "bars"})
+        g_out = {
             "key": gk, "label": label, "hint": hint, "respond": respond,
             "allnew": all(it[3] == "new" for it in items),
-            "cap": detect_cap(checkbox_cols),
+            "cap": detect_cap(checkbox_cols) if rspec["render"] == "bars" else None,
             "metrics": [it[0] for it in items],
-        })
+            "render": rspec["render"],
+        }
+        if rspec["render"] in ("dist", "matrix"):
+            g_out["cats"] = [{"label": cl, "color": cc} for cl, cc in rspec["cats"]]
+        if rspec["render"] == "matrix":
+            g_out["rows"] = [{"label": rl, "cols": rc} for rl, rc in rspec["rows"]]
+        groups_out.append(g_out)
+
+    # pořadí panelů = pořadí otázek v dotazníku (PANEL_ORDER); zbytek na konec
+    _ord = {k: i for i, k in enumerate(PANEL_ORDER)}
+    groups_out.sort(key=lambda g: _ord.get(g["key"], len(_ord)))
 
     # přírůstky obohacených možností (enr): enriched − původní zaškrtávátko
     metric_increment = {}

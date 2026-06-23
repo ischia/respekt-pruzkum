@@ -122,6 +122,23 @@
   .lift.up{color:#1f8a4c;background:#1f8a4c18}
   .lift.down{color:#c0392b;background:#c0392b18}
   .mrow.low{opacity:.42}
+  /* panely typu rozdělení (naskládaný pruh) */
+  .dlegend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--muted);margin:0 0 9px}
+  .dlegend span{display:flex;align-items:center;gap:5px}
+  .dlegend i{width:11px;height:11px;border-radius:2px;display:inline-block}
+  .drow{display:grid;grid-template-columns:150px 1fr;align-items:center;gap:10px;padding:5px 0;
+    border-top:1px solid #f3f1ee}
+  .drow:first-of-type{border-top:none}
+  .drow .rname{font-size:12.5px;color:#333;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dseries{display:flex;flex-direction:column;gap:4px}
+  .sline{display:flex;align-items:center;gap:8px}
+  .sline .sid{flex:0 0 46px;font-size:10.5px;color:var(--muted);text-align:right;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis}
+  .stack{flex:1;display:flex;height:20px;border-radius:4px;overflow:hidden;
+    font-size:10px;color:#fff;font-weight:600;font-variant-numeric:tabular-nums}
+  .stack .seg{display:flex;align-items:center;justify-content:center;min-width:0;cursor:default;
+    white-space:nowrap;overflow:hidden}
+  .stack .seg.lo{color:#2C2C2A}
   .plus{color:#1f8a4c;font-weight:800;font-size:12px;margin-left:3px}
   h2 .plus{font-size:13px}
   sup.enr{color:#b8860b;font-size:9px;font-weight:700;margin-left:1px}
@@ -204,7 +221,7 @@
   </div>
 </div>
 <script>
-let DATA=null, FI={}, FMETA={}, MI=0, RESP={}, ORIGIN={}, INCREMENT={}, TEXTKEY={}, TEXTLAB={};
+let DATA=null, FI={}, FMETA={}, MI=0, RESP={}, ORIGIN={}, INCREMENT={}, TEXTKEY={}, TEXTLAB={}, DISTMK={};
 const COLORS={A:'#e2342f',B:'#2f6fe2',C:'#15a05a'};
 const segs=[
   {id:'A',color:COLORS.A,on:true,cons:{}},
@@ -223,6 +240,7 @@ function init(){
   RESP=DATA.respond;
   ORIGIN=DATA.metric_origin||{}; INCREMENT=DATA.metric_increment||{};
   TEXTKEY=DATA.metric_textkey||{}; TEXTLAB=DATA.text_labels||{};
+  DISTMK={}; DATA.metric_groups.forEach(g=>{if(g.render!=='bars')g.metrics.forEach(mk=>DISTMK[mk]=1);});
   loadURL();
   document.getElementById('showBase').onchange=e=>{showBase=e.target.checked;renderPanels();buildTabs();syncURL();};
   document.querySelectorAll('input[name=denom]').forEach(r=>r.onchange=e=>{denom=e.target.value;renderPanels();syncURL();});
@@ -510,6 +528,7 @@ function renderInsights(enabled,res,whole,mIdx){
   box.innerHTML=filtered.map(e=>{
     const facs=[];
     DATA.metric_keys.forEach((mk,m)=>{
+      if(DISTMK[mk]) return;                   // rozdělení/matice nejsou „faktory"
       const wp=whole[m][1]?whole[m][0]/whole[m][1]:0;
       const [n,d]=res[m][e.i]; const sp=d?n/d:0;
       if(n<10||d<10||wp<=0) return;           // ochrana proti malým n
@@ -532,6 +551,26 @@ function renderInsights(enabled,res,whole,mIdx){
       ${body}</div>`;
   }).join('');
 }
+function lum(h){const n=parseInt(h.slice(1),16);
+  const r=(n>>16&255)/255,gg=(n>>8&255)/255,b=(n&255)/255;
+  return 0.2126*r+0.7152*gg+0.0722*b;}
+/* jeden naskládaný pruh na řadu série (Celek + segmenty); kategorie = cols */
+function distSeries(cols,cats,ser,res,mIdx){
+  return ser.map((s,k)=>{
+    const counts=cols.map(c=>res[mIdx[c]][k][0]);
+    const tot=counts.reduce((a,b)=>a+b,0)||1;
+    const segs=cats.map((c,ci)=>{
+      const pct=100*counts[ci]/tot;
+      const lo=lum(c.color)>0.62?' lo':'';
+      const txt=pct>=9?Math.round(pct)+' %':'';
+      return `<div class="seg${lo}" style="width:${pct.toFixed(1)}%;background:${c.color}" `+
+        `title="${c.label}: ${counts[ci]} (${Math.round(pct)} %)">${txt}</div>`;
+    }).join('');
+    const sid=s.base?'Celek':s.id;
+    return `<div class="sline" title="n = ${tot}"><span class="sid">${sid}</span>`+
+      `<div class="stack">${segs}</div></div>`;
+  }).join('');
+}
 function renderPanels(){
   const ser=series();
   renderTop(ser); renderLegend();
@@ -545,6 +584,15 @@ function renderPanels(){
   renderInsights(enabled,res,whole,mIdx);
 
   const html=DATA.metric_groups.map(g=>{
+    if(g.render==='dist'||g.render==='matrix'){
+      const legend=`<div class="dlegend">${g.cats.map(c=>
+        `<span><i style="background:${c.color}"></i>${c.label}</span>`).join('')}</div>`;
+      const body = g.render==='dist'
+        ? `<div class="dseries">${distSeries(g.metrics,g.cats,ser,res,mIdx)}</div>`
+        : g.rows.map(r=>`<div class="drow"><div class="rname" title="${r.label}">${r.label}</div>`+
+            `<div class="dseries">${distSeries(r.cols,g.cats,ser,res,mIdx)}</div></div>`).join('');
+      return `<div class="panel"><h2>${g.label}</h2><p class="hint">${g.hint}</p>${legend}${body}</div>`;
+    }
     const items=g.metrics.map(mk=>{
       const m=mIdx[mk];
       const cells=ser.map((s,k)=>{const[n,d]=res[m][k];return {id:s.id,color:s.color,base:s.base,n,d,p:d?n/d:0};});
