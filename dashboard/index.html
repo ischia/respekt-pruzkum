@@ -123,7 +123,6 @@
   .vals .v .lift{font-size:10px;padding:0 4px;border-radius:4px}
   .lift.up{color:#1f8a4c;background:#1f8a4c18}
   .lift.down{color:#c0392b;background:#c0392b18}
-  .mrow.low{opacity:.42}
   .mrow.faint .vals,.mrow.faint .name{opacity:.5}
   .mrow.sig .name .lbl{font-weight:700}
   .mrow.sig .vals .v:not(.base) .pct{font-weight:700}
@@ -521,7 +520,7 @@ function renderLegend(){
     '<span><span class="lift up">1,5×</span> lift = kolikrát častější/vzácnější než v celku; jen u témat s ≥20 odpověďmi v segmentu nebo ≥2 % vzorku</span>'+
     '<span><b>tučně</b> = rozdíl mezi segmenty je statisticky významný (z-test, p&lt;0,05)</span>'+
     '<span><span class="plus">＋</span> nová možnost z volného textu · <sup class="enr">+n</sup> obohacení původní možnosti o n zmínek · 🔍 klik = znění odpovědí</span>'+
-    '<span style="opacity:.55">šedé téma = vzácné (&lt;20 osob a &lt;2 %) · vybledlý řádek = &lt;5 osob v segmentu</span>';
+    '<span style="opacity:.55">šedé/vybledlé téma = vzácné (&lt;20 osob v segmentu a &lt;2 % vzorku) → bez liftu</span>';
 }
 function renderInsights(enabled,res,whole,mIdx){
   const box=document.getElementById('insights');
@@ -664,7 +663,7 @@ function renderPanels(){
       const tip=ser.map((s,k)=>`${s.id}: ${it.cells[k].n}/${it.cells[k].d}`).join(' · ')+(it.sig?' · rozdíl významný (p<0,05)':'');
       const canDrill=!!TEXTKEY[it.mk];
       const mark=originMark(it.mk);
-      return `<div class="mrow${it.maxn<5?' low':''}${it.faint?' faint':''}${it.sig?' sig':''}${canDrill?' drill':''}" data-mk="${it.mk}">
+      return `<div class="mrow${it.faint?' faint':''}${it.sig?' sig':''}${canDrill?' drill':''}" data-mk="${it.mk}">
         <div class="name" title="${it.label} — ${tip}${canDrill?' · klikni pro znění odpovědí':''}"><span class="lbl">${it.label}</span>${mark}</div>
         <div class="bars">${bars}${baseMark}</div>
         <div class="vals">${vals}</div></div>`;
