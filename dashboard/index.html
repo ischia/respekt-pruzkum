@@ -114,14 +114,19 @@
   .bwrap{position:relative;height:7px;background:var(--track);border-radius:3px;overflow:hidden}
   .bfill{position:absolute;left:0;top:0;bottom:0;border-radius:3px;transition:width .2s}
   .baseMark{position:absolute;top:-2px;bottom:-2px;width:2px;background:#00000066;z-index:3}
-  .vals{display:flex;flex-direction:column;gap:1px;align-items:flex-end;font-variant-numeric:tabular-nums}
+  .vals{display:flex;flex-direction:column;gap:1px;align-items:stretch;font-variant-numeric:tabular-nums}
   .vals .v{font-size:11.5px;display:flex;align-items:center;gap:5px}
-  .vals .v .d{width:8px;height:8px;border-radius:50%}
+  .vals .v .d{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
   .vals .v.base{color:var(--muted)}
-  .vals .v .lift{font-size:10px;padding:0 4px;border-radius:4px;margin-left:2px}
+  .vals .v .pct{margin-left:auto;min-width:30px;text-align:right}
+  .vals .v .pct.muted{color:#b9b9b6}
+  .vals .v .lift{font-size:10px;padding:0 4px;border-radius:4px}
   .lift.up{color:#1f8a4c;background:#1f8a4c18}
   .lift.down{color:#c0392b;background:#c0392b18}
   .mrow.low{opacity:.42}
+  .mrow.faint .vals,.mrow.faint .name{opacity:.5}
+  .mrow.sig .name .lbl{font-weight:700}
+  .mrow.sig .vals .v:not(.base) .pct{font-weight:700}
   /* panely typu rozdělení (naskládaný pruh) */
   .dlegend{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--muted);margin:0 0 9px}
   .dlegend span{display:flex;align-items:center;gap:5px}
@@ -513,9 +518,10 @@ function renderLegend(){
   document.getElementById('legend').innerHTML=
     '<span><i style="background:#888"></i>svislá ryska = celek</span>'+
     '<span>pruh = % v segmentu</span>'+
-    '<span><span class="lift up">1,5×</span> lift = kolikrát častější/vzácnější než v celku (jen u filtrovaných segmentů)</span>'+
+    '<span><span class="lift up">1,5×</span> lift = kolikrát častější/vzácnější než v celku; jen u témat s ≥20 odpověďmi v segmentu nebo ≥2 % vzorku</span>'+
+    '<span><b>tučně</b> = rozdíl mezi segmenty je statisticky významný (z-test, p&lt;0,05)</span>'+
     '<span><span class="plus">＋</span> nová možnost z volného textu · <sup class="enr">+n</sup> obohacení původní možnosti o n zmínek · 🔍 klik = znění odpovědí</span>'+
-    '<span style="opacity:.55">vybledlý řádek = méně než 5 osob</span>';
+    '<span style="opacity:.55">šedé téma = vzácné (&lt;20 osob a &lt;2 %) · vybledlý řádek = &lt;5 osob v segmentu</span>';
 }
 function renderInsights(enabled,res,whole,mIdx){
   const box=document.getElementById('insights');
@@ -550,6 +556,13 @@ function renderInsights(enabled,res,whole,mIdx){
       <div class="ih">Čím se liší <b>Segment ${e.id}</b> <span class="muted">· ${consSummary(e.seg)} · vůči celku</span></div>
       ${body}</div>`;
   }).join('');
+}
+/* dvouvýběrový z-test podílů: vrací true, pokud p<0,05 (|z|>1,96) */
+function ztest2(p1,n1,p2,n2){
+  if(n1<1||n2<1) return false;
+  const pool=(p1*n1+p2*n2)/(n1+n2);
+  const se=Math.sqrt(pool*(1-pool)*(1/n1+1/n2));
+  return se>0 && Math.abs((p1-p2)/se)>1.96;
 }
 function lum(h){const n=parseInt(h.slice(1),16);
   const r=(n>>16&255)/255,gg=(n>>8&255)/255,b=(n&255)/255;
@@ -593,10 +606,12 @@ function renderPanels(){
             `<div class="dseries">${distSeries(r.cols,g.cats,ser,res,mIdx)}</div></div>`).join('');
       return `<div class="panel"><h2>${g.label}</h2><p class="hint">${g.hint}</p>${legend}${body}</div>`;
     }
+    const pct2=0.02*DATA.n;            // práh: ≥2 % celého vzorku
     const items=g.metrics.map(mk=>{
       const m=mIdx[mk];
       const cells=ser.map((s,k)=>{const[n,d]=res[m][k];return {id:s.id,color:s.color,base:s.base,n,d,p:d?n/d:0};});
       const wholeP=whole[m][1]?whole[m][0]/whole[m][1]:0;
+      const wholeN=whole[m][0], wholeD=whole[m][1];
       const ep=enabled.map(e=>cells[e.i].p);
       const spread=ep.length?Math.max(...ep)-Math.min(...ep):0;
       const maxn=Math.max(0,...enabled.map(e=>cells[e.i].n));
@@ -605,7 +620,23 @@ function renderPanels(){
         const c=cells[e.i];
         return (c.n>=10 && c.d>=10 && wholeP>0) ? Math.abs(c.p/wholeP-1) : 0;
       }));
-      return {mk,label:DATA.metric_labels[mk],cells,wholeP,spread,maxn,surprise};
+      // téma je „šedé", pokud je globálně vzácné (<20 osob a <2 % vzorku)
+      const faint = wholeN<20 && wholeN<pct2;
+      // statistická významnost rozdílu mezi segmenty (2-prop z-test)
+      let sig=false;
+      if(!faint){
+        // bold jen tam, kde důvěřujeme i liftu: téma spolehlivé (≥20 kladných
+        // v segmentu nebo ≥2 % vzorku) a validní z-test (≥20 odpovídajících, np≥5)
+        const es=enabled.map(e=>({p:cells[e.i].p,n:cells[e.i].d,k:cells[e.i].n}))
+                        .filter(x=>x.n>=20 && x.k>=5 && (x.k>=20 || wholeN>=pct2));
+        if(es.length>=2){
+          let hi=es[0],lo=es[0]; es.forEach(x=>{if(x.p>hi.p)hi=x; if(x.p<lo.p)lo=x;});
+          sig=ztest2(hi.p,hi.n,lo.p,lo.n);
+        }else if(es.length===1 && wholeD>0 && wholeN>=5){
+          sig=ztest2(es[0].p,es[0].n,wholeP,wholeD);
+        }
+      }
+      return {mk,label:DATA.metric_labels[mk],cells,wholeP,wholeN,pct2,spread,maxn,surprise,faint,sig};
     });
     items.sort((a,b)=> sortMode==='spread'? b.spread-a.spread
       : sortMode==='surprise'? b.surprise-a.surprise
@@ -619,18 +650,21 @@ function renderPanels(){
       const baseMark=baseIdx>=0?`<div class="baseMark" style="left:${(it.cells[baseIdx].p/maxp*100).toFixed(1)}%"></div>`:'';
       const vals=ser.map((s,k)=>{
         const c=it.cells[k];
+        // lift jen pro spolehlivá témata: ≥20 odpovědí v segmentu nebo ≥2 % vzorku
+        const reliable = c.n>=20 || it.wholeN>=it.pct2;
         let lift='';
-        if(!s.base && it.wholeP>0){
+        if(!s.base && it.wholeP>0 && reliable){
           const l=c.p/it.wholeP;
           const cls=l>=1.2?'up':(l<=0.8?'down':'');
           if(cls) lift=`<span class="lift ${cls}" title="${l.toFixed(2).replace('.',',')}× oproti celku">${l.toFixed(2).replace('.',',')}×</span>`;
         }
-        return `<div class="v ${s.base?'base':''}"><span class="d" style="background:${s.color}"></span>${Math.round(c.p*100)} %${lift}</div>`;
+        const pm=(!s.base && !reliable)?' muted':'';
+        return `<div class="v ${s.base?'base':''}"><span class="d" style="background:${s.color}"></span>${lift}<span class="pct${pm}">${Math.round(c.p*100)} %</span></div>`;
       }).join('');
-      const tip=ser.map((s,k)=>`${s.id}: ${it.cells[k].n}/${it.cells[k].d}`).join(' · ');
+      const tip=ser.map((s,k)=>`${s.id}: ${it.cells[k].n}/${it.cells[k].d}`).join(' · ')+(it.sig?' · rozdíl významný (p<0,05)':'');
       const canDrill=!!TEXTKEY[it.mk];
       const mark=originMark(it.mk);
-      return `<div class="mrow${it.maxn<5?' low':''}${canDrill?' drill':''}" data-mk="${it.mk}">
+      return `<div class="mrow${it.maxn<5?' low':''}${it.faint?' faint':''}${it.sig?' sig':''}${canDrill?' drill':''}" data-mk="${it.mk}">
         <div class="name" title="${it.label} — ${tip}${canDrill?' · klikni pro znění odpovědí':''}"><span class="lbl">${it.label}</span>${mark}</div>
         <div class="bars">${bars}${baseMark}</div>
         <div class="vals">${vals}</div></div>`;
