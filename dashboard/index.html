@@ -38,6 +38,13 @@
   .tab input{margin:0;cursor:pointer}
   .tab.off{opacity:.5}
   .baseline-row{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;cursor:pointer}
+  .presets{display:flex;flex-direction:column;gap:4px}
+  .preset{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;
+    padding:6px 9px;border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer;font-size:12.5px}
+  .preset:hover{background:var(--bg);border-color:#bbb}
+  .preset .pn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .preset .ps{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;flex:0 0 auto}
+  .preset-hint{color:var(--muted);font-size:10.5px;margin:2px 0 0}
 
   .editor{margin-top:6px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:var(--bg)}
   .editor .eh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -74,6 +81,20 @@
     display:flex;align-items:center;gap:8px;font-size:12.5px}
   .scard .dot{width:11px;height:11px;border-radius:50%}
   .scard b{font-size:15px}
+  #insights{margin:0 0 14px;display:flex;flex-direction:column;gap:8px}
+  .insight{background:var(--card);border:1px solid var(--line);border-left-width:3px;border-radius:9px;padding:10px 14px}
+  .insight .ih{font-size:13px;margin-bottom:6px}
+  .insight .ih b{font-size:13.5px}
+  .insight .ih .muted{color:var(--muted);font-weight:400}
+  .insight .iline{font-size:12.5px;line-height:1.7;color:#333}
+  .insight .iline .tag{font-weight:700;font-size:11px;margin-right:6px}
+  .insight .iline .tag.up{color:#1f8a4c}
+  .insight .iline .tag.down{color:#c0392b}
+  .insight .iline .f{white-space:nowrap}
+  .insight .iline .f .x{font-variant-numeric:tabular-nums;color:#666}
+  .insight .none{color:var(--muted);font-size:12px}
+  .insight-hint{color:var(--muted);font-size:12px;background:var(--bg);border:1px dashed var(--line);
+    border-radius:9px;padding:9px 13px}
   .legend{font-size:11px;color:var(--muted);margin:0 0 12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin-right:4px}
 
@@ -145,6 +166,9 @@
     <label class="baseline-row"><input type="checkbox" id="showBase"> ukázat celek (baseline)</label>
     <button class="share" id="share">🔗 zkopírovat odkaz na tento pohled</button>
 
+    <div class="ftitle">Předdefinované segmenty (kanál)</div>
+    <div class="presets" id="presets"></div>
+
     <div class="editor" id="editor"></div>
 
     <div class="ftitle">Jmenovatel</div>
@@ -155,11 +179,13 @@
     <div class="ftitle">Řazení</div>
     <div class="opt" id="sortOpt">
       <label><input type="radio" name="sort" value="base" checked> podle četnosti</label>
+      <label><input type="radio" name="sort" value="surprise"> podle překvapivosti (odchylka od celku)</label>
       <label><input type="radio" name="sort" value="spread"> podle rozdílu mezi segmenty</label>
     </div>
   </aside>
   <main>
     <div class="topbar" id="topbar"></div>
+    <div id="insights"></div>
     <div class="legend" id="legend"></div>
     <div id="panels"></div>
   </main>
@@ -220,7 +246,24 @@ function init(){
       b.textContent='✓ zkopírováno do schránky'; setTimeout(()=>b.textContent=t,1600);
     });
   };
+  buildPresets();
   buildTabs(); renderEditor(); renderPanels();
+}
+
+/* ---------- předdefinované segmenty (latentní shluky) ---------- */
+function buildPresets(){
+  const el=document.getElementById('presets');
+  if(!DATA.clusters){el.innerHTML='';return;}
+  el.innerHTML=DATA.clusters.map(c=>
+    `<button class="preset" data-cid="${c.id}"><span class="pn">${c.name}</span>`+
+    `<span class="ps">${c.size.toLocaleString('cs')}</span></button>`).join('')+
+    '<div class="preset-hint">klik = načte do aktivního segmentu ('+segs[active].id+')</div>';
+  el.querySelectorAll('.preset').forEach(b=>b.onclick=()=>loadPreset(+b.dataset.cid));
+}
+function loadPreset(cid){
+  const s=segs[active];
+  s.on=true; s.cons={cluster:[cid]};
+  buildTabs(); renderEditor(); renderPanels(); syncURL();
 }
 
 /* ---------- sdílení stavu přes URL ---------- */
@@ -318,8 +361,10 @@ function renderEditor(){
     <button class="clr">vyčistit</button></div>`;
   el.querySelector('.clr').onclick=()=>{s.cons={};renderEditor();buildTabs();renderPanels();syncURL();};
   DATA.filters.forEach(f=>{
+    if(f.key==='cluster') return;   // shluk se nastavuje přes tlačítka, ne chipy
     el.appendChild(f.type==='ordinal'?makeSlider(f,s):makeChips(f,s));
   });
+  buildPresets();                   // sync nápovědy „načte do aktivního segmentu"
 }
 
 function makeSlider(f,s){
@@ -406,6 +451,7 @@ function aggregate(ser){
       g.metrics.forEach(mk=>{ mResp[DATA.metric_keys.indexOf(mk)]=ri; });
     });
   }
+  const whole=Array.from({length:M},()=>[0,0]);  // celý vzorek = vždy referenční
   const inScope=ser.map(()=>false);
   for(const row of DATA.rows){
     for(let k=0;k<ser.length;k++) inScope[k]=ser[k].base?true:passes(row,ser[k].seg);
@@ -413,13 +459,14 @@ function aggregate(ser){
       const v=row[MI+m];
       if(v===null) continue;
       if(mResp[m]>=0 && row[mResp[m]]!==1) continue;
+      whole[m][1]++; if(v) whole[m][0]++;
       for(let k=0;k<ser.length;k++){
         if(!inScope[k]) continue;
         res[m][k][1]++; if(v) res[m][k][0]++;
       }
     }
   }
-  return {res,mResp};
+  return {res,whole,mResp};
 }
 
 /* ---------- render ---------- */
@@ -445,33 +492,73 @@ function renderLegend(){
   document.getElementById('legend').innerHTML=
     '<span><i style="background:#888"></i>svislá ryska = celek</span>'+
     '<span>pruh = % v segmentu</span>'+
-    '<span>lift = poměr segment/celek (jen u 1 segmentu)</span>'+
+    '<span><span class="lift up">1,5×</span> lift = kolikrát častější/vzácnější než v celku (jen u filtrovaných segmentů)</span>'+
     '<span><span class="plus">＋</span> nová možnost z volného textu · <sup class="enr">+n</sup> obohacení původní možnosti o n zmínek · 🔍 klik = znění odpovědí</span>'+
     '<span style="opacity:.55">vybledlý řádek = méně než 5 osob</span>';
+}
+function renderInsights(enabled,res,whole,mIdx){
+  const box=document.getElementById('insights');
+  const filtered=enabled.filter(e=>Object.keys(e.seg.cons).length>0);
+  if(filtered.length===0){
+    box.innerHTML='<div class="insight-hint">💡 Zúžením segmentu (posuvníky / chipy vlevo) se tu objeví shrnutí, čím se segment nejvíc liší od celku.</div>';
+    return;
+  }
+  const fx=(l)=>l.toFixed(l>=10?0:1).replace('.',',')+'×';
+  box.innerHTML=filtered.map(e=>{
+    const facs=[];
+    DATA.metric_keys.forEach((mk,m)=>{
+      const wp=whole[m][1]?whole[m][0]/whole[m][1]:0;
+      const [n,d]=res[m][e.i]; const sp=d?n/d:0;
+      if(n<10||d<10||wp<=0) return;           // ochrana proti malým n
+      facs.push({label:DATA.metric_labels[mk],lift:sp/wp,sp,n});
+    });
+    // dedup podle popisku (stejný název ve víc panelech) – necháme nejvýraznější
+    const byLabel={};
+    facs.forEach(f=>{ const o=byLabel[f.label];
+      if(!o||Math.abs(f.lift-1)>Math.abs(o.lift-1)) byLabel[f.label]=f; });
+    const uniq=Object.values(byLabel);
+    const more=uniq.filter(f=>f.lift>=1.2).sort((a,b)=>b.lift-a.lift).slice(0,6);
+    const less=uniq.filter(f=>f.lift<=0.8).sort((a,b)=>a.lift-b.lift).slice(0,6);
+    const fmt=arr=>arr.map(f=>`<span class="f">${f.label} <span class="x">${fx(f.lift)}</span></span>`).join(' · ');
+    const moreLine=more.length?`<div class="iline"><span class="tag up">▲ výrazně častěji</span>${fmt(more)}</div>`:'';
+    const lessLine=less.length?`<div class="iline"><span class="tag down">▼ výrazně vzácněji</span>${fmt(less)}</div>`:'';
+    const body=(more.length||less.length)?moreLine+lessLine
+      :'<div class="none">Segment se od celku výrazně neliší (žádný faktor mimo 0,8–1,2×).</div>';
+    return `<div class="insight" style="border-left-color:${e.color}">
+      <div class="ih">Čím se liší <b>Segment ${e.id}</b> <span class="muted">· ${consSummary(e.seg)} · vůči celku</span></div>
+      ${body}</div>`;
+  }).join('');
 }
 function renderPanels(){
   const ser=series();
   renderTop(ser); renderLegend();
-  if(ser.length===0){document.getElementById('panels').innerHTML='';return;}
-  const {res}=aggregate(ser);
+  if(ser.length===0){document.getElementById('panels').innerHTML='';document.getElementById('insights').innerHTML='';return;}
+  const {res,whole}=aggregate(ser);
   const mIdx={}; DATA.metric_keys.forEach((k,i)=>mIdx[k]=i);
   const baseIdx=ser.findIndex(s=>s.base);
   const enabled=ser.map((s,i)=>({...s,i})).filter(s=>!s.base);
-  const singleSeg=enabled.length===1;
   // baseline řada pro lift/řazení: celek pokud je, jinak první segment
   const refK=baseIdx>=0?baseIdx:(enabled[0]?enabled[0].i:0);
+  renderInsights(enabled,res,whole,mIdx);
 
   const html=DATA.metric_groups.map(g=>{
     const items=g.metrics.map(mk=>{
       const m=mIdx[mk];
       const cells=ser.map((s,k)=>{const[n,d]=res[m][k];return {id:s.id,color:s.color,base:s.base,n,d,p:d?n/d:0};});
-      const refP=cells[ (baseIdx>=0?baseIdx : enabled[0]?enabled[0].i:0) ].p;
+      const wholeP=whole[m][1]?whole[m][0]/whole[m][1]:0;
       const ep=enabled.map(e=>cells[e.i].p);
       const spread=ep.length?Math.max(...ep)-Math.min(...ep):0;
       const maxn=Math.max(0,...enabled.map(e=>cells[e.i].n));
-      return {mk,label:DATA.metric_labels[mk],cells,refP,spread,maxn};
+      // překvapivost = max |lift-1| přes filtrované segmenty (s ochranou proti malým n)
+      const surprise=Math.max(0,...enabled.map(e=>{
+        const c=cells[e.i];
+        return (c.n>=10 && c.d>=10 && wholeP>0) ? Math.abs(c.p/wholeP-1) : 0;
+      }));
+      return {mk,label:DATA.metric_labels[mk],cells,wholeP,spread,maxn,surprise};
     });
-    items.sort((a,b)=> sortMode==='spread'? b.spread-a.spread : b.cells[refK].p-a.cells[refK].p);
+    items.sort((a,b)=> sortMode==='spread'? b.spread-a.spread
+      : sortMode==='surprise'? b.surprise-a.surprise
+      : b.cells[refK].p-a.cells[refK].p);
     const maxp=Math.max(0.01,...items.flatMap(it=>it.cells.map(c=>c.p)));
     const rows=items.map(it=>{
       const bars=enabled.map(e=>{
@@ -482,10 +569,10 @@ function renderPanels(){
       const vals=ser.map((s,k)=>{
         const c=it.cells[k];
         let lift='';
-        if(singleSeg && !s.base && baseIdx>=0){
-          const r=it.cells[baseIdx].p; const l=r>0?c.p/r:1;
-          const cls=l>=1.2?'up':(l<=0.8&&r>0?'down':'');
-          if(cls) lift=`<span class="lift ${cls}">${l.toFixed(2).replace('.',',')}×</span>`;
+        if(!s.base && it.wholeP>0){
+          const l=c.p/it.wholeP;
+          const cls=l>=1.2?'up':(l<=0.8?'down':'');
+          if(cls) lift=`<span class="lift ${cls}" title="${l.toFixed(2).replace('.',',')}× oproti celku">${l.toFixed(2).replace('.',',')}×</span>`;
         }
         return `<div class="v ${s.base?'base':''}"><span class="d" style="background:${s.color}"></span>${Math.round(c.p*100)} %${lift}</div>`;
       }).join('');

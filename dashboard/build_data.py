@@ -18,6 +18,8 @@ import csv
 import json
 import os
 
+import numpy as np
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "data", "processed", "respekt_analyticky.csv")
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
@@ -97,10 +99,42 @@ def nw(col, label, tk):
 def en(vccol, label, tk, origcol):
     return (vccol, label, "bool", "enr", tk, origcol)
 
+# jednovýběrové / škálové otázky → rozbalení na rozdělení (id, syrový sloupec, [(hodnota,label)])
+DIST_SPECS = [
+    ("podlisten", "Posloucháte podcasty Respektu?", [
+        ("Ano, pravidelně", "Ano, pravidelně"),
+        ("Ano, občas", "Ano, občas"),
+        ("Vím o nich, ale neposlouchám", "Vím o nich, ale neposlouchám"),
+        ("Zkoušel/a jsem, ale přestal/a", "Zkoušel/a, ale přestal/a"),
+        ("Nevím o nich", "Nevím o nich")]),
+    ("podfreq", "Jak často váš oblíbený pořad Respektu posloucháte?", [
+        ("Pravidelně každou epizodu", "Pravidelně každou epizodu"),
+        ("Přibližně každou druhou epizodu", "Přibližně každou druhou epizodu"),
+        ("Nepravidelně", "Nepravidelně")]),
+    ("podplat", "podcast_platforma_clean", [
+        ("Aplikace Respektu", "Aplikace Respektu"), ("Spotify", "Spotify"),
+        ("Web Respektu", "Web Respektu"), ("Apple Podcasts", "Apple Podcasts"),
+        ("Jina podcastova aplikace", "Jiná podcastová aplikace"),
+        ("YouTube", "YouTube"), ("Audioteka", "Audiotéka")]),
+    ("doruc", "Jak jste spokojen/a s doručováním tištěného Respektu?", [
+        ("5", "5 – velmi spokojen/a"), ("4", "4"), ("3", "3"), ("2", "2"),
+        ("1", "1 – velmi nespokojen/a")]),
+    ("ctedrive", "Četl/a jste dříve tištěný časopis?", [
+        ("Ano", "Ano"), ("Ne", "Ne")]),
+    ("changeform", "Uvažujete o změně formy čtení Respektu?", [
+        ("Ne, neuvažuji", "Ne, neuvažuji"),
+        ("Ano, přechod z tisku do digitálu", "Ano – z tisku do digitálu"),
+        ("Ano, přechod z digitálu na tisk", "Ano – z digitálu na tisk")]),
+]
+
+
+def _dist_opts(sid):
+    return next(opts for s, _, opts in DIST_SPECS if s == sid)
+
 # --- Panely = skutečné otázky dotazníku --------------------------------------
 GROUPS = [
     ("spok", "Jak vnímáte Respekt? (% spokojených)",
-     "Podíl spokojených z těch, kdo položku hodnotili.", None, [
+     "Podíl spokojených z těch, kdo měli názor (mimo odpověď Nevím).", None, [
         o("spok_vyber_temat", "Výběr témat", "spok"),
         o("spok_mnozstvi_clanku", "Množství článků", "spok"),
         o("spok_delka_clanku", "Délka článků", "spok"),
@@ -108,6 +142,17 @@ GROUPS = [
         o("spok_prehlednost", "Přehlednost", "spok"),
         o("spok_mnozstvi_reklamy", "Množství reklamy", "spok"),
         o("spok_kvalita_nacteni_audioc", "Kvalita načtení audia", "spok"),
+     ]),
+
+    ("spoknevim", "Vnímání Respektu — kdo nemá názor (Nevím)",
+     "Podíl odpovědí Nevím z těch, kdo na oblast odpověděli. Signál (ne)využívání / expozice.", None, [
+        o("spoknevim_audio", "Kvalita audia", "bool"),
+        o("spoknevim_reklama", "Množství reklamy", "bool"),
+        o("spoknevim_vyvazenost", "Vyváženost", "bool"),
+        o("spoknevim_prehlednost", "Přehlednost", "bool"),
+        o("spoknevim_mnozstvi", "Množství článků", "bool"),
+        o("spoknevim_delka", "Délka článků", "bool"),
+        o("spoknevim_temata", "Výběr témat", "bool"),
      ]),
 
     ("styk", "Jak jste přišel/a do styku s Respektem před předplacením?",
@@ -254,6 +299,18 @@ GROUPS = [
         o("O rodině a vztazích", "Rodina a vztahy"),
      ]),
 
+    ("podcasty", "Které podcasty Respektu posloucháte nejčastěji?",
+     "Podíl osob, které podcast poslouchají.", None, [
+        o("Výtah Respektu", "Výtah Respektu"),
+        o("Vládneme, nerušit", "Vládneme, nerušit"),
+        o("(Ne)bezpečí Ondřeje Kundry", "(Ne)bezpečí O. Kundry"),
+        o("Ženy XYZ", "Ženy XYZ"),
+        o("Dělníci kultury", "Dělníci kultury"),
+        o("Tekutá společnost", "Tekutá společnost"),
+        o("Československý podcast", "Československý podcast"),
+        o("Zeitgeist", "Zeitgeist"),
+     ]),
+
     ("bariery", "Setkal/a jste se při čtení nebo poslechu s bariérami?",
      "Podíl osob. ＋ = nová z „Jiné\"; ⁺n u obohacených = přidané zmínky z textu.", None, [
         o("Nesetkal/a, vše mi vyhovuje", "Nesetkal, vše vyhovuje"),
@@ -273,18 +330,35 @@ GROUPS = [
         nw("bariera_epub", "EPUB / čtečka", "jine_bariery"),
      ]),
 
-    ("frekvence", "Jak často navštěvujete web nebo aplikaci Respektu?",
-     "Podíl těch, kdo kanál navštěvují alespoň týdně (z uživatelů kanálu).", None, [
-        o("frekvence_web_ord", "Web – alespoň týdně", "thresh2"),
-        o("frekvence_app_ord", "Aplikace – alespoň týdně", "thresh2"),
+    ("freqweb", "Jak často navštěvujete web Respekt.cz?",
+     "Rozdělení frekvence (z těch, kdo na položku odpověděli). Součet ≈ 100 %.", None, [
+        o("freq_web_lvl4", "Každý den", "bool"),
+        o("freq_web_lvl3", "Několikrát za týden", "bool"),
+        o("freq_web_lvl2", "Každý týden", "bool"),
+        o("freq_web_lvl1", "Několikrát za měsíc", "bool"),
+        o("freq_web_lvl0", "Nepoužívám", "bool"),
      ]),
 
-    ("delkapref", "Která kombinace délky formátů vám vyhovuje?",
-     "Podíl těch, kdo preferují delší formáty (z hodnotících daný formát).", None, [
-        o("delka_texty_kratsi_zpravy_ko_dir", "Texty – delší formáty", "dirpos"),
-        o("delka_audioclanky_kratsi_zpr_dir", "Audiočlánky – delší", "dirpos"),
-        o("delka_podcasty_souhrny_a_glo_dir", "Podcasty – delší", "dirpos"),
-        o("delka_videa_souhrny_a_glosy__dir", "Videa – delší", "dirpos"),
+    ("freqapp", "Jak často navštěvujete aplikaci Respekt?",
+     "Rozdělení frekvence (z těch, kdo na položku odpověděli). Součet ≈ 100 %.", None, [
+        o("freq_app_lvl4", "Každý den", "bool"),
+        o("freq_app_lvl3", "Několikrát za týden", "bool"),
+        o("freq_app_lvl2", "Každý týden", "bool"),
+        o("freq_app_lvl1", "Několikrát za měsíc", "bool"),
+        o("freq_app_lvl0", "Nepoužívám", "bool"),
+     ]),
+
+    ("delkapref", "Která délka formátů vám vyhovuje?",
+     "Podíl spíše delší / spíše kratší z těch, kdo formát hodnotili; "
+     "zbytek do 100 % = Nevím / bez preference.", None, [
+        o("lendelsi_texty", "Texty – spíše delší", "bool"),
+        o("lenkratsi_texty", "Texty – spíše kratší", "bool"),
+        o("lendelsi_audioclanky", "Audiočlánky – spíše delší", "bool"),
+        o("lenkratsi_audioclanky", "Audiočlánky – spíše kratší", "bool"),
+        o("lendelsi_podcasty", "Podcasty – spíše delší", "bool"),
+        o("lenkratsi_podcasty", "Podcasty – spíše kratší", "bool"),
+        o("lendelsi_videa", "Videa – spíše delší", "bool"),
+        o("lenkratsi_videa", "Videa – spíše kratší", "bool"),
      ]),
 
     ("q155", "V čem je podle vás Respekt výjimečný? (otevřená otázka)",
@@ -357,6 +431,153 @@ GROUPS = [
 ]
 
 
+# --- Doplňkové panely k dosud nezobrazeným otázkám (vloží se na vhodná místa) -
+def _dist_items(sid):
+    return [o(f"dist_{sid}_{i}", lab, "bool")
+            for i, (_, lab) in enumerate(_dist_opts(sid))]
+
+
+_EXTRA = [
+    ("forma", ("digiaccess", "Využíváte také digitální přístup?",
+               "Podíl osob, které možnost označily.", None, [
+        o("Ano, používám web nebo aplikaci pro čtení", "Web/app pro čtení"),
+        o("Ano, používám web nebo aplikaci pro poslouchání audia", "Web/app pro audio"),
+        o("Přístup využívá někdo z rodiny/přátel", "Sdílí rodina/přátelé"),
+        o("Nevyužívám", "Nevyužívám digitál"),
+    ])),
+    ("digital", ("ctedrive", "Četl/a jste dříve tištěný časopis?",
+                 "Podíl z těch, kdo odpověděli.", None, _dist_items("ctedrive"))),
+    ("digital", ("changeform", "Uvažujete o změně formy čtení Respektu?",
+                 "Rozdělení z těch, kdo odpověděli. Součet ≈ 100 %.", None, _dist_items("changeform"))),
+    ("podcasty", ("podplat", "Na jaké platformě podcasty posloucháte?",
+                  "Rozdělení z těch, kdo poslouchají. Součet ≈ 100 %.", None, _dist_items("podplat"))),
+    ("podcasty", ("podfreq", "Jak často oblíbený pořad posloucháte? (zapojení)",
+                  "Rozdělení z těch, kdo mají oblíbený pořad. Součet ≈ 100 %.", None, _dist_items("podfreq"))),
+    ("podcasty", ("podlisten", "Posloucháte podcasty Respektu?",
+                  "Rozdělení z těch, kdo odpověděli. Součet ≈ 100 %.", None, _dist_items("podlisten"))),
+    ("bariery", ("doruc", "Spokojenost s doručováním tištěného Respektu",
+                 "Rozdělení 1–5 z odběratelů tisku, kdo odpověděli. Součet ≈ 100 %.", None, _dist_items("doruc"))),
+]
+for _after_key, _grp in _EXTRA:
+    _idx = next(i for i, g in enumerate(GROUPS) if g[0] == _after_key)
+    GROUPS.insert(_idx + 1, _grp)
+
+
+# --- Latentní segmentace (PCA + k-means, kanálová, k=6) ----------------------
+# Shluky vznikají ze VŠECH proměnných; dominuje distribuční kanál. Rozšíření
+# o platformu/intenzitu poslechu (k=7) jsme zkoušeli, ale není robustní –
+# tříští tištěné publikum na redundantní skupiny a „bridge" segment je artefakt
+# jednoho běhu. Stabilní a interpretovatelná je tahle kanálová šestka.
+# Pořadí názvů = pořadí tlačítek; přiřazení názvu deterministické (profil kanálu).
+CLUSTER_NAMES = [
+    "Tištění senioři", "Uživatelé aplikace", "Tištění s digitálním přesahem",
+    "Mladá audio generace", "Weboví čtenáři", "Podcastoví posluchači",
+]
+_CL_META = {"ID", "Started on", "Last updated on", "Status", "Collector",
+            "Language", "IP address", "Device", "{mwg_rnd}", "{url}", "{userid}"}
+
+
+def _kmeans(Z, k, iters=120, restarts=12):
+    best = None
+    for _ in range(restarts):
+        cen = [Z[np.random.randint(len(Z))]]
+        for _ in range(k - 1):
+            d = np.min([((Z - c) ** 2).sum(1) for c in cen], axis=0)
+            cen.append(Z[np.random.choice(len(Z), p=d / d.sum())])
+        C = np.array(cen)
+        for _ in range(iters):
+            lab = ((Z[:, None] - C[None]) ** 2).sum(2).argmin(1)
+            nC = np.array([Z[lab == j].mean(0) if (lab == j).any() else C[j]
+                           for j in range(k)])
+            if np.allclose(nC, C):
+                C = nC
+                break
+            C = nC
+        inertia = ((Z - C[lab]) ** 2).sum()
+        if best is None or inertia < best[0]:
+            best = (inertia, lab)
+    return best[1]
+
+
+def compute_channel_clusters(rows):
+    """Vrátí (labels v pořadí CLUSTER_NAMES, velikosti). Reprodukovatelné (seed)."""
+    np.random.seed(42)
+    header = list(rows[0].keys())
+    kinds = {}
+    for c in header:
+        if c in _CL_META:
+            continue
+        vals = set(r[c] for r in rows if r[c] != "")
+        if vals and vals <= {"x", "X"}:
+            kinds[c] = "bx"
+        elif vals and vals <= {"True", "False"}:
+            kinds[c] = "tf"
+    for c in header:
+        if c in _CL_META or c in kinds:
+            continue
+        if c.endswith("_ord") or c.endswith("_dir") or c.startswith("spok_"):
+            kinds[c] = "ord"
+
+    def _f(s):
+        try:
+            return float(s)
+        except ValueError:
+            return np.nan
+
+    def num(c):
+        k = kinds[c]
+        if k == "bx":
+            return np.array([1.0 if r[c] in ("x", "X") else 0.0 for r in rows])
+        if k == "tf":
+            return np.array([1.0 if r[c] == "True" else 0.0 for r in rows])
+        x = np.array([_f(r[c]) for r in rows])
+        if c.endswith("_dir"):
+            x = (x + 1) / 2
+        med = np.nanmedian(x)
+        med = med if np.isfinite(med) else 0.0
+        x = np.where(np.isnan(x), med, x)
+        lo, hi = x.min(), x.max()
+        return (x - lo) / (hi - lo) if hi > lo else x * 0.0
+
+    meanv, mat = {}, []
+    for c in kinds:
+        v = num(c)
+        meanv[c] = v
+        if kinds[c] != "ord" and (v.mean() < 0.02 or v.mean() > 0.98):
+            continue
+        if v.std() == 0:
+            continue
+        mat.append(v)
+    X = np.array(mat).T
+    Xc = X - X.mean(0)
+    U, S, _ = np.linalg.svd(Xc, full_matrices=False)
+    Z = U[:, :20] * S[:20]
+    raw = _kmeans(Z, 6)
+
+    # deterministické přiřazení názvů podle profilu kanálu
+    SIG = {"print": "Papírové vydání", "web": "Web Respekt.cz",
+           "app": "Mobilní aplikace.1", "podc": "Podcastové aplikace",
+           "audiocl": "Audiočlánky", "age": "vek_ord"}
+    sig = {k: {j: meanv[col][raw == j].mean() for j in range(6)}
+           for k, col in SIG.items()}
+    rem, name_of = set(range(6)), {}
+
+    def take(metric):
+        j = max(rem, key=lambda j: sig[metric][j])
+        rem.discard(j)
+        return j
+    name_of[take("podc")] = "Podcastoví posluchači"
+    name_of[take("audiocl")] = "Mladá audio generace"
+    name_of[take("app")] = "Uživatelé aplikace"
+    name_of[take("web")] = "Weboví čtenáři"
+    name_of[take("age")] = "Tištění senioři"
+    name_of[rem.pop()] = "Tištění s digitálním přesahem"
+
+    display = np.array([CLUSTER_NAMES.index(name_of[l]) for l in raw])
+    sizes = [int((display == i).sum()) for i in range(len(CLUSTER_NAMES))]
+    return display, sizes
+
+
 def parse(kind, v):
     s = (v or "").strip()
     if kind == "check":
@@ -389,9 +610,67 @@ def parse(kind, v):
     raise ValueError(kind)
 
 
+# úrovně frekvence (frekvence_*_ord): hodnota -> label
+FREQ_LEVELS = [(4, "Každý den"), (3, "Několikrát za týden"), (2, "Každý týden"),
+               (1, "Několikrát za měsíc"), (0, "Nepoužívám")]
+
+# baterie vnímání Q120 (id, syrový sloupec, label) – pro podíl „Nevím"
+SPOK_AREAS = [
+    ("mnozstvi", "Množství článků", "Množství článků"),
+    ("delka", "Délka článků", "Délka článků"),
+    ("temata", "Výběr témat", "Výběr témat"),
+    ("vyvazenost", "Vyváženost", "Vyváženost"),
+    ("prehlednost", "Přehlednost", "Přehlednost"),
+    ("reklama", "Množství reklamy", "Množství reklamy"),
+    ("audio", "Kvalita načtení audiočlánků", "Kvalita audia"),
+]
+# baterie délky formátu Q115 (id, syrový sloupec, label)
+LEN_FMT = [
+    ("texty", "Texty (kratší zprávy/komentáře vs. reportáže, rozhovory apod.)", "Texty"),
+    ("audioclanky", "Audiočlánky (kratší zprávy/komentáře vs. reportáže, rozhovory apod.)", "Audiočlánky"),
+    ("podcasty", "Podcasty (souhrny a glosy událostí vs. delší rozhovory a diskuze)", "Podcasty"),
+    ("videa", "Videa (souhrny a glosy událostí vs. delší rozhovory a diskuze)", "Videa"),
+]
+
+
 def main():
     with open(SRC, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
+
+    # shluky počítáme z PŮVODNÍCH sloupců (před injektáží odvozených)
+    cl_labels, cl_sizes = compute_channel_clusters(rows)
+
+    # rozbal frekvenční škálu na úrovně (True/False/'' = neodpověděl) –
+    # syntetické sloupce, ať se ukáže celé rozdělení, ne jen „alespoň týdně"
+    for r in rows:
+        for ch, src in (("web", "frekvence_web_ord"), ("app", "frekvence_app_ord")):
+            raw = (r.get(src) or "").strip()
+            try:
+                val = int(float(raw))
+            except ValueError:
+                val = None
+            for lv, _ in FREQ_LEVELS:
+                r[f"freq_{ch}_lvl{lv}"] = "" if val is None else (
+                    "True" if val == lv else "False")
+        # spokojenost: podíl „Nevím" (jmenovatel = kdo na položku odpověděl)
+        for sid, src, _ in SPOK_AREAS:
+            v = (r.get(src) or "").strip()
+            r[f"spoknevim_{sid}"] = ("True" if v == "Nevím" else
+                ("False" if v in ("Spokojen/a", "Nespokojen/a") else ""))
+        # délka formátu: spíše delší / spíše kratší (jmenovatel vč. „Nevím")
+        for fid, src, _ in LEN_FMT:
+            v = (r.get(src) or "").strip()
+            answered = v in ("Spíše delší", "Spíše kratší", "Nevím")
+            r[f"lendelsi_{fid}"] = "True" if v == "Spíše delší" else ("False" if answered else "")
+            r[f"lenkratsi_{fid}"] = "True" if v == "Spíše kratší" else ("False" if answered else "")
+        # jednovýběrové/škálové otázky → rozdělení (jmenovatel = kdo odpověděl)
+        for sid, src, opts in DIST_SPECS:
+            v = (r.get(src) or "").strip()
+            answered = v in [val for val, _ in opts]
+            for i, (val, _) in enumerate(opts):
+                r[f"dist_{sid}_{i}"] = ("True" if v == val else
+                                        ("False" if answered else ""))
+
     header = set(rows[0].keys())
 
     needed = [fl["col"] for fl in FILTERS] + list(RESPOND_COLS.values())
@@ -453,19 +732,24 @@ def main():
         ob = sum(1 for r in rows if (r.get(origcol) or "").strip() in ("x", "X"))
         metric_increment[col] = e - ob
 
-    F = len(FILTERS)
+    # latentní segmenty (přidá se jako 9. filtr, kategoriální)
+    filters_out.append({"key": "cluster", "label": "Latentní segment",
+                        "type": "categorical", "categories": CLUSTER_NAMES})
+
+    F = len(filters_out)               # 8 demo + 1 cluster
     M = len(metric_keys)
     respond_keys = list(RESPOND_COLS.keys())
     respond_index = {k: F + M + i for i, k in enumerate(respond_keys)}
 
     out_rows, out_texts = [], []
-    for r in rows:
+    for i, r in enumerate(rows):
         row = []
         for fl in FILTERS:
             raw = (r.get(fl["col"]) or "").strip()
             if "map" in fl:
                 raw = fl["map"].get(raw, "")
             row.append(fl["order"].index(raw) if raw in fl["order"] else None)
+        row.append(int(cl_labels[i]))  # cluster (9. filtr)
         for k in metric_keys:
             row.append(parse(kinds[k], r.get(k)))
         for rk in respond_keys:
@@ -489,6 +773,8 @@ def main():
         "metric_textkey": metric_textkey,
         "text_labels": {tk: lab for tk, (_, lab) in TEXTCOLS.items()},
         "respond": respond_index,
+        "clusters": [{"id": i, "name": CLUSTER_NAMES[i], "size": cl_sizes[i]}
+                     for i in range(len(CLUSTER_NAMES))],
         "rows": out_rows,
         "texts": out_texts,
     }
