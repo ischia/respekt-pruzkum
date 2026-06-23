@@ -52,6 +52,12 @@ FILTERS = [
      "order": ["Velmi nízká", "Nízká", "Střední", "Vysoká", "Velmi vysoká"],
      "map": {"1.0": "Velmi nízká", "2.0": "Nízká", "3.0": "Střední",
              "4.0": "Vysoká", "5.0": "Velmi vysoká"}},
+    {"key": "frekv_app", "label": "Frekvence aplikace", "type": "ordinal",
+     "col": "frekvence_app_ord",
+     "order": ["Nepoužívá", "Několikrát/měsíc", "Každý týden",
+               "Několikrát/týden", "Každý den"],
+     "map": {"0.0": "Nepoužívá", "1.0": "Několikrát/měsíc", "2.0": "Každý týden",
+             "3.0": "Několikrát/týden", "4.0": "Každý den"}},
     {"key": "pohlavi", "label": "Pohlaví", "type": "categorical",
      "col": "Jaké je vaše pohlaví?",
      "order": ["Žena", "Muž", "Jiné / nechci uvést"]},
@@ -64,6 +70,32 @@ FILTERS = [
      "order": ["Zamestnanecky pomer", "OSVC / podnikani", "Student/ka",
                "V domacnosti / na rodicovske", "Duchod (nepracujici)",
                "Pracujici duchod", "Nezamestnany/a", "Neuvedeno / jine"]},
+    {"key": "poslech", "label": "Poslech podcastů", "type": "categorical",
+     "col": "Posloucháte podcasty Respektu?",
+     "order": ["Ano, pravidelně", "Ano, občas", "Vím o nich, ale neposlouchám",
+               "Zkoušel/a, ale přestal/a", "Nevím o nich"],
+     "map": {"Ano, pravidelně": "Ano, pravidelně", "Ano, občas": "Ano, občas",
+             "Vím o nich, ale neposlouchám": "Vím o nich, ale neposlouchám",
+             "Zkoušel/a jsem, ale přestal/a": "Zkoušel/a, ale přestal/a",
+             "Nevím o nich": "Nevím o nich"}},
+    {"key": "platforma", "label": "Platforma podcastů", "type": "categorical",
+     "col": "podcast_platforma_clean",
+     "order": ["Aplikace Respektu", "Spotify", "Web Respektu", "Apple Podcasts",
+               "Jiná aplikace", "YouTube", "Audiotéka"],
+     "map": {"Aplikace Respektu": "Aplikace Respektu", "Spotify": "Spotify",
+             "Web Respektu": "Web Respektu", "Apple Podcasts": "Apple Podcasts",
+             "Jina podcastova aplikace": "Jiná aplikace", "YouTube": "YouTube",
+             "Audioteka": "Audiotéka"}},
+]
+
+# Kanál (forma) – multi-label boolean filtr (osoba má víc kanálů; OR logika)
+FORMA_CHANNELS = [
+    ("Papírové vydání", "Papírové vydání"),
+    ("Web Respekt.cz", "Web"),
+    ("Mobilní aplikace.1", "Aplikace"),
+    ("Podcastové aplikace", "Podcastové aplikace"),
+    ("Newslettery", "Newslettery"),
+    ("Čtečka EPUB verze (Kindle, Pocketbook apod.)", "EPUB"),
 ]
 
 # --- Otevřené otázky: respond flag (zodpověděl/a otevřenou otázku) ------------
@@ -732,11 +764,14 @@ def main():
         ob = sum(1 for r in rows if (r.get(origcol) or "").strip() in ("x", "X"))
         metric_increment[col] = e - ob
 
-    # latentní segmenty (přidá se jako 9. filtr, kategoriální)
+    # kanál (forma) – multibool (bitmaska kanálů) + latentní segment (kategoriální)
+    filters_out.append({"key": "forma_ch", "label": "Kanál (forma)",
+                        "type": "multibool",
+                        "categories": [lab for _, lab in FORMA_CHANNELS]})
     filters_out.append({"key": "cluster", "label": "Latentní segment",
                         "type": "categorical", "categories": CLUSTER_NAMES})
 
-    F = len(filters_out)               # 8 demo + 1 cluster
+    F = len(filters_out)               # demo + frekv/poslech/platforma + forma + cluster
     M = len(metric_keys)
     respond_keys = list(RESPOND_COLS.keys())
     respond_index = {k: F + M + i for i, k in enumerate(respond_keys)}
@@ -749,7 +784,12 @@ def main():
             if "map" in fl:
                 raw = fl["map"].get(raw, "")
             row.append(fl["order"].index(raw) if raw in fl["order"] else None)
-        row.append(int(cl_labels[i]))  # cluster (9. filtr)
+        mask = 0                        # forma jako bitmaska kanálů
+        for bit, (col, _) in enumerate(FORMA_CHANNELS):
+            if (r.get(col) or "").strip() in ("x", "X"):
+                mask |= (1 << bit)
+        row.append(mask)
+        row.append(int(cl_labels[i]))  # cluster
         for k in metric_keys:
             row.append(parse(kinds[k], r.get(k)))
         for rk in respond_keys:

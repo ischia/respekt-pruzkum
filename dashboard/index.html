@@ -204,7 +204,7 @@
   </div>
 </div>
 <script>
-let DATA=null, FI={}, MI=0, RESP={}, ORIGIN={}, INCREMENT={}, TEXTKEY={}, TEXTLAB={};
+let DATA=null, FI={}, FMETA={}, MI=0, RESP={}, ORIGIN={}, INCREMENT={}, TEXTKEY={}, TEXTLAB={};
 const COLORS={A:'#e2342f',B:'#2f6fe2',C:'#15a05a'};
 const segs=[
   {id:'A',color:COLORS.A,on:true,cons:{}},
@@ -218,7 +218,7 @@ fetch('data.json').then(r=>r.json()).then(d=>{DATA=d;init();})
     '<div class="panel">Nepodařilo se načíst <code>data.json</code>. Spusť přes <code>python3 dashboard/serve.py</code> a otevři http://localhost:8731/.</div>';});
 
 function init(){
-  DATA.filters.forEach((f,i)=>FI[f.key]=i);
+  DATA.filters.forEach((f,i)=>{FI[f.key]=i;FMETA[f.key]=f;});
   MI=DATA.filters.length;            // offset prvního metrického sloupce
   RESP=DATA.respond;
   ORIGIN=DATA.metric_origin||{}; INCREMENT=DATA.metric_increment||{};
@@ -318,10 +318,13 @@ function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 /* ---------- segment passing ---------- */
 function passes(row,seg){
   for(const fk in seg.cons){
-    const v=row[FI[fk]], c=seg.cons[fk];
-    if(v===null) return false;
-    if(Array.isArray(c)){ if(!c.includes(v)) return false; }
-    else { if(v<c.min||v>c.max) return false; }
+    const v=row[FI[fk]], c=seg.cons[fk], t=FMETA[fk]&&FMETA[fk].type;
+    if(t==='multibool'){           // bitmaska kanálů, OR logika
+      let m=0; for(const i of c) m|=(1<<i);
+      if((v & m)===0) return false;
+    } else if(v===null){ return false; }
+    else if(Array.isArray(c)){ if(!c.includes(v)) return false; }   // kategoriální
+    else { if(v<c.min||v>c.max) return false; }                     // ordinální
   }
   return true;
 }
