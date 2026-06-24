@@ -128,6 +128,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
   jako přání v aplikaci zaškrtlo **229** lidí.
 - Přehlednost / archiv / orientace: 36 výtek (Q156).
 
+![Poptávka po vyhledávání napříč otázkami](charts/vyhledavani.png)
+
 **Co s tím**
 - **Vyhledávání a orientace v archivu** patří vysoko na app/web roadmapu — je to opakovaný,
   konkrétní a řešitelný požadavek (rychlá výhra).
@@ -140,6 +142,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
 - Část předplatitelů digitál **aktivně odmítá**: preferuje tisk (15 — haptika, offline, únava
   z displeje, „pondělní rituál"), digitál jako doplněk (20 — papír doma, audio na cestách).
 - „Tištěné posílám rodině" (12) — opakovaný vzorec.
+
+![Tisk jako rituál a sdílení](charts/tisk_ritual.png)
 
 **Co s tím**
 - **Nehnat všechny do digitálu.** Tištěný zážitek (rituál, haptika) je reálná kotva retence.
@@ -310,6 +314,8 @@ Druhá vrstva — jemnější vzorce a produktové detaily, často kontraintuiti
 - Q153: hlavní důvod, proč ne appka, **není chyba** — lidé už mají **jinou platformu** (Spotify/Apple,
   126) a **zvyk** (30), hlavně kvůli **agregaci všech podcastů na jednom místě** (65).
 - **119 lidí** poslech v appce vůbec nezkusilo; skutečné technické problémy (21) jsou menšina.
+
+![Proč ne aplikace pro poslech (Q153)](charts/poslech_app.png)
 
 **Co s tím**
 - **Nepřetahovat ze Spotify** (těžké). Realistický cíl je **119 nevyzkoušejících** + nabídnout to,

@@ -257,6 +257,28 @@ def chart_churneri_overindex():
     save(fig, "churneri_overindex.png")
 
 
+# ---------- malé grafy: poslech v app / vyhledávání / tisk-rituál ----------
+def chart_poslech_app():
+    hbar(group_items("q153", top=8), "Proč ne aplikace pro poslech (Q153)",
+         "#5a7d9a", "poslech_app.png", (7.0, 3.4))
+
+
+def chart_vyhledavani():
+    items = [("Přání: vyhledávání v aplikaci", 229),
+             ("Výtka „chybí vyhledávání“ (Q156)", 32),
+             ("Nevyžádaně v poli bariéry", 13)]
+    hbar(items, "Poptávka po vyhledávání se objevuje všude",
+         "#2f6db0", "vyhledavani.png", (7.0, 2.3))
+
+
+def chart_tisk_ritual():
+    items = [("Digitál jen jako doplněk", 20),
+             ("Aktivně preferuje tisk", 15),
+             ("Tištěné posílá rodině", 12)]
+    hbar(items, "Tisk jako rituál a sdílení (volný text)",
+         "#9a7b5a", "tisk_ritual.png", (7.0, 2.3))
+
+
 if __name__ == "__main__":
     print("Generuji grafy do charts/:")
     chart_churn_tenure()
@@ -272,4 +294,7 @@ if __name__ == "__main__":
     chart_zdroje()
     chart_digital()
     chart_app_prani()
+    chart_poslech_app()
+    chart_vyhledavani()
+    chart_tisk_ritual()
     print("Hotovo.")
