@@ -104,6 +104,21 @@
   .panel .hint{color:var(--muted);font-size:11px;margin:0 0 9px}
   .panel .cap{font-size:11px;color:#8a6d00;background:#fbf3d6;border:1px solid #efe0a8;
     border-radius:6px;padding:4px 9px;margin:0 0 9px;cursor:help}
+  /* kohortové heatmapy */
+  .hm-head{font-size:13px;font-weight:600;cursor:pointer;user-select:none;margin:6px 0 10px;
+    color:var(--ink)}
+  .hm-head .hm-caret{display:inline-block;transition:transform .15s;font-size:11px}
+  .hm-head.collapsed .hm-caret{transform:rotate(-90deg)}
+  #heatmaps{display:grid;grid-template-columns:repeat(auto-fit,minmax(440px,1fr));gap:14px;margin-bottom:14px}
+  #heatmaps.hidden{display:none}
+  .hm-panel h2{margin:0 0 1px;font-size:13.5px}
+  .hm-grid{display:grid;gap:3px;margin-top:8px;font-variant-numeric:tabular-nums}
+  .hm-coh{text-align:center;font-size:11px;font-weight:500;padding:0 0 3px;line-height:1.25}
+  .hm-coh span{color:var(--muted);font-weight:400}
+  .hm-rl{font-size:11.5px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;
+    text-align:right;padding-right:8px}
+  .hm-cell{height:40px;display:flex;align-items:center;justify-content:center;border-radius:4px;
+    font-size:12.5px}
   .mrow{display:grid;grid-template-columns:182px 1fr 132px;align-items:center;gap:10px;padding:4px 0;
     border-top:1px solid #f3f1ee}
   .mrow:first-of-type{border-top:none}
@@ -190,6 +205,9 @@
     <div class="ftitle">Předdefinované segmenty (kanál)</div>
     <div class="presets" id="presets"></div>
 
+    <div class="ftitle">Podle vztahu / zapojení</div>
+    <div class="presets" id="presets2"></div>
+
     <div class="editor" id="editor"></div>
 
     <div class="ftitle">Jmenovatel</div>
@@ -207,6 +225,8 @@
   <main>
     <div class="topbar" id="topbar"></div>
     <div id="insights"></div>
+    <div class="hm-head" id="heatToggle"><span class="hm-caret">▾</span> Kohortové heatmapy (věk × pohlaví)</div>
+    <div id="heatmaps"></div>
     <div class="legend" id="legend"></div>
     <div id="panels"></div>
   </main>
@@ -268,7 +288,12 @@ function init(){
       b.textContent='✓ zkopírováno do schránky'; setTimeout(()=>b.textContent=t,1600);
     });
   };
-  buildPresets();
+  // přepínač heatmap
+  document.getElementById('heatToggle').onclick=()=>{
+    document.getElementById('heatToggle').classList.toggle('collapsed');
+    document.getElementById('heatmaps').classList.toggle('hidden');
+  };
+  buildPresets(); buildPresets2(); renderHeatmaps();
   buildTabs(); renderEditor(); renderPanels();
 }
 
@@ -286,6 +311,56 @@ function loadPreset(cid){
   const s=segs[active];
   s.on=true; s.cons={cluster:[cid]};
   buildTabs(); renderEditor(); renderPanels(); syncURL();
+}
+
+/* ---------- presety podle vztahu / zapojení (filtrové) ---------- */
+function buildPresets2(){
+  const el=document.getElementById('presets2'); if(!el) return;
+  if(!DATA.behavior_presets){el.innerHTML='';return;}
+  el.innerHTML=DATA.behavior_presets.map((p,i)=>
+    `<button class="preset" data-bi="${i}"><span class="pn">${p.name}</span>`+
+    `<span class="ps">${p.size.toLocaleString('cs')}</span></button>`).join('');
+  el.querySelectorAll('.preset').forEach(b=>b.onclick=()=>loadBehaviorPreset(+b.dataset.bi));
+}
+function loadBehaviorPreset(i){
+  const p=DATA.behavior_presets[i], s=segs[active];
+  s.on=true; s.cons=JSON.parse(JSON.stringify(p.cons));
+  buildTabs(); renderEditor(); renderPanels(); syncURL();
+}
+
+/* ---------- kohortové heatmapy ---------- */
+function rampPick(stops,t){
+  t=Math.max(0,Math.min(1,t));
+  const x=t*(stops.length-1), i=Math.floor(x), f=x-i;
+  const a=stops[i], b=stops[Math.min(i+1,stops.length-1)];
+  return a.map((v,j)=>Math.round(v+(b[j]-v)*f));
+}
+function heatColor(v,mode,vmin,vmax){
+  let t=(vmax>vmin)?(v-vmin)/(vmax-vmin):0.5;
+  const RdYlGn=[[180,0,38],[252,141,89],[254,224,139],[145,207,96],[26,152,80]];
+  const Blues=[[247,251,255],[198,219,239],[107,174,214],[33,113,181],[8,48,107]];
+  if(mode==='good_high') return rampPick(RdYlGn,t);
+  if(mode==='bad_high')  return rampPick(RdYlGn,1-t);   // vyšší hodnota = červená
+  return rampPick(Blues,t);
+}
+function renderHeatmaps(){
+  const el=document.getElementById('heatmaps'); if(!el) return;
+  if(!DATA.heatmaps){el.innerHTML='';return;}
+  el.innerHTML=DATA.heatmaps.map(h=>{
+    const cols=`minmax(110px,160px) repeat(${h.cohorts.length},1fr)`;
+    let g=`<div class="hm-grid" style="grid-template-columns:${cols}"><div></div>`;
+    h.cohorts.forEach(c=>{g+=`<div class="hm-coh">${c.label}<br><span>n=${c.n.toLocaleString('cs')}</span></div>`;});
+    h.rows.forEach(r=>{
+      g+=`<div class="hm-rl">${r.label}</div>`;
+      r.vals.forEach(v=>{
+        const c=heatColor(v,h.mode,h.vmin,h.vmax);
+        const dark=(0.2126*c[0]+0.7152*c[1]+0.0722*c[2])/255<0.55?'#fff':'#1a1a1a';
+        g+=`<div class="hm-cell" style="background:rgb(${c[0]},${c[1]},${c[2]});color:${dark}">${v.toFixed(1)}</div>`;
+      });
+    });
+    g+=`</div>`;
+    return `<div class="panel hm-panel"><h2>${h.title}</h2><p class="hint">${h.hint}</p>${g}</div>`;
+  }).join('');
 }
 
 /* ---------- sdílení stavu přes URL ---------- */

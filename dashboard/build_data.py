@@ -727,6 +727,113 @@ def parse(kind, v):
     raise ValueError(kind)
 
 
+# --- Presety „podle vztahu / zapojení" (filtrové, AND; cons = ordinální min/max) -
+# Definice mezí labely z FILTERS["order"]; OR podmínky model neumí → churn jako proxy.
+BEHAVIOR_PRESETS = [
+    ("Ohrožení odchodem", {"zruseni": ("Spíše ano", "Ano")}),
+    ("Loajální ambasadoři", {"delka": ("11–15 let", "21+ let"),
+                             "setrvani": ("Velmi vysoká", "Velmi vysoká"),
+                             "zruseni": ("Ne", "Ne")}),
+    ("Noví předplatitelé (1. rok)", {"delka": ("< 1 rok", "< 1 rok")}),
+    ("Digitální jádro (aktivní app)", {"frekv_app": ("Několikrát/týden", "Každý den")}),
+    ("Pasivní digitál", {"frekv_app": ("Nepoužívá", "Několikrát/měsíc"),
+                         "frekv_web": ("Nepoužívá", "Několikrát/měsíc")}),
+    ("Mladí ohrožení", {"vek": ("18–24", "35–44"), "zruseni": ("Spíše ano", "Ano")}),
+]
+
+
+def _truthy_any(v):
+    return (v or "").strip() in ("x", "X", "True", "1", "1.0")
+
+
+# --- Kohortové heatmapy (věk × pohlaví) --------------------------------------
+HEAT_INTERESTS = [
+    ("Politické", "Politické"), ("Reportáže", "Reportáže"),
+    ("Komentáře k aktuálnímu dění", "Komentáře"), ("Rozhovory", "Rozhovory"),
+    ("Kulturní", "Kulturní"),
+    ("Překlady zahraničních médií (The Atlantic, NYT, Die Zeit)", "Překlady zahraničí"),
+    ("Ekonomické", "Ekonomické"), ("Podcasty/videa", "Podcasty / videa"),
+    ("O rodině a vztazích", "Rodina a vztahy"),
+]
+HEAT_BARRIERS = [
+    ("audio_umele_vc_text", "Audio zní uměle"),
+    ("Problémy s uživatelským rozhraním (špatné ovládání aplikace, nepřehledný web)", "UX / ovládání"),
+    ("cas_delka_vc_text", "Články moc dlouhé"),
+    ("doruceni_vc_text", "Nepřišlo včas"),
+    ("tech_problemy_vc_text", "Technické problémy"),
+    ("bariera_vyhledavani", "Vyhledávání"),
+    ("Rušivé reklamy", "Rušivé reklamy"),
+]
+
+
+def compute_heatmaps(rows):
+    ya = ("18–24", "25–34", "35–44")
+    oa = ("45–54", "55–64", "65 a více")
+    vek = lambda r: (r.get("Jaký je váš věk?") or "")
+    gen = lambda r: (r.get("Jaké je vaše pohlaví?") or "")
+    cohdefs = [("mladší muž", ya, "Muž"), ("mladší žena", ya, "Žena"),
+               ("starší muž", oa, "Muž"), ("starší žena", oa, "Žena")]
+    cohrows = [[r for r in rows if vek(r) in ages and gen(r) == g]
+               for _, ages, g in cohdefs]
+    cohorts = [{"label": lab, "n": len(cohrows[i])}
+               for i, (lab, _, _) in enumerate(cohdefs)]
+
+    def pct(sub, fn):
+        return round(100 * sum(1 for r in sub if fn(r)) / len(sub), 1) if sub else 0.0
+
+    def grid(rowspec, fn):
+        out = []
+        for key, lab in rowspec:
+            out.append({"label": lab, "vals": [pct(sub, lambda r: fn(r, key))
+                                               for sub in cohrows]})
+        return out
+
+    def minmax(rs):
+        flat = [v for r in rs for v in r["vals"]]
+        return (min(flat), max(flat)) if flat else (0, 100)
+
+    heatmaps = []
+    # spokojenost (% spokojených mimo Nevím)
+    srows = []
+    for sid, src, lab in SPOK_AREAS:
+        vals = []
+        for sub in cohrows:
+            sp = sum(1 for r in sub if (r.get(src) or "").strip() == "Spokojen/a")
+            ne = sum(1 for r in sub if (r.get(src) or "").strip() == "Nespokojen/a")
+            vals.append(round(100 * sp / (sp + ne), 1) if (sp + ne) else 0.0)
+        srows.append({"label": lab, "vals": vals})
+    vmn, vmx = minmax(srows)
+    heatmaps.append({"title": "Spokojenost s atributy", "mode": "good_high",
+                     "hint": "% spokojených z těch, kdo měli názor (mimo „Nevím“).",
+                     "cohorts": cohorts, "rows": srows, "vmin": vmn, "vmax": vmx})
+    # zájmy o obsah
+    zr = grid(HEAT_INTERESTS, lambda r, k: _truthy_any(r.get(k)))
+    vmn, vmx = minmax(zr)
+    heatmaps.append({"title": "Zájem o okruhy obsahu", "mode": "seq",
+                     "hint": "% osob v kohortě, které okruh označily.",
+                     "cohorts": cohorts, "rows": zr, "vmin": 0, "vmax": vmx})
+    # churn / setrvání
+    cr = [
+        {"label": "Uvažuje o zrušení", "vals": [pct(sub, lambda r:
+            (r.get("uvazoval_zruseni_ord") or "").strip() in ("1.0", "2.0"))
+            for sub in cohrows]},
+        {"label": "Nízké setrvání (≤ Střední)", "vals": [pct(sub, lambda r:
+            (r.get("pravdep_setrvani_ord") or "").strip() in ("1.0", "2.0", "3.0"))
+            for sub in cohrows]},
+    ]
+    vmn, vmx = minmax(cr)
+    heatmaps.append({"title": "Riziko odchodu", "mode": "bad_high",
+                     "hint": "% osob v kohortě (vyšší = větší riziko).",
+                     "cohorts": cohorts, "rows": cr, "vmin": 0, "vmax": vmx})
+    # bariéry
+    br = grid(HEAT_BARRIERS, lambda r, k: _truthy_any(r.get(k)))
+    vmn, vmx = minmax(br)
+    heatmaps.append({"title": "Bariéry při čtení/poslechu", "mode": "bad_high",
+                     "hint": "% osob v kohortě, které na bariéru narazily.",
+                     "cohorts": cohorts, "rows": br, "vmin": 0, "vmax": vmx})
+    return heatmaps
+
+
 def main():
     with open(SRC, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
@@ -878,9 +985,28 @@ def main():
                 t[tk] = v
         out_texts.append(t)
 
+    # presety „podle vztahu/zapojení" → cons (ordinální min/max) + velikost
+    fkey_idx = {f["key"]: j for j, f in enumerate(filters_out)}
+    fkey_cats = {f["key"]: f["categories"] for f in filters_out}
+    behavior_presets = []
+    for name, spec in BEHAVIOR_PRESETS:
+        cons = {k: {"min": fkey_cats[k].index(lo), "max": fkey_cats[k].index(hi)}
+                for k, (lo, hi) in spec.items()}
+        size = 0
+        for row in out_rows:
+            if all((row[fkey_idx[k]] is not None
+                    and c["min"] <= row[fkey_idx[k]] <= c["max"])
+                   for k, c in cons.items()):
+                size += 1
+        behavior_presets.append({"name": name, "size": size, "cons": cons})
+
+    heatmaps = compute_heatmaps(rows)
+
     data = {
         "n": len(out_rows),
         "filters": filters_out,
+        "behavior_presets": behavior_presets,
+        "heatmaps": heatmaps,
         "metric_groups": groups_out,
         "metric_keys": metric_keys,
         "metric_labels": metric_labels,
