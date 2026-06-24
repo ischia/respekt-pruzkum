@@ -162,6 +162,101 @@ def chart_heatmap(title_match, fname, figsize):
     save(fig, fname)
 
 
+# ---------- pomocné: počty osob u metrik skupiny ----------
+def group_items(gkey, top=None, drop=()):
+    g = next(x for x in DATA["metric_groups"] if x["key"] == gkey)
+    items = []
+    for mk in g["metrics"]:
+        lab = DATA["metric_labels"][mk]
+        if any(s in lab for s in drop):
+            continue
+        n = sum(1 for r in rows if mv(r, mk) == 1)
+        items.append((lab, n))
+    items.sort(key=lambda x: x[1], reverse=True)
+    return items[:top] if top else items
+
+
+def hbar(items, title, color, fname, figsize, unit="osob", xlabelmax=34):
+    labels = [a if len(a) <= xlabelmax else a[:xlabelmax - 1] + "…" for a, _ in items][::-1]
+    vals = [b for _, b in items][::-1]
+    fig, ax = plt.subplots(figsize=figsize)
+    bars = ax.barh(labels, vals, color=color, height=0.7)
+    for b, v in zip(bars, vals):
+        ax.text(v + max(vals) * 0.012, b.get_y() + b.get_height() / 2, f"{v}",
+                va="center", fontsize=9.5)
+    ax.set_xlim(0, max(vals) * 1.12)
+    ax.set_xlabel(f"počet {unit}")
+    ax.set_title(title, fontsize=12.5, loc="left", pad=10)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    save(fig, fname)
+
+
+# ---------- chvála Q155 / výtky Q156 / zdroje Q154 / digitál / app ----------
+def chart_chvala():
+    hbar(group_items("q155", top=10), "V čem je Respekt výjimečný (Q155, chvála)",
+         GREEN, "chvala.png", (7.2, 4.2))
+
+
+def chart_vytky():
+    items = group_items("q156", drop=("Nic nevadí",))
+    hbar(items, "Co předplatitelům nejvíce vadí (Q156) — cena je až na dně",
+         "#d98a3d", "vytky.png", (7.2, 5.6))
+
+
+def chart_zdroje():
+    hbar(group_items("q154", top=10), "Jaké jiné zdroje sledují (Q154) — konkurence",
+         "#2f6db0", "zdroje.png", (7.2, 4.2))
+
+
+def chart_digital():
+    hbar(group_items("digital", top=8), "Co přimělo přejít na digitál (Q60)",
+         "#5a7d9a", "digital_drivers.png", (7.2, 3.6))
+
+
+def chart_app_prani():
+    items = group_items("appchybi", top=9, drop=("nic nechybí", "Nic ",))
+    hbar(items, "Co nejvíce chybí v aplikaci (přání)", "#7a6da8",
+         "app_prani.png", (7.2, 4.0))
+
+
+# ---------- churneři vs celek: over-index výtek (#13) ----------
+def chart_churneri_overindex():
+    g = next(x for x in DATA["metric_groups"] if x["key"] == "q156")
+    pick = ["Jednostrannost", "Délka", "Kulturní", "Audio", "Tón", "Aplikace"]
+    sel = []
+    for want in pick:
+        mk = next((k for k in g["metrics"] if want in DATA["metric_labels"][k]), None)
+        if mk:
+            sel.append((DATA["metric_labels"][mk], mk))
+    ch = [r for r in rows if churn(r)]
+
+    def pc(sub, mk):
+        return 100 * sum(1 for r in sub if mv(r, mk) == 1) / len(sub)
+
+    labs = [a.split(" /")[0].split(" (")[0] for a, _ in sel]
+    cv = [pc(ch, mk) for _, mk in sel]
+    av = [pc(rows, mk) for _, mk in sel]
+    import numpy as np
+    y = np.arange(len(labs))
+    fig, ax = plt.subplots(figsize=(7.2, 3.8))
+    ax.barh(y + 0.2, av, height=0.36, color=GRAY, label="celek")
+    ax.barh(y - 0.2, cv, height=0.36, color=RED, label="uvažují o zrušení")
+    for i, (c, a) in enumerate(zip(cv, av)):
+        ax.text(c + 0.15, i - 0.2, f"{c:.0f} %", va="center", fontsize=9)
+        ax.text(a + 0.15, i + 0.2, f"{a:.0f} %", va="center", fontsize=9, color="#777")
+    ax.set_yticks(y)
+    ax.set_yticklabels(labs)
+    ax.invert_yaxis()
+    ax.set_xlim(0, max(cv) * 1.25)
+    ax.set_xlabel("% skupiny, které téma zmínilo")
+    ax.set_title("Kdo odchází, vadí mu víc jednostrannost a tón", fontsize=12.5, loc="left", pad=10)
+    ax.legend(loc="lower right", frameon=False, fontsize=9.5)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    save(fig, "churneri_overindex.png")
+
+
 if __name__ == "__main__":
     print("Generuji grafy do charts/:")
     chart_churn_tenure()
@@ -171,4 +266,10 @@ if __name__ == "__main__":
     chart_heatmap("Zájem o okruhy obsahu", "heat_zajmy.png", (6.6, 4.2))
     chart_heatmap("Riziko odchodu", "heat_riziko.png", (6.6, 2.0))
     chart_heatmap("Co přimělo k předplatnému", "heat_konv.png", (6.6, 5.2))
+    chart_chvala()
+    chart_vytky()
+    chart_churneri_overindex()
+    chart_zdroje()
+    chart_digital()
+    chart_app_prani()
     print("Hotovo.")

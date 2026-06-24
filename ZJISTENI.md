@@ -47,6 +47,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
 - Nejčastější *zaškrtnutý* motiv konverze je „podpořit nezávislá média" (1 373), ale nejčastější
   *spontánně psaný* důvod je **kvalita obsahu (151)** a **dlouholetý vztah ke značce (96)**.
 
+![V čem je Respekt výjimečný (chvála Q155)](charts/chvala.png)
+
 **Co s tím**
 - Chránit jádro (hloubka, šíře, nezávislost, kvalita psaní) — to drží retenci.
 - V akvizici i udržení stavět na **hodnotě a kvalitě**, ne na ceně. Hodnotová podpora je rámec,
@@ -153,6 +155,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
 - Stejná osa, opačná valence: **hodnotové souznění** je v chvále (173) i ve výtce (bias 64) —
   proto se valence kódují odděleně.
 
+![Co předplatitelům nejvíce vadí (Q156)](charts/vytky.png)
+
 **Co s tím**
 - Redakční reflexe **kultury**, **vyváženosti** a **délky**; vědět, že „bias" je menšinový,
   ale hlasitý a hodnotově nabitý signál — ne plošný problém.
@@ -184,6 +188,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
   ČT / ČT24 374.
 - Předplatitelé běžně kombinují kvalitní domácí + veřejnoprávní + zahraniční zdroje
   (BBC, Economist, NYT, FT…).
+
+![Jaké jiné zdroje sledují (Q154)](charts/zdroje.png)
 
 **Co s tím**
 - Sledovat **Deník N** jako přímého konkurenta v segmentu.
@@ -235,6 +241,8 @@ Druhá vrstva — jemnější vzorce a produktové detaily, často kontraintuiti
 - Vznikají tak **dvě odlišné churn-pružiny**: produktová (mladí muži — audio, app, bod 4)
   a **hodnotově-redakční** (vnímaná jednostrannost, tón).
 
+![Churneři vs. celek: over-index výtek](charts/churneri_overindex.png)
+
 **Co s tím**
 - Retenční komunikace a redakční reflexe musí **mířit na obě osy zvlášť** — produktové opravy
   neudrží toho, kdo odchází kvůli vnímané jednostrannosti, a naopak.
@@ -259,6 +267,8 @@ Druhá vrstva — jemnější vzorce a produktové detaily, často kontraintuiti
 - Důvody přechodu na digitál (Q60): pohodlnost (vše v telefonu) 529, **audio dostupné jen
   digitálně 344**, praktické (zahraničí / nestíhám fyzicky) 298, ekologie 200, cena 136.
 - **Offline** je silné přání: stáhnout vydání a číst offline zaškrtlo 366, „lepší offline režim" 93.
+
+![Co přimělo přejít na digitál (Q60)](charts/digital_drivers.png)
 
 **Co s tím**
 - **Audio a offline čtení = on-ramp na digitál.** Propagovat je jako důvod vyzkoušet appku;
@@ -285,6 +295,8 @@ Druhá vrstva — jemnější vzorce a produktové detaily, často kontraintuiti
   offline stažení vydání 366, otevírat články ze sítí v appce 126, vlastní audio playlist 120,
   CarPlay / Android Auto 118.
 - Plus z volného textu: přehlednost UI (12), výkon/stabilita (10).
+
+![Co nejvíce chybí v aplikaci](charts/app_prani.png)
 
 **Co s tím**
 - Konkrétní app roadmapa: **orientace ve vydání** (co už jsem četl/poslechl), **offline**,
