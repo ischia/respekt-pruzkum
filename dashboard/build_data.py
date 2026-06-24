@@ -766,7 +766,7 @@ HEAT_BARRIERS = [
 ]
 
 
-def compute_heatmaps(rows):
+def compute_heatmaps(rows, metric_grids=None):
     ya = ("18–24", "25–34", "35–44")
     oa = ("45–54", "55–64", "65 a více")
     vek = lambda r: (r.get("Jaký je váš věk?") or "")
@@ -831,6 +831,13 @@ def compute_heatmaps(rows):
     heatmaps.append({"title": "Bariéry při čtení/poslechu", "mode": "bad_high",
                      "hint": "% osob v kohortě, které na bariéru narazily.",
                      "cohorts": cohorts, "rows": br, "vmin": 0, "vmax": vmx})
+    # heatmapy z metrik panelů (konv, q156) – předané z main()
+    for spec in (metric_grids or []):
+        gr = grid(spec["rowspec"], lambda r, k: _truthy_any(r.get(k)))
+        _, vmx = minmax(gr)
+        heatmaps.append({"title": spec["title"], "mode": spec.get("mode", "seq"),
+                         "hint": spec["hint"], "cohorts": cohorts, "rows": gr,
+                         "vmin": 0, "vmax": vmx})
     return heatmaps
 
 
@@ -1000,7 +1007,19 @@ def main():
                 size += 1
         behavior_presets.append({"name": name, "size": size, "cons": cons})
 
-    heatmaps = compute_heatmaps(rows)
+    # heatmapy z metrik panelů: „co přimělo k předplatnému" + „co vám vadí"
+    def _grid_from_group(gkey):
+        g = next((x for x in groups_out if x["key"] == gkey), None)
+        return [(k, metric_labels[k]) for k in g["metrics"]] if g else []
+    metric_grids = [
+        {"title": "Co přimělo k předplatnému", "mode": "seq",
+         "hint": "% osob v kohortě, které důvod uvedly.",
+         "rowspec": _grid_from_group("konv")},
+        {"title": "Co vám na Respektu vadí", "mode": "seq",
+         "hint": "% osob v kohortě, které téma zmínily (otevřená otázka).",
+         "rowspec": _grid_from_group("q156")},
+    ]
+    heatmaps = compute_heatmaps(rows, metric_grids)
 
     data = {
         "n": len(out_rows),
