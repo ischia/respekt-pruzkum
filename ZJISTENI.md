@@ -61,6 +61,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
   16–20 let **5,3 %**, 21+ let 8,0 %.
 - Noví předplatitelé (151 osob, první rok) jsou nejkřehčí skupina.
 
+![Churn podle délky předplatného](charts/churn_tenure.png)
+
 **Co s tím**
 - **Onboarding prvního roku**: aktivně ukázat hloubku, archiv a audio, dovést k pravidelnému návyku.
 - Měřit a cílit retenci právě v prvních 12 měsících — tam uniká nejvíc.
@@ -73,6 +75,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
 - Pasivní digitál (web i appku používá max. několikrát měsíčně, 178 osob): **churn 19,1 %**.
 - Digitální jádro (appku denně / několikrát týdně, 688 osob): **churn 10,2 %**.
 - Web vůbec nepoužívá 23–27 % mladších kohort.
+
+![Churn podle segmentu](charts/churn_segments.png)
 
 **Co s tím**
 - Brát **frekvenci návštěv jako early-warning** signál churnu.
@@ -87,6 +91,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
   **starší ženy 8,5 %**.
 - Mladší muže nejvíc trápí **audio** (21 % „zní uměle") a **UX / ovládání** (16 %).
 - „Nic nevadí" řekne jen **5 % mladších mužů** vs. 21 % starších žen — nejkritičtější skupina.
+
+![Riziko odchodu podle kohort](charts/heat_riziko.png)
 
 **Co s tím**
 - Udržení mladších = **produktové investice** (audio, aplikace, UX), ne další obsah.
@@ -103,6 +109,8 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
   přidal +20 zmínek nad checkbox (chybné čtení, výslovnost, jeden hlas pro tazatele i odpovídajícího).
 - Zároveň **1 026 lidí** u audia odpovědělo „Nevím" = audio nevyužívají; dalších 119 poslech v appce
   nikdy nezkusilo.
+
+![Spokojenost s atributy podle kohort](charts/heat_spokojenost.png)
 
 **Co s tím**
 - Zlepšit **kvalitu AI hlasu** (výslovnost, rozlišení hlasů v rozhovorech) — řeší konkrétní stížnost.
@@ -159,6 +167,10 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
 - Konverzní motivy mladých: **podpora nezávislých médií 73 %** (vs. 58–61 % starší) a
   **akční nabídka / sleva 22 %** (vs. 9–12 % starší).
 
+![Zájem o okruhy obsahu podle kohort](charts/heat_zajmy.png)
+
+![Co přimělo k předplatnému podle kohort](charts/heat_konv.png)
+
 **Co s tím**
 - Cílený **obsah a marketing pro mladší** (reportáž, témata vztahů/každodennosti vedle politiky).
 - **Slevová akvizice funguje na mladé** — ale viz bod 2: bez onboardingu prvního roku je zase ztratíme.
@@ -202,9 +214,11 @@ Druhá vrstva — jemnější vzorce a produktové detaily, často kontraintuiti
 ## 12. Publikum chce delší obsah, ne kratší — 80 % preferuje spíše delší texty
 
 **Evidence**
-- Z těch, kdo mají názor: **spíše delší texty preferuje 80 %**, audioverze 64 %, podcasty 61 %
-  (jen videa 39 %).
+- U textů preferuje **spíše delší 67 %**, spíše kratší jen 17 %, bez preference 16 % — tj.
+  **4 z 5 lidí s názorem chtějí delší** (u audioverzí 64 %, podcastů 61 % z těch s názorem).
 - Proti tomu je „délka článků (moc dlouhé)" ve výtkách jen 67 zmínek = **hlasitá menšina**.
+
+![Preference délky obsahu](charts/delka_preference.png)
 
 **Co s tím**
 - **Nepřeklápět produkt ke krátkému obsahu.** Hloubka je hodnota, ne slabina; zkracovat selektivně,
@@ -319,4 +333,5 @@ Druhá vrstva — jemnější vzorce a produktové detaily, často kontraintuiti
 
 *Zdroje: `respekt_analyticky.csv` (2 139 × 294), kódování otevřených otázek Q153–Q156,
 kohortové a segmentové křížové analýzy (viz interaktivní dashboard `dashboard/`).
-Detailní per-otázkové výsledky kódování volných polí jsou v `SOUHRNY.md`.*
+Detailní per-otázkové výsledky kódování volných polí jsou v `SOUHRNY.md`.
+Grafy se generují skriptem `python3 charts/make_charts.py` z `dashboard/data.json`.*
