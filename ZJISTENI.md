@@ -180,6 +180,143 @@ Odlišení stojí na **hloubce, kurátorství a překladech**.
 
 ---
 
+# Hlubší zjištění (11–20)
+
+Druhá vrstva — jemnější vzorce a produktové detaily, často kontraintuitivní.
+
+---
+
+## 11. Cena není churn páka — citlivost na cenu je minimální
+
+**Evidence**
+- Ve výtkách (Q156) je **cena / paywall jen 11×** — prakticky na dně seznamu 16 témat.
+- Sleva jako konverzní motiv je výrazná jen u **mladých a nových** (22 % vs. 9–12 % u starších);
+  u jádra báze hraje malou roli.
+
+**Co s tím**
+- Cena není důvod odchodu — **zdražení nese menší riziko, než se obvykle předpokládá**, pokud zůstane
+  hodnota. Slevu používat cíleně jako akviziční nástroj na mladé, ne plošně.
+
+---
+
+## 12. Publikum chce delší obsah, ne kratší — 80 % preferuje spíše delší texty
+
+**Evidence**
+- Z těch, kdo mají názor: **spíše delší texty preferuje 80 %**, audioverze 64 %, podcasty 61 %
+  (jen videa 39 %).
+- Proti tomu je „délka článků (moc dlouhé)" ve výtkách jen 67 zmínek = **hlasitá menšina**.
+
+**Co s tím**
+- **Nepřeklápět produkt ke krátkému obsahu.** Hloubka je hodnota, ne slabina; zkracovat selektivně,
+  ne plošně. U videa naopak prostor pro kratší formát.
+
+---
+
+## 13. Kdo odchází kvůli obsahu, vadí mu jednostrannost a tón — ne produkt
+
+**Evidence**
+- Mezi těmi, kdo uvažují o zrušení (274), jsou nadprůměrně zastoupené výtky na
+  **vnímanou jednostrannost / bias** (6 % vs. 3 % v celku), **délku**, **kulturní rubriku**
+  a **„depresivní" tón** — vedle audia.
+- Vznikají tak **dvě odlišné churn-pružiny**: produktová (mladí muži — audio, app, bod 4)
+  a **hodnotově-redakční** (vnímaná jednostrannost, tón).
+
+**Co s tím**
+- Retenční komunikace a redakční reflexe musí **mířit na obě osy zvlášť** — produktové opravy
+  neudrží toho, kdo odchází kvůli vnímané jednostrannosti, a naopak.
+
+---
+
+## 14. Homepage není vstupní bod — distribuce běží přes newsletter, sítě, RSS
+
+**Evidence**
+- Q73: část přichází na obsah přes **externí odkaz** (newsletter / mail, sociální sítě, RSS,
+  QR z tisku — 15) nebo homepage prakticky nepoužívá (8).
+
+**Co s tím**
+- Brát **newsletter a sociální sítě jako reálnou vstupní bránu** k obsahu, ne jen doplněk —
+  investovat do nich jako do distribučního kanálu, ne marketingové ozdoby.
+
+---
+
+## 15. Audio a offline jsou tahouny přechodu na digitál
+
+**Evidence**
+- Důvody přechodu na digitál (Q60): pohodlnost (vše v telefonu) 529, **audio dostupné jen
+  digitálně 344**, praktické (zahraničí / nestíhám fyzicky) 298, ekologie 200, cena 136.
+- **Offline** je silné přání: stáhnout vydání a číst offline zaškrtlo 366, „lepší offline režim" 93.
+
+**Co s tím**
+- **Audio a offline čtení = on-ramp na digitál.** Propagovat je jako důvod vyzkoušet appku;
+  doladit offline režim (opakované přání).
+
+---
+
+## 16. Přístupnost (velikost písma) je snadná výhra vzhledem k věku
+
+**Evidence**
+- Nevyžádaně v poli „co chybí v aplikaci": **přístupnost** (velikost písma/fontů, zoom obrázků,
+  čtení bez brýlí) 10× — bez nabídnutého checkboxu.
+- Věkový profil báze je starší (většina 45+), takže dopad je nadproporční.
+
+**Co s tím**
+- **Nastavitelná velikost písma a zoom obrázků** je low-effort / high-fit zásah do appky.
+
+---
+
+## 17. Top přání v aplikaci: odlišit přečtené, offline, vlastní playlist
+
+**Evidence**
+- Nejčastější přání (checkboxy): **výraznější odlišení přečteného/poslouchaného 251**,
+  offline stažení vydání 366, otevírat články ze sítí v appce 126, vlastní audio playlist 120,
+  CarPlay / Android Auto 118.
+- Plus z volného textu: přehlednost UI (12), výkon/stabilita (10).
+
+**Co s tím**
+- Konkrétní app roadmapa: **orientace ve vydání** (co už jsem četl/poslechl), **offline**,
+  **audio playlist** a **CarPlay** — vše opakovaně žádané.
+
+---
+
+## 18. Poslech v aplikaci prohrává s agregátory — cíl jsou ti, kdo nezkusili
+
+**Evidence**
+- Q153: hlavní důvod, proč ne appka, **není chyba** — lidé už mají **jinou platformu** (Spotify/Apple,
+  126) a **zvyk** (30), hlavně kvůli **agregaci všech podcastů na jednom místě** (65).
+- **119 lidí** poslech v appce vůbec nezkusilo; skutečné technické problémy (21) jsou menšina.
+
+**Co s tím**
+- **Nepřetahovat ze Spotify** (těžké). Realistický cíl je **119 nevyzkoušejících** + nabídnout to,
+  co agregátor neumí (návaznost na text, sledování přehraného).
+
+---
+
+## 19. Loajalita stojí na dvou různých osách: důvěra/fakta vs. vyváženost/objektivita
+
+**Evidence**
+- Po retaxonomizaci chvály (Q155) se „důvěra/věrohodnost/vyváženost" rozpadla na dvě odlišné věci:
+  **důvěra / ověřená fakta (194)** a **vyváženost / objektivita / nestrannost (170)**.
+- Jsou to **dva různé důvody** loajality — serióznost vs. nestrannost úhlů.
+
+**Co s tím**
+- V komunikaci značky **nezaměňovat** „věříme faktům" a „dáváme různé úhly" — rezonují u různých lidí.
+  Vyváženost je navíc tatáž osa, kterou jiná skupina kritizuje jako bias (bod 13).
+
+---
+
+## 20. Drobné, ale opakované značkové signály: obálka a „depresivní" tón
+
+**Evidence**
+- Grafika / obálka / ilustrace 39 výtek — **opakované „chybí Reisenauer"**.
+- Tón / víc pozitivního 28 — „depresivní", chybí naděje a řešení.
+
+**Co s tím**
+- Vizuální identita (obálka, ilustrace) má **emoční vazbu ke značce** — drobnost s velkým ohlasem.
+- Zvážit **konstruktivní / řešení-orientovaný** obsah jako protiváhu vnímané depresivnosti
+  (souvisí s churn-pružinou v bodě 13).
+
+---
+
 *Zdroje: `respekt_analyticky.csv` (2 139 × 294), kódování otevřených otázek Q153–Q156,
 kohortové a segmentové křížové analýzy (viz interaktivní dashboard `dashboard/`).
 Detailní per-otázkové výsledky kódování volných polí jsou v `SOUHRNY.md`.*
