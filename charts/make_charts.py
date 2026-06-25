@@ -405,7 +405,8 @@ def chart_frekv_web_app():
     cats_hi2lo = [4, 3, 2, 1, 0]
     cat_labels  = {4: "Každý den", 3: "Několikrát/týden",
                    2: "Každý týden", 1: "Několikrát/měsíc", 0: "Nepoužívám"}
-    cat_colors  = [GRAPHITE, BLUE, AMBER, GRAYBAR, "#D8DCE2"]
+    # spektrum analogické k heatmapám: tmavá modrá → světle modrá → skoro bílá
+    cat_colors  = ["#1756AC", "#4D85C8", "#85AEE0", "#BDD0EE", "#E0E8F5"]
 
     def dist(ser):
         valid = ser.dropna()
@@ -442,9 +443,10 @@ def chart_frekv_web_app():
             w = data[v]
             ax1.barh(ri, w, left=x, height=bar_h, color=color, zorder=2)
             if w >= 7:
+                is_dark = color in ("#1756AC", "#4D85C8")
                 ax1.text(x + w / 2, ri, f"{w:.0f} %",
                          ha="center", va="center", fontsize=9.5,
-                         color="white" if color in (GRAPHITE, BLUE) else INK,
+                         color="white" if is_dark else INK,
                          fontweight="bold")
             x += w
 
@@ -469,28 +471,27 @@ def chart_frekv_web_app():
     bw     = 0.35
     labels_short = ["Každý\nden", "Nkrát/\ntýden", "Každý\ntýden", "Nkrát/\nměsíc", "Nepoužívám"]
 
-    for di, (ser_ch, color, series_label) in enumerate(
-            [(app_ch, GRAPHITE, "App"), (web_ch, GRAYBAR, "Web")]):
+    APP_COLOR = PURPLE   # fialová
+    WEB_COLOR = AMBER    # žlutá
+
+    for di, (ser_ch, bar_color, series_label) in enumerate(
+            [(app_ch, APP_COLOR, "App"), (web_ch, WEB_COLOR, "Web")]):
         for xi, v in enumerate(cats_hi2lo):
             val, n = ser_ch[v]
             if val is None:
                 continue
             xpos = xi + di * bw - bw / 2
-            bar_color = RED if val > 16 else (AMBER if val > 12 else GREEN)
-            bar_color = bar_color if di == 0 else GRAYBAR
             ax2.bar(xpos, val, width=bw * 0.88, color=bar_color, zorder=2,
                     label=series_label if xi == 0 else "")
-            if di == 0:
-                ax2.text(xpos, val + 0.4, f"{val:.0f} %",
-                         ha="center", fontsize=9, color=INK, fontweight="bold")
-            else:
-                ax2.text(xpos, val + 0.4, f"{val:.0f}",
-                         ha="center", fontsize=8, color=GRAY)
+            ax2.text(xpos, val + 0.4, f"{val:.0f} %",
+                     ha="center", fontsize=9,
+                     color=INK if di == 0 else GRAY,
+                     fontweight="bold" if di == 0 else "normal")
 
     ax2.set_xticks([i for i in x_pos])
     ax2.set_xticklabels(labels_short, fontsize=9.5)
     ax2.set_xlim(-0.6, len(cats_hi2lo) - 0.4)
-    ax2.set_ylim(0, 27)
+    ax2.set_ylim(0, 29)
     ax2.set_yticks([])
     for s in ("top", "right", "left"): ax2.spines[s].set_visible(False)
     ax2.spines["bottom"].set_color(HAIRLINE)
@@ -500,10 +501,10 @@ def chart_frekv_web_app():
     ax2.text(len(cats_hi2lo) - 0.45, 13.4, "průměr 12,8 %",
              ha="right", fontsize=8.5, color=GRAPHITE)
 
-    # legenda pro pravý panel
-    ax2.plot([], [], color=GRAPHITE, linewidth=9, solid_capstyle="round", label="App (výška sloupce)")
-    ax2.plot([], [], color=GRAYBAR,  linewidth=9, solid_capstyle="round", label="Web (číslo)")
-    ax2.legend(fontsize=8.5, frameon=False, loc="upper left", handlelength=1.0)
+    # legenda
+    ax2.plot([], [], color=APP_COLOR, linewidth=9, solid_capstyle="round", label="App")
+    ax2.plot([], [], color=WEB_COLOR, linewidth=9, solid_capstyle="round", label="Web")
+    ax2.legend(fontsize=9, frameon=False, loc="upper left", handlelength=1.0)
 
     ax2.set_title("Churn podle frekvence (app = silnější gradient)",
                   fontsize=12, fontweight="bold", color=INK, loc="left", pad=14)
