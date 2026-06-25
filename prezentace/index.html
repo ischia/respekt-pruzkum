@@ -5,59 +5,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Respekt — klíčová zjištění</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root{ --ink:#1f2937; --red:#c0392b; --muted:#6b7280; --dark:#1f2a37; --tint:#f8ecea; }
-  .reveal{ font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-           font-size:30px; color:var(--ink); }
-  html,body{ background:#fff; }
-  .reveal .slides{ text-align:left; }
-  .reveal .slides section{ height:100%; }
+  /* ---- Respekt design system: fonty ---- */
+  @font-face{ font-family:'Adelle Sans'; src:url('fonts/AdelleSans-Regular.otf') format('opentype'); font-weight:400; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Adelle Sans'; src:url('fonts/AdelleSans-Semibold.otf') format('opentype'); font-weight:600; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Adelle Sans'; src:url('fonts/AdelleSans-Bold.otf') format('opentype'); font-weight:700; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Adelle Sans'; src:url('fonts/AdelleSans-Extrabold.otf') format('opentype'); font-weight:800; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Adelle'; src:url('fonts/Adelle-Regular.otf') format('opentype'); font-weight:400; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Adelle'; src:url('fonts/Adelle-Bold.otf') format('opentype'); font-weight:700; font-style:normal; font-display:swap; }
 
-  /* nadpisy zjištění */
-  .reveal h2{ font-size:30px; font-weight:800; color:var(--ink); text-transform:none;
-              margin:0 0 18px; line-height:1.12; letter-spacing:-0.01em; }
+  /* ---- tokeny ---- */
+  :root{
+    --paper:#FFFFFF; --ink:#181D27; --graphite:#494E56; --gray:#868D98;
+    --hairline:#E0E4E9; --surface:#ECEFF2; --red:#CE0B24; --red-press:#A8081C;
+    --amber:#F2A43A; --wash-amber:#FBEFD6; --rule:#CFD4DA; --radius:6px;
+    --font-sans:'Adelle Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --font-serif:'Adelle',Georgia,'Times New Roman',serif;
+  }
+  html,body,.reveal-viewport{ background:var(--surface); }
+  .reveal{ font-family:var(--font-sans); font-size:30px; color:var(--ink); background:var(--surface); }
+  .reveal .slides{ text-align:left; }
+
+  /* nadpis zjištění (Adelle Sans, headline) — s podtržením */
+  .reveal h2{ font-family:var(--font-sans); font-size:30px; font-weight:800; color:var(--ink);
+              text-transform:none; margin:0 0 16px; padding-bottom:12px; line-height:1.1;
+              letter-spacing:-0.015em; border-bottom:1.5px solid var(--rule); }
   .reveal ul{ display:block; margin:0 0 14px; }
-  .reveal li{ font-size:20px; line-height:1.35; margin:0 0 7px; color:var(--ink); }
+  .reveal li{ font-size:20px; line-height:1.4; margin:0 0 7px; color:var(--graphite); }
   .reveal li::marker{ color:var(--red); }
   .reveal strong{ color:var(--ink); font-weight:700; }
 
-  /* obrázky grafů */
-  .reveal section img{ display:block; margin:6px auto 14px; max-height:290px; max-width:86%;
-                       border-radius:8px; box-shadow:0 2px 14px rgba(0,0,0,.10); background:#fff; }
+  /* grafy — bílá karta s vnitřním paddingem nad #ECEFF2 */
+  .reveal section img{ display:block; box-sizing:border-box; margin:8px auto 16px;
+                       max-height:330px; max-width:88%; padding:16px; background:#fff;
+                       border-radius:10px; border:1px solid var(--hairline);
+                       box-shadow:0 8px 26px rgba(24,29,39,.09); }
 
-  /* „Co s tím" callout */
-  .reveal blockquote{ width:100%; box-sizing:border-box; margin:0; padding:12px 18px 12px 16px;
-                      background:var(--tint); border-radius:9px; box-shadow:none;
-                      font-size:19px; font-style:normal; color:var(--ink); line-height:1.32; }
-  .reveal blockquote::before{ content:"CO S TÍM  "; color:var(--red); font-weight:800;
-                              font-size:13px; letter-spacing:.04em; }
+  /* „Co s tím" callout — amber wash + serif text (reading) */
+  .reveal blockquote{ width:100%; box-sizing:border-box; margin:0; padding:13px 18px;
+                      background:var(--wash-amber); border-radius:var(--radius); box-shadow:none; border:none;
+                      font-family:var(--font-serif); font-size:18px; font-style:normal;
+                      color:var(--ink); line-height:1.45; }
+  .reveal blockquote::before{ content:"CO S TÍM"; display:block; font-family:var(--font-sans);
+                              color:var(--red); font-weight:700; font-size:12px; letter-spacing:.06em;
+                              text-transform:uppercase; margin-bottom:4px; }
 
-  /* velké číslo u zjištění bez grafu */
-  .reveal .stat{ font-size:88px; font-weight:800; color:var(--red); text-align:center;
-                 margin:6px 0 18px; line-height:1; letter-spacing:-0.02em; }
+  /* velké číslo (zjištění bez grafu) */
+  .reveal .stat{ font-family:var(--font-sans); font-size:86px; font-weight:800; color:var(--red);
+                 text-align:center; margin:8px 0 18px; line-height:1; letter-spacing:-0.02em; }
 
   /* tmavé snímky: titul / předěl / závěr */
   .reveal .dark{ color:#fff; }
-  .reveal .dark .kicker{ color:#c9b0ac; font-weight:800; letter-spacing:.06em; font-size:17px;
-                         text-transform:uppercase; margin:0 0 14px; }
-  .reveal .dark h1{ color:#fff; font-weight:800; font-size:54px; line-height:1.08;
-                    letter-spacing:-0.02em; margin:0; text-transform:none; }
-  .reveal .title .lead{ color:#c9cfd6; font-size:24px; margin:26px 0 0; }
-  .reveal .title .meta{ color:#9aa3ad; font-size:16px; margin:34px 0 0; }
-  .reveal .divider h1{ font-size:60px; }
+  .reveal .dark .kicker{ color:rgba(255,255,255,.60); font-weight:700; letter-spacing:.07em;
+                         font-size:16px; text-transform:uppercase; margin:0 0 16px; }
+  .reveal .dark h1{ font-family:var(--font-sans); color:#fff; font-weight:800; font-size:56px;
+                    line-height:1.06; letter-spacing:-0.02em; margin:0; text-transform:none; }
+  .reveal .title .lead{ font-family:var(--font-serif); color:rgba(255,255,255,.82); font-size:23px; margin:24px 0 0; }
+  .reveal .title .meta{ color:rgba(255,255,255,.50); font-size:15px; margin:30px 0 0; letter-spacing:.01em; }
+  .reveal .divider h1{ font-size:62px; }
   .reveal .closing ol{ margin:34px 0 0; padding:0; counter-reset:p; list-style:none; }
-  .reveal .closing li{ color:#c9cfd6; font-size:20px; line-height:1.4; margin:0 0 20px;
-                       padding-left:52px; position:relative; }
-  .reveal .closing li::before{ counter-increment:p; content:counter(p); position:absolute; left:0; top:-4px;
-                               color:var(--red); font-weight:800; font-size:34px; }
+  .reveal .closing li{ color:rgba(255,255,255,.80); font-size:20px; line-height:1.42; margin:0 0 20px;
+                       padding-left:54px; position:relative; }
+  .reveal .closing li::before{ counter-increment:p; content:counter(p); position:absolute; left:0; top:-6px;
+                               color:var(--red); font-weight:800; font-size:36px; font-family:var(--font-sans); }
   .reveal .closing strong{ color:#fff; }
 
-  /* progress / ovládání v barvě Respektu */
-  .reveal .progress{ color:var(--red); height:4px; }
+  /* Respekt wordmark (přebarvený přes mask) */
+  .reveal .wordmark{ width:188px; height:58px; margin:0 0 26px;
+                     background:#fff; -webkit-mask:url('assets/respekt-wordmark.svg') no-repeat left center;
+                     mask:url('assets/respekt-wordmark.svg') no-repeat left center;
+                     -webkit-mask-size:contain; mask-size:contain; }
+  .reveal .closing .wordmark{ width:150px; height:46px; margin-bottom:18px; opacity:.92; }
+
+  /* progress bar nahoře, tlustší, v barvě Respektu */
+  .reveal .progress{ position:fixed; top:0; bottom:auto; height:6px; color:var(--red); background:rgba(24,29,39,.08); }
+  .reveal .progress span{ height:6px; }
+  /* šipky vpravo dole, stránkovač vlevo dole — ať se nepřekrývají */
   .reveal .controls{ color:var(--red); }
-  .reveal .slide-number{ background:transparent; color:#9aa3ad; }
+  .reveal .slide-number{ background:transparent; color:var(--gray); font-family:var(--font-sans);
+                         left:12px; right:auto; bottom:10px; top:auto; font-size:14px; }
 </style>
 </head>
 <body>

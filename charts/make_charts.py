@@ -1,23 +1,47 @@
 #!/usr/bin/env python3
-"""Generuje PNG grafy pro ZJISTENI.md z dashboard/data.json.
-Spuštění:  python3 charts/make_charts.py  → zapíše charts/*.png
-Heatmapy bere hotové z data.json["heatmaps"]; churn/délku dopočítá z řádků.
+"""Generuje PNG grafy pro ZJISTENI.md / prezentaci z dashboard/data.json.
+Styl: Respekt design systém (Adelle Sans, brand barvy, zaoblené sloupce a buňky).
+Spuštění:  python3 charts/make_charts.py
 """
+import glob
 import json
 import os
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.patches as mp
+from matplotlib import font_manager as fm
+from matplotlib.path import Path
+from matplotlib.patches import PathPatch, FancyBboxPatch
 from matplotlib.colors import LinearSegmentedColormap
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = json.load(open(os.path.join(ROOT, "dashboard", "data.json")))
 OUT = os.path.dirname(os.path.abspath(__file__))
+FONTDIR = os.path.join(ROOT, "prezentace", "fonts")
 
-plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 11,
-                     "axes.edgecolor": "#cccccc", "svg.fonttype": "none"})
-RED, GRAY, GREEN, BLUE = "#c0392b", "#b9b9b6", "#1f8a4c", "#2f6db0"
+for fp in glob.glob(os.path.join(FONTDIR, "AdelleSans-*.otf")):
+    try:
+        fm.fontManager.addfont(fp)
+    except Exception:
+        pass
+try:
+    ADELLE = fm.FontProperties(fname=os.path.join(FONTDIR, "AdelleSans-Regular.otf")).get_name()
+except Exception:
+    ADELLE = "DejaVu Sans"
+plt.rcParams.update({"font.family": ADELLE, "font.size": 12,
+                     "text.color": "#181D27", "axes.labelcolor": "#494E56",
+                     "xtick.color": "#868D98", "ytick.color": "#494E56"})
+
+INK, GRAPHITE, GRAY = "#181D27", "#494E56", "#868D98"
+GRAYBAR = "#C2C7CE"
+RED = "#CE0B24"
+GREEN, AMBER, BLUE, PURPLE = "#178D4D", "#F2A43A", "#1756AC", "#9747FF"
+HAIRLINE = "#E0E4E9"
+CMAP_GR = LinearSegmentedColormap.from_list("gr", ["#CE0B24", "#E8784E", "#F4D27A", "#7FBF6A", "#178D4D"])
+CMAP_GR_R = CMAP_GR.reversed()
+CMAP_BLUE = LinearSegmentedColormap.from_list("bl", ["#EAF1FB", "#9DBDE6", "#1756AC"])
 
 F = {f["key"]: i for i, f in enumerate(DATA["filters"])}
 MK = {k: i for i, k in enumerate(DATA["metric_keys"])}
@@ -25,50 +49,81 @@ OFFM = len(DATA["filters"])
 rows = DATA["rows"]
 
 
-def vi(r, k):
-    return r[F[k]]
-
-
-def mv(r, mk):
-    return r[OFFM + MK[mk]] if mk in MK else None
-
-
-def churn(r):
-    return vi(r, "zruseni") in (1, 2)
-
-
+def vi(r, k): return r[F[k]]
+def mv(r, mk): return r[OFFM + MK[mk]] if mk in MK else None
+def churn(r): return vi(r, "zruseni") in (1, 2)
 def rate(pred):
     sub = [r for r in rows if pred(r)]
     return 100 * sum(1 for r in sub if churn(r)) / len(sub) if sub else 0
+def _g(label):
+    cats = DATA["filters"][F["pohlavi"]]["categories"]
+    return cats.index(label) if label in cats else -1
 
 
 def save(fig, name):
-    fig.savefig(os.path.join(OUT, name), dpi=150, bbox_inches="tight",
-                facecolor="white")
+    fig.savefig(os.path.join(OUT, name), dpi=160, bbox_inches="tight",
+                pad_inches=0.34, facecolor="white")
     plt.close(fig)
     print("  ", name)
 
 
-# ---------- 1. churn podle délky předplatného ----------
+def style_ax(ax):
+    for s in ("top", "right", "left"):
+        ax.spines[s].set_visible(False)
+    ax.tick_params(length=0)
+    ax.spines["bottom"].set_color(HAIRLINE)
+
+
+def title(ax, t):
+    ax.set_title(t, fontsize=14.5, fontweight="bold", color=INK, loc="left", pad=14)
+
+
+def round_rect(ax, x, y, w, h, color, corners="tl,tr,br,bl", R=8, z=2):
+    pos = ax.get_position()
+    fw, fh = ax.figure.get_size_inches(); dpi = ax.figure.dpi
+    xr = ax.get_xlim(); yr = ax.get_ylim()
+    ppx = (pos.width * fw * dpi) / (xr[1] - xr[0])
+    ppy = (pos.height * fh * dpi) / (yr[1] - yr[0])
+    rx = min(R / abs(ppx), abs(w) / 2); ry = min(R / abs(ppy), abs(h) / 2)
+    c = set(s for s in corners.split(",") if s)
+    x1, y1, x2, y2 = x, y, x + w, y + h
+    P, C = [], []
+    def mv(p): P.append(p); C.append(Path.MOVETO)
+    def ln(p): P.append(p); C.append(Path.LINETO)
+    def cv(ct, en): P.extend([ct, en]); C.extend([Path.CURVE3, Path.CURVE3])
+    mv((x1 + (rx if "bl" in c else 0), y1))
+    ln((x2 - (rx if "br" in c else 0), y1))
+    if "br" in c: cv((x2, y1), (x2, y1 + ry))
+    ln((x2, y2 - (ry if "tr" in c else 0)))
+    if "tr" in c: cv((x2, y2), (x2 - rx, y2))
+    ln((x1 + (rx if "tl" in c else 0), y2))
+    if "tl" in c: cv((x1, y2), (x1, y2 - ry))
+    ln((x1, y1 + (ry if "bl" in c else 0)))
+    if "bl" in c: cv((x1, y1), (x1 + rx, y1))
+    P.append(P[0]); C.append(Path.CLOSEPOLY)
+    ax.add_patch(PathPatch(Path(P, C), fc=color, ec="none", clip_on=False, zorder=z))
+
+
+# ---------- 1. churn podle tenury (svislé) ----------
 def chart_churn_tenure():
     order = DATA["filters"][F["delka"]]["categories"]
     vals = [rate(lambda r, i=i: vi(r, "delka") == i) for i in range(len(order))]
-    fig, ax = plt.subplots(figsize=(7.2, 3.4))
-    colors = [RED if v >= 15 else GRAY for v in vals]
-    bars = ax.bar(order, vals, color=colors, width=0.66)
-    ax.axhline(12.8, color="#888", ls="--", lw=1)
-    ax.text(len(order) - 0.5, 13.4, "průměr 12,8 %", ha="right", color="#666", fontsize=9.5)
-    for b, v in zip(bars, vals):
-        ax.text(b.get_x() + b.get_width() / 2, v + 0.4, f"{v:.0f} %", ha="center", fontsize=10)
-    ax.set_ylim(0, max(vals) + 3)
-    ax.set_ylabel("uvažuje o zrušení")
-    ax.set_title("Churn podle délky předplatného — láme se v prvním roce", fontsize=12.5, loc="left", pad=10)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
+    fig, ax = plt.subplots(figsize=(7.6, 3.6))
+    ax.set_xlim(-0.6, len(order) - 0.4); ax.set_ylim(0, max(vals) + 3)
+    th = 0.6
+    for i, v in enumerate(vals):
+        round_rect(ax, i - th / 2, 0, th, v, RED if v >= 15 else GRAYBAR, corners="tl,tr", R=9)
+        ax.text(i, v + 0.5, f"{v:.0f} %", ha="center", fontsize=11, color=INK, fontweight="bold")
+    ax.axhline(12.8, color=GRAPHITE, ls=(0, (4, 4)), lw=1)
+    ax.text(len(order) - 0.5, 13.3, "průměr 12,8 %", ha="right", color=GRAPHITE, fontsize=9.5)
+    ax.set_xticks(range(len(order))); ax.set_xticklabels(order, fontsize=10.5)
+    ax.set_ylabel("uvažuje o zrušení", fontsize=10.5)
+    style_ax(ax)
+    title(ax, "Churn podle délky předplatného — láme se v prvním roce")
     save(fig, "churn_tenure.png")
 
 
-# ---------- 2. churn podle segmentu (srovnání) ----------
+# ---------- 2. churn podle segmentu (vodorovné) ----------
 def chart_churn_segments():
     items = [
         ("Pasivní digitál", rate(lambda r: vi(r, "frekv_app") in (0, 1) and vi(r, "frekv_web") in (0, 1))),
@@ -79,90 +134,55 @@ def chart_churn_segments():
         ("Dlouholetí (16–20 let)", rate(lambda r: vi(r, "delka") == 4)),
     ]
     items.sort(key=lambda x: x[1])
-    labels = [a for a, _ in items]
-    vals = [b for _, b in items]
-    colors = ["#7a7a7a" if l == "CELEK" else (RED if v >= 12.8 else GREEN) for l, v in zip(labels, vals)]
-    fig, ax = plt.subplots(figsize=(7.4, 3.6))
-    bars = ax.barh(labels, vals, color=colors, height=0.64)
-    for b, v in zip(bars, vals):
-        ax.text(v + 0.3, b.get_y() + b.get_height() / 2, f"{v:.0f} %", va="center", fontsize=10)
-    ax.set_xlim(0, max(vals) + 3)
-    ax.set_xlabel("uvažuje o zrušení")
-    ax.set_title("Zapojení a kohorta předpovídají churn", fontsize=12.5, loc="left", pad=10)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
+    labels = [a for a, _ in items]; vals = [b for _, b in items]
+    fig, ax = plt.subplots(figsize=(7.8, 3.7))
+    ax.set_xlim(0, max(vals) + 3); ax.set_ylim(-0.6, len(labels) - 0.4)
+    th = 0.58
+    for i, (l, v) in enumerate(zip(labels, vals)):
+        c = GRAPHITE if l == "CELEK" else (RED if v >= 12.8 else GREEN)
+        round_rect(ax, 0, i - th / 2, v, th, c, corners="tr,br", R=9)
+        ax.text(v + 0.3, i, f"{v:.0f} %", va="center", fontsize=11, color=INK, fontweight="bold")
+    ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels, fontsize=11)
+    ax.set_xlabel("uvažuje o zrušení", fontsize=10.5)
+    style_ax(ax)
+    title(ax, "Zapojení a kohorta předpovídají churn")
     save(fig, "churn_segments.png")
 
 
-def _g(label):
-    cats = DATA["filters"][F["pohlavi"]]["categories"]
-    return cats.index(label) if label in cats else -1
-
-
-# ---------- 3. preference délky obsahu ----------
+# ---------- 3. preference délky (stacked) ----------
 def chart_delka_preference():
     fmts = [("texty", "Texty"), ("audioclanky", "Audioverze"), ("podcasty", "Podcasty"), ("videa", "Videa")]
-    fig, ax = plt.subplots(figsize=(7.4, 3.2))
-    yp = range(len(fmts))
-    longer, shorter, dunno = [], [], []
-    for key, _ in fmts:
-        c = [sum(1 for r in rows if mv(r, f"mx_len_{key}_{i}") == 1) for i in range(3)]
-        tot = sum(c) or 1
-        longer.append(100 * c[0] / tot)
-        shorter.append(100 * c[1] / tot)
-        dunno.append(100 * c[2] / tot)
-    ax.barh(yp, longer, color=GREEN, height=0.6, label="Spíše delší")
-    ax.barh(yp, shorter, left=longer, color=BLUE, height=0.6, label="Spíše kratší")
-    ax.barh(yp, dunno, left=[a + b for a, b in zip(longer, shorter)], color=GRAY, height=0.6, label="Nevím")
-    for i, (lo, sh) in enumerate(zip(longer, shorter)):
-        ax.text(lo / 2, i, f"{lo:.0f} %", ha="center", va="center", color="white", fontsize=10, fontweight="bold")
-        if sh > 7:
-            ax.text(lo + sh / 2, i, f"{sh:.0f} %", ha="center", va="center", color="white", fontsize=9)
-    ax.set_yticks(list(yp))
-    ax.set_yticklabels([lab for _, lab in fmts])
-    ax.invert_yaxis()
-    ax.set_xlim(0, 100)
-    ax.set_xlabel("% z těch, kdo formát hodnotili")
-    ax.set_title("Publikum chce spíše delší obsah (zvlášť texty)", fontsize=12.5, loc="left", pad=10)
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.32), ncol=3, frameon=False, fontsize=9.5)
-    for s in ("top", "right", "left"):
-        ax.spines[s].set_visible(False)
+    fig, ax = plt.subplots(figsize=(7.8, 3.3))
+    ax.set_xlim(0, 100); ax.set_ylim(len(fmts) - 0.4, -0.6)
+    th = 0.56
+    cols = [GREEN, BLUE, GRAYBAR]
+    for i, (key, _) in enumerate(fmts):
+        cnt = [sum(1 for r in rows if mv(r, f"mx_len_{key}_{j}") == 1) for j in range(3)]
+        tot = sum(cnt) or 1
+        seg = [100 * x / tot for x in cnt]
+        present = [k for k in range(3) if seg[k] > 0.6]
+        xs = 0
+        for k in range(3):
+            if seg[k] > 0.6:
+                cr = ""
+                if k == present[0]: cr += "tl,bl"
+                if k == present[-1]: cr += (",tr,br" if cr else "tr,br")
+                round_rect(ax, xs, i - th / 2, seg[k], th, cols[k], corners=cr, R=7)
+            xs += seg[k]
+        ax.text(seg[0] / 2, i, f"{seg[0]:.0f} %", ha="center", va="center", color="white", fontsize=10.5, fontweight="bold")
+        if seg[1] > 8:
+            ax.text(seg[0] + seg[1] / 2, i, f"{seg[1]:.0f} %", ha="center", va="center", color="white", fontsize=9.5)
+    ax.set_yticks(range(len(fmts))); ax.set_yticklabels([l for _, l in fmts], fontsize=11)
+    ax.set_xlabel("% z těch, kdo formát hodnotili", fontsize=10.5)
+    style_ax(ax)
+    leg = [mp.Patch(color=GREEN, label="Spíše delší"), mp.Patch(color=BLUE, label="Spíše kratší"),
+           mp.Patch(color=GRAYBAR, label="Nevím")]
+    ax.legend(handles=leg, loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=3, frameon=False, fontsize=9.5)
+    title(ax, "Publikum chce spíše delší obsah (zvlášť texty)")
     save(fig, "delka_preference.png")
 
 
-# ---------- 4. kohortové heatmapy (z data.json) ----------
-RdYlGn = plt.get_cmap("RdYlGn")
-RdYlGn_r = plt.get_cmap("RdYlGn_r")
-Blues = LinearSegmentedColormap.from_list("b", ["#f7fbff", "#08306b"])
-
-
-def chart_heatmap(title_match, fname, figsize):
-    h = next(x for x in DATA["heatmaps"] if x["title"] == title_match)
-    cmap = {"good_high": RdYlGn, "bad_high": RdYlGn_r}.get(h["mode"], Blues)
-    rlabs = [r["label"] for r in h["rows"]]
-    mat = [r["vals"] for r in h["rows"]]
-    clabs = [f"{c['label']}\n(n={c['n']})" for c in h["cohorts"]]
-    fig, ax = plt.subplots(figsize=figsize)
-    im = ax.imshow(mat, cmap=cmap, vmin=h["vmin"], vmax=h["vmax"], aspect="auto")
-    ax.set_xticks(range(len(clabs)))
-    ax.set_xticklabels(clabs, fontsize=9.5)
-    ax.set_yticks(range(len(rlabs)))
-    ax.set_yticklabels(rlabs, fontsize=10)
-    rng = (h["vmax"] - h["vmin"]) or 1
-    for i, row in enumerate(mat):
-        for j, v in enumerate(row):
-            t = (v - h["vmin"]) / rng
-            light = 0.30 < t < 0.78 if h["mode"] != "seq" else t < 0.55
-            ax.text(j, i, f"{v:.0f}", ha="center", va="center", fontsize=9.5,
-                    color="#1a1a1a" if light else "white")
-    ax.set_title(h["title"] + "  (% v kohortě)", fontsize=12, loc="left", pad=10)
-    ax.tick_params(length=0)
-    for s in ax.spines.values():
-        s.set_visible(False)
-    save(fig, fname)
-
-
-# ---------- pomocné: počty osob u metrik skupiny ----------
+# ---------- vodorovné bary z metrik skupiny ----------
 def group_items(gkey, top=None, drop=()):
     g = next(x for x in DATA["metric_groups"] if x["key"] == gkey)
     items = []
@@ -170,57 +190,47 @@ def group_items(gkey, top=None, drop=()):
         lab = DATA["metric_labels"][mk]
         if any(s in lab for s in drop):
             continue
-        n = sum(1 for r in rows if mv(r, mk) == 1)
-        items.append((lab, n))
+        items.append((lab, sum(1 for r in rows if mv(r, mk) == 1)))
     items.sort(key=lambda x: x[1], reverse=True)
     return items[:top] if top else items
 
 
-def hbar(items, title, color, fname, figsize, unit="osob", xlabelmax=34):
+def hbar(items, ttl, color, fname, figsize, xlabelmax=34):
     labels = [a if len(a) <= xlabelmax else a[:xlabelmax - 1] + "…" for a, _ in items][::-1]
     vals = [b for _, b in items][::-1]
     fig, ax = plt.subplots(figsize=figsize)
-    bars = ax.barh(labels, vals, color=color, height=0.7)
-    for b, v in zip(bars, vals):
-        ax.text(v + max(vals) * 0.012, b.get_y() + b.get_height() / 2, f"{v}",
-                va="center", fontsize=9.5)
-    ax.set_xlim(0, max(vals) * 1.12)
-    ax.set_xlabel(f"počet {unit}")
-    ax.set_title(title, fontsize=12.5, loc="left", pad=10)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
+    ax.set_xlim(0, max(vals) * 1.13); ax.set_ylim(-0.6, len(labels) - 0.4)
+    th = 0.64
+    for i, v in enumerate(vals):
+        round_rect(ax, 0, i - th / 2, v, th, color, corners="tr,br", R=8)
+        ax.text(v + max(vals) * 0.014, i, f"{v}", va="center", fontsize=10, color=INK)
+    ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels, fontsize=11)
+    ax.set_xlabel("počet osob", fontsize=10.5)
+    style_ax(ax)
+    title(ax, ttl)
     save(fig, fname)
 
 
-# ---------- chvála Q155 / výtky Q156 / zdroje Q154 / digitál / app ----------
 def chart_chvala():
-    hbar(group_items("q155", top=10), "V čem je Respekt výjimečný (Q155, chvála)",
-         GREEN, "chvala.png", (7.2, 4.2))
-
-
+    hbar(group_items("q155", top=10), "V čem je Respekt výjimečný (Q155, chvála)", GREEN, "chvala.png", (7.6, 4.3))
 def chart_vytky():
-    items = group_items("q156", drop=("Nic nevadí",))
-    hbar(items, "Co předplatitelům nejvíce vadí (Q156) — cena je až na dně",
-         "#d98a3d", "vytky.png", (7.2, 5.6))
-
-
+    hbar(group_items("q156", drop=("Nic nevadí",)), "Co předplatitelům nejvíce vadí (Q156) — cena je až na dně", AMBER, "vytky.png", (7.6, 5.6))
 def chart_zdroje():
-    hbar(group_items("q154", top=10), "Jaké jiné zdroje sledují (Q154) — konkurence",
-         "#2f6db0", "zdroje.png", (7.2, 4.2))
-
-
+    hbar(group_items("q154", top=10), "Jaké jiné zdroje sledují (Q154) — konkurence", BLUE, "zdroje.png", (7.6, 4.3))
 def chart_digital():
-    hbar(group_items("digital", top=8), "Co přimělo přejít na digitál (Q60)",
-         "#5a7d9a", "digital_drivers.png", (7.2, 3.6))
-
-
+    hbar(group_items("digital", top=8), "Co přimělo přejít na digitál (Q60)", GRAPHITE, "digital_drivers.png", (7.6, 3.7))
 def chart_app_prani():
-    items = group_items("appchybi", top=9, drop=("nic nechybí", "Nic ",))
-    hbar(items, "Co nejvíce chybí v aplikaci (přání)", "#7a6da8",
-         "app_prani.png", (7.2, 4.0))
+    hbar(group_items("appchybi", top=9, drop=("nic nechybí", "Nic ")), "Co nejvíce chybí v aplikaci (přání)", PURPLE, "app_prani.png", (7.6, 4.1))
+def chart_poslech_app():
+    hbar(group_items("q153", top=8), "Proč ne aplikace pro poslech (Q153)", BLUE, "poslech_app.png", (7.4, 3.5))
+def chart_vyhledavani():
+    hbar([("Přání: vyhledávání v aplikaci", 229), ("Výtka „chybí vyhledávání“ (Q156)", 32), ("Nevyžádaně v poli bariéry", 13)],
+         "Poptávka po vyhledávání se objevuje všude", BLUE, "vyhledavani.png", (7.4, 2.6))
+def chart_tisk_ritual():
+    hbar([("Digitál jen jako doplněk", 20), ("Aktivně preferuje tisk", 15), ("Tištěné posílá rodině", 12)],
+         "Tisk jako rituál a sdílení (volný text)", GRAPHITE, "tisk_ritual.png", (7.4, 2.6))
 
 
-# ---------- churneři vs celek: over-index výtek (#13) ----------
 def chart_churneri_overindex():
     g = next(x for x in DATA["metric_groups"] if x["key"] == "q156")
     pick = ["Jednostrannost", "Délka", "Kulturní", "Audio", "Tón", "Aplikace"]
@@ -230,71 +240,67 @@ def chart_churneri_overindex():
         if mk:
             sel.append((DATA["metric_labels"][mk], mk))
     ch = [r for r in rows if churn(r)]
-
-    def pc(sub, mk):
-        return 100 * sum(1 for r in sub if mv(r, mk) == 1) / len(sub)
-
+    def pc(sub, mk): return 100 * sum(1 for r in sub if mv(r, mk) == 1) / len(sub)
     labs = [a.split(" /")[0].split(" (")[0] for a, _ in sel]
-    cv = [pc(ch, mk) for _, mk in sel]
-    av = [pc(rows, mk) for _, mk in sel]
-    import numpy as np
-    y = np.arange(len(labs))
-    fig, ax = plt.subplots(figsize=(7.2, 3.8))
-    ax.barh(y + 0.2, av, height=0.36, color=GRAY, label="celek")
-    ax.barh(y - 0.2, cv, height=0.36, color=RED, label="uvažují o zrušení")
-    for i, (c, a) in enumerate(zip(cv, av)):
-        ax.text(c + 0.15, i - 0.2, f"{c:.0f} %", va="center", fontsize=9)
-        ax.text(a + 0.15, i + 0.2, f"{a:.0f} %", va="center", fontsize=9, color="#777")
-    ax.set_yticks(y)
-    ax.set_yticklabels(labs)
-    ax.invert_yaxis()
-    ax.set_xlim(0, max(cv) * 1.25)
-    ax.set_xlabel("% skupiny, které téma zmínilo")
-    ax.set_title("Kdo odchází, vadí mu víc jednostrannost a tón", fontsize=12.5, loc="left", pad=10)
-    ax.legend(loc="lower right", frameon=False, fontsize=9.5)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
+    cv = [pc(ch, mk) for _, mk in sel]; av = [pc(rows, mk) for _, mk in sel]
+    fig, ax = plt.subplots(figsize=(7.6, 3.9))
+    ax.set_xlim(0, max(cv) * 1.25); ax.set_ylim(len(labs) - 0.5, -0.5)
+    th = 0.34
+    for i in range(len(labs)):
+        round_rect(ax, 0, i + 0.19 - th / 2, av[i], th, GRAYBAR, corners="tr,br", R=7)
+        round_rect(ax, 0, i - 0.19 - th / 2, cv[i], th, RED, corners="tr,br", R=7)
+        ax.text(cv[i] + 0.15, i - 0.19, f"{cv[i]:.0f} %", va="center", fontsize=9, color=INK)
+        ax.text(av[i] + 0.15, i + 0.19, f"{av[i]:.0f} %", va="center", fontsize=9, color=GRAY)
+    ax.set_yticks(range(len(labs))); ax.set_yticklabels(labs, fontsize=11)
+    ax.set_xlabel("% skupiny, které téma zmínilo", fontsize=10.5)
+    ax.legend(handles=[mp.Patch(color=RED, label="uvažují o zrušení"), mp.Patch(color=GRAYBAR, label="celek")],
+              loc="lower right", frameon=False, fontsize=9.5)
+    style_ax(ax)
+    title(ax, "Kdo odchází, vadí mu víc jednostrannost a tón")
     save(fig, "churneri_overindex.png")
 
 
-# ---------- malé grafy: poslech v app / vyhledávání / tisk-rituál ----------
-def chart_poslech_app():
-    hbar(group_items("q153", top=8), "Proč ne aplikace pro poslech (Q153)",
-         "#5a7d9a", "poslech_app.png", (7.0, 3.4))
-
-
-def chart_vyhledavani():
-    items = [("Přání: vyhledávání v aplikaci", 229),
-             ("Výtka „chybí vyhledávání“ (Q156)", 32),
-             ("Nevyžádaně v poli bariéry", 13)]
-    hbar(items, "Poptávka po vyhledávání se objevuje všude",
-         "#2f6db0", "vyhledavani.png", (7.0, 2.3))
-
-
-def chart_tisk_ritual():
-    items = [("Digitál jen jako doplněk", 20),
-             ("Aktivně preferuje tisk", 15),
-             ("Tištěné posílá rodině", 12)]
-    hbar(items, "Tisk jako rituál a sdílení (volný text)",
-         "#9a7b5a", "tisk_ritual.png", (7.0, 2.3))
+# ---------- heatmapy: zaoblené buňky s mezerami ----------
+def chart_heatmap(title_match, fname, figsize):
+    h = next(x for x in DATA["heatmaps"] if x["title"] == title_match)
+    cmap = {"good_high": CMAP_GR, "bad_high": CMAP_GR_R}.get(h["mode"], CMAP_BLUE)
+    rlabs = [r["label"] for r in h["rows"]]
+    mat = [r["vals"] for r in h["rows"]]
+    clabs = h["cohorts"]
+    nC, nR = len(clabs), len(rlabs)
+    vmin, vmax = h["vmin"], h["vmax"]; rng = (vmax - vmin) or 1
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.set_xlim(0, nC); ax.set_ylim(0, nR); ax.invert_yaxis()
+    gap = 0.11
+    for i, row in enumerate(mat):
+        for j, v in enumerate(row):
+            col = cmap((v - vmin) / rng)
+            lum = 0.2126 * col[0] + 0.7152 * col[1] + 0.0722 * col[2]
+            tc = INK if lum > 0.62 else "white"
+            ax.add_patch(FancyBboxPatch((j + gap / 2, i + gap / 2), 1 - gap, 1 - gap,
+                         boxstyle="round,pad=0,rounding_size=0.12", mutation_aspect=1,
+                         fc=col, ec="none"))
+            ax.text(j + 0.5, i + 0.5, f"{v:.0f}" if (v >= 10 or v == 0) else f"{v:.1f}",
+                    ha="center", va="center", color=tc, fontsize=11)
+    ax.set_xticks([j + 0.5 for j in range(nC)])
+    ax.set_xticklabels([f"{c['label']}\nn={c['n']:,}".replace(",", " ") for c in clabs], fontsize=10)
+    ax.xaxis.set_ticks_position("top"); ax.xaxis.set_label_position("top")
+    ax.tick_params(axis="x", pad=6)
+    ax.set_yticks([i + 0.5 for i in range(nR)]); ax.set_yticklabels(rlabs, fontsize=10.5)
+    ax.tick_params(length=0)
+    for s in ax.spines.values():
+        s.set_visible(False)
+    ax.set_title(h["title"], fontsize=14, fontweight="bold", color=INK, loc="left", pad=44)
+    save(fig, fname)
 
 
 if __name__ == "__main__":
     print("Generuji grafy do charts/:")
-    chart_churn_tenure()
-    chart_churn_segments()
-    chart_delka_preference()
-    chart_heatmap("Spokojenost s atributy", "heat_spokojenost.png", (6.6, 3.6))
-    chart_heatmap("Zájem o okruhy obsahu", "heat_zajmy.png", (6.6, 4.2))
-    chart_heatmap("Riziko odchodu", "heat_riziko.png", (6.6, 2.0))
-    chart_heatmap("Co přimělo k předplatnému", "heat_konv.png", (6.6, 5.2))
-    chart_chvala()
-    chart_vytky()
-    chart_churneri_overindex()
-    chart_zdroje()
-    chart_digital()
-    chart_app_prani()
-    chart_poslech_app()
-    chart_vyhledavani()
-    chart_tisk_ritual()
+    chart_churn_tenure(); chart_churn_segments(); chart_delka_preference()
+    chart_heatmap("Spokojenost s atributy", "heat_spokojenost.png", (7.0, 3.8))
+    chart_heatmap("Zájem o okruhy obsahu", "heat_zajmy.png", (7.0, 4.4))
+    chart_heatmap("Riziko odchodu", "heat_riziko.png", (7.0, 2.5))
+    chart_heatmap("Co přimělo k předplatnému", "heat_konv.png", (7.0, 5.2))
+    chart_chvala(); chart_vytky(); chart_zdroje(); chart_digital(); chart_app_prani()
+    chart_poslech_app(); chart_vyhledavani(); chart_tisk_ritual(); chart_churneri_overindex()
     print("Hotovo.")

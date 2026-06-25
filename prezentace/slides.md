@@ -1,12 +1,11 @@
-<!-- .slide: data-background-color="#1f2a37" -->
+<!-- .slide: data-background-color="#222222" -->
 <div class="dark title">
 <p class="kicker">PŘEDPLATITELSKÝ PRŮZKUM</p>
-<h1>Klíčová zjištění pro management</h1>
-<p class="lead">20 zjištění ve formátu: zjištění → evidence → co s tím</p>
-<p class="meta">N = 2 139 dokončených odpovědí · export červen 2026</p>
+<h1>Klíčová zjištění</h1>
+<p class="meta">N = 2 139 dokončených odpovědí · export 20. 6. 2026</p>
 </div>
 
----
+<!-----
 
 ## Exekutivní shrnutí
 
@@ -15,7 +14,53 @@
 - **Tři produktové páky** — audio / AI hlas, vyhledávání a archiv, přehlednost aplikace.
 - **Redakční signály** jsou menšinové, ale hlasité — kultura, vnímaná jednostrannost, „depresivní" tón, délka.
 
-> **Top 5:** onboarding 1. roku · aktivace pasivních (frekvence = early-warning) · audio · vyhledávání + přehlednost · chránit jádro a komunikovat hodnotu.
+> **Top 5:** 
+> - onboarding 1. roku 
+> - aktivace pasivních (frekvence = early-warning) 
+> - audio 
+> - vyhledávání + přehlednost 
+> - chránit jádro a komunikovat hodnotu.-->
+
+
+---
+Rado
+
+- Jadro do 10 rokov! ?
+- segmentácia: v čom sú iní mladší?
+- Ak klesá print, ako nahradíme najčastejší vstupný produkt? Case for online reach / trial
+- Youtube nie je vstupnou bránou (aspoň nie teraz)
+- četl jsem cizí výtisk Sila printu sa multiplikuje cirkuláciou - pořád silné!
+- Newslettre nie sú asi silný akvizičný benefit? Nemali by sme ich používať v komunikácii?
+- audio = pohodlnost, důraz na přístupnost a ux
+- sdílení v rodině - klub/rodičovské
+- Zopakujme si to: nie sme rychlé shrnutí
+- V akvizičnej komunikácii spomínajme úlohu média, konkrétnych silných autorov a audio?
+- Lákadlom na web / app je archív, odtiaľ môžeme budovať online návyky
+- "heldám nové zaujímavé čtení" - discover tab (personalizované)?
+- potvrdenie: aplikácia je silnejší retenčný nástroj ako web - graf přidat
+- app Most pre budovanie online návyku: vlastnosti printu a audia
+- app chybí Jasné: vyhľadávanie, označovnanie (fajka od Economistu určite?)
+- Jadro sú politika a komentáre (vieme), ale pritom stále ide o pozitívny, oddychový rituál (vzácne!)
+- AI hlas je najväčší produktový problém celého prieskumu — ale dáta ho rozkladajú na tri opraviteľné vrstvy. V hlavných možnostiach je „audiočlánky zní moc uměle" tretia najčastejšia bariéra (273). „Jiné" k tomu pridáva ~30 hlasov, ktoré sa delia na: (a) opraviteľné defekty — chýbajúce pauzy medzi článkami, „uřízlé" začiatky, splývanie nadpisov, výslovnosť mien/čísloviek/skratiek, kolísanie hlasitosti, jeden ženský hlas s vysokofrekvenčným šumom (konkrétny audio bug!); (b) UX návrhy — dvojhlas pre rozhovory, striedanie hlasov, nastaviteľná medzera; (c) principiálny smútok za ľuďmi — s elegantným kompromisom priamo od respondenta: „hlavní článek čísla přečtený od člověka, jeden týdně by možná šel, ne?". A dôležitý protihlas: „Teď, když jsou všechny články načteny AI, nemám se svým očním handicapem žádné bariéry. Dříve velké." — AI audio je zároveň prístupnosť a škálovateľnosť. Záver pre Respekt: nie návrat k ľuďom, ale QA vrstva + hybridný model.
+- poslech kde - výborný podiel aplikácie (sedia aj čísla?) - ověřit
+- strata pozície prehrávania pri prerušení (~9 — najčastejší jednotlivý bug), autoplay/playlist problémy (~5), neprehľadnosť a orientácia (~12), chýbajúce vyhľadávanie (4), offline sťahovanie s absurdným UX (3 — „pro stažení musím nejdřív spustit přehrávání"), nefunkčné ovládanie na zamknutej obrazovke/cez Bluetooth (~4), chýbajúca kontinuita poslchu web↔app (1, pekne opísaná).
+- Existuje aj tretia cesta — a respondenti ju sami navrhujú: privátny RSS feed pre predplatiteľov. „Ideální by bylo mít RSS zdroj i pro své audio předplatné, abych si ho mohl přidat do své aplikace."
+- 
+
+---
+ChatGPT
+
+- Respekt je vnímán jako důvěryhodná instituce, analytické médium a hodnotový projekt.
+- Důvěra a témata jsou silnější než objem obsahu.
+- Převaha dlouhodobých a vysokoškolsky vzdělaných předplatitelů.
+- Nezávislá žurnalistika je dominantní motiv.
+- Velmi vysoká deklarovaná retence.
+- Pět hodnotových segmentů publika.
+-- Analytici a opinion leaders - 28 % publika. Hledají interpretaci a kontext.
+-- Hodnotoví podporovatelé - 21 % publika. Platí za existenci nezávislé žurnalistiky.
+-- Kulturně-intelektuální čtenáři - 20 % publika. Eseje, kultura, inspirace.
+-- Tradiční věrní - 19 % publika. Silná vazba na tisk a značku.
+-- Hledači orientace - 12 % publika. Přehled, orientace, audio.
 
 ---
 
@@ -24,6 +69,7 @@
 - 92 % udává vysokou/velmi vysokou pravděpodobnost setrvání; jen **12,8 %** zvažovalo odchod
 - Spokojenost s atributy je **90–99 %** napříč
 - Chvála stojí na šíři témat (461), hloubce (385), kvalitě psaní (370)
+
 
 ![](charts/chvala.png)
 
@@ -51,6 +97,9 @@
 
 > Frekvenci návštěv brát jako early-warning churnu; reaktivovat utlumené (newsletter, notifikace, audio).
 
+- DODEFINOVAT PASIVNÍ DIGITÁL
+- PŘIDAT DO GRAFU PRINT?
+
 ---
 
 ## 4 · Mladší muži jsou nejrizikovější kohorta — táhne to produkt
@@ -65,7 +114,7 @@
 
 ---
 
-## 5 · Audio je jediná slabina spokojenosti — a největší příležitost
+## 5 · Audio jako slabina spokojenosti
 
 - Audio nejnižší spokojenost: **83 %** (mladší muži 72 %) vs. 95–99 % jinde
 - Výtky k audiu / AI hlasu 102; volný text přidal +20 zmínek
@@ -74,7 +123,10 @@
 ![](charts/heat_spokojenost.png)
 
 > Zlepšit kvalitu AI hlasu (výslovnost, rozlišení hlasů) a aktivovat ty, kdo audio zatím míjejí.
-
+- MIXUJÍ SE TAM STÍŽNOSTI NA VÝSLOVNOST V PODCASTECH
+- Jeden z vašich hlasů, ženský, který často používáte na hlavní témata, má v pozadí vysokofrekvenční zvuk, který z toho dělá neposlouchatelnou věc. Slyším to v autě i ve sluchátcích a už hodně dlouho, nemyslím si, že to je problém na mojí straně
+- ČASTO ŘEŠÍ UŽ VYŘEŠENÉ - CHYBĚJÍCÍ TEXTY (AUDIOTÉKA?), STŘÍDÁNÍ HLASŮ V ROZHOVORECH, V2, 
+- ODLIŠENÍ KONCE A ZAČÁTKU, DLOUHÉ PAUZY, ZMĚNY HLASU NA ZAČÁTKU ODSTAVŮC
 ---
 
 ## 6 · Vyhledávání a archiv = nejkonkrétnější funkční mezera
@@ -85,6 +137,10 @@
 ![](charts/vyhledavani.png)
 
 > Vyhledávání a orientaci v archivu vysoko na app/web roadmapu — opakovaná a řešitelná rychlá výhra.
+
+- VYHLEDÁVÁNÍ PŘIDAT RICE VÝŠ, DEEPLINKY
+- ZVÁŠŽIT FUNKCI LANDING PAGE Z IG V APP
+- 
 
 ---
 
@@ -97,6 +153,9 @@
 
 > Nehnat všechny do digitálu; chránit tištěný zážitek. Potenciál pro dárkové a rodinné předplatné.
 
+- TADY PŘIDAT I NĚCO Z UZAVŘENÝCH ODPOVĚDÍ
+- KLUB - RODIČOVSKÉ
+
 ---
 
 ## 8 · Obsahové výtky míří na kulturu, jednostrannost a tón
@@ -107,6 +166,8 @@
 ![](charts/vytky.png)
 
 > Redakční reflexe kultury, vyváženosti a délky; „bias" je menšinový, ale hlasitý a hodnotově nabitý signál.
+
+- TOHLE JEŠTĚ VZTÁHNOUT K UZAVŘENÝM - DORUČOVÁNÍ MENŠÍ, DÉLKA ČLÁNKŮ ASI TAKY NEODPOVÍDÁ
 
 ---
 
@@ -149,6 +210,8 @@
 
 > Zdražení nese menší riziko, než se obvykle čeká, pokud zůstane hodnota. Slevu cíleně na mladé, ne plošně.
 
+- TOHLE JEŠTĚ VZTÁHNOUT K UZAVŘENÝM
+
 ---
 
 ## 12 · Publikum chce delší obsah, ne kratší
@@ -171,6 +234,8 @@
 
 > Retence musí mířit na obě osy zvlášť — produktové opravy neudrží toho, kdo odchází kvůli vnímané jednostrannosti.
 
+- DIVNÝ SLOVNÍK
+
 ---
 
 ## 14 · Homepage není vstupní bod — distribuce přes newsletter a sítě
@@ -181,6 +246,8 @@
 - Část homepage prakticky nepoužívá — 8 (jde rovnou na audio, RSS, papír)
 
 > Brát newsletter a sociální sítě jako distribuční kanál, ne marketingovou ozdobu — investovat do nich.
+
+- STOJÍ JEN NA OTEVŘENÝCH?
 
 ---
 
@@ -193,6 +260,11 @@
 
 > Audio a offline čtení = on-ramp na digitál; propagovat je jako důvod vyzkoušet appku, doladit offline režim.
 
+- CO JSOU PRAKTICKÉ DŮVODY
+- NEPŘEŠEL VYHODIT A DALŠÍ TAKY
+- SLOVNÍK
+- VZTAH K 17
+
 ---
 
 ## 16 · Přístupnost (velikost písma) je snadná výhra vzhledem k věku
@@ -204,6 +276,8 @@
 
 > Nastavitelná velikost písma a zoom obrázků = low-effort / high-fit zásah do aplikace.
 
+- MALÝ VZOREK?
+
 ---
 
 ## 17 · Top přání v aplikaci: odlišit přečtené, offline, vlastní playlist
@@ -214,6 +288,8 @@
 ![](charts/app_prani.png)
 
 > App roadmapa: orientace ve vydání (co už jsem četl), offline, audio playlist a CarPlay.
+
+- MOC TOHO CARPLAY?
 
 ---
 
@@ -247,6 +323,8 @@
 - Tón / víc pozitivního 28 — „depresivní", chybí naděje a řešení
 
 > Vizuální identita má emoční vazbu ke značce; zvážit konstruktivní / řešení-orientovaný obsah jako protiváhu.
+
+- OPATRNĚJŠÍ FORMULACE
 
 ---
 
