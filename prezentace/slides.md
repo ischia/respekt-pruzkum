@@ -319,6 +319,19 @@ ChatGPT
 
 ---
 
+## 21b · Kontaktní kanál před předplacením: stánek táhne, digitál roste
+
+- **Stánek** zůstává dominantním kontaktem (24,5 % celkem) — mladší ženy výrazně nad průměrem (37 %)
+- Web: 9 %, podcasty: 4 %, soc. sítě: 6 % — ale u mladší kohorty 2–3× silnější
+- **Posun u nových předplatitelů**: ti z posledního roku přichází výrazně více přes web (29 %) a podcast (19 %) než ti z 1–5 let (22 % / 8 %) — digitální kanály rostou
+- Konverzní spouštěč: **konkrétní článek** 15,7 % (rovnoměrně přes kohorty); podcast→konverze jen 2,6 %; soc. sítě→konverze 0,9 %
+
+![](charts/akvizicni_kanaly.png)
+
+> Stánek stále relevantní (zejm. u žen), ale u nových předplatitelů web a podcast přebírají roli vstupu. Signál pro distribuci obsahu na webu a audio jako akvizičního kanálu.
+
+---
+
 ## 22 · Co jim na Respektu vadí — profil výtek podle kohorty
 
 - „Nic nevadí": starší ženy **20,8 %** vs. mladší muži jen **5,4 %** — nejkritičtější kohorta

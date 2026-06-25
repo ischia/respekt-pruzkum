@@ -391,6 +391,110 @@ def chart_reklama():
     save(fig, "reklama.png")
 
 
+def chart_akvizicni_kanaly():
+    import pandas as pd
+    df = pd.read_csv(os.path.join(ROOT, "data", "processed", "respekt_analyticky.csv"), dtype=str)
+
+    def xc(col): return df[col].str.strip().str.lower() == "x"
+    def num(col): return pd.to_numeric(df[col], errors="coerce")
+
+    stank = xc(df.columns[13])
+    web   = xc(df.columns[14])
+    pod   = xc(df.columns[15])
+    site  = xc(df.columns[17])
+
+    vek     = num("vek_ord")
+    pohlavi = df["Jaké je vaše pohlaví?"].str.strip()
+    delka   = num("delka_predplatneho_ord")
+
+    mladi  = vek.isin([1, 2, 3])
+    starsi = vek.isin([4, 5, 6])
+    mm = mladi  & (pohlavi == "Muž")
+    mz = mladi  & (pohlavi == "Žena")
+    sm = starsi & (pohlavi == "Muž")
+    sz = starsi & (pohlavi == "Žena")
+
+    def pct(mask_n, mask_d):
+        n = mask_d.sum()
+        return mask_n[mask_d].sum() / n * 100 if n else 0
+
+    cohorts  = [("Ml. muž",   mm, RED),     ("Ml. žena",   mz, AMBER),
+                ("St. muž",   sm, GRAPHITE), ("St. žena",   sz, GRAYBAR)]
+    channels = [("Stánek / stánkový prodej", stank),
+                ("Články na webu Respektu",  web),
+                ("Podcasty Respektu",         pod),
+                ("Sociální sítě",             site)]
+
+    fig = plt.figure(figsize=(8.8, 7.4))
+    gs  = fig.add_gridspec(2, 1, height_ratios=[3.2, 1.0], hspace=0.55)
+    ax1 = fig.add_subplot(gs[0])
+    ax2 = fig.add_subplot(gs[1])
+
+    # --- Panel 1: grouped horizontal bars channel × cohort ---
+    bar_h   = 0.16
+    grp_h   = len(cohorts) * bar_h + 0.28
+    ax1.set_xlim(0, 56)
+    ax1.set_ylim(-0.22, len(channels) * grp_h - 0.04)
+    for ci, (ch_label, ch_mask) in enumerate(channels):
+        y_base = ci * grp_h
+        for bi, (co_label, co_mask, co_color) in enumerate(cohorts):
+            y = y_base + bi * bar_h
+            v = pct(ch_mask, co_mask)
+            round_rect(ax1, 0, y, max(v, 0.3), bar_h * 0.8, co_color, corners="tr,br", R=5)
+            ax1.text(v + 0.6, y + bar_h * 0.4, f"{v:.0f} %",
+                     va="center", fontsize=9, color=INK)
+        ax1.text(-0.7, y_base + len(cohorts) * bar_h / 2,
+                 ch_label, va="center", ha="right", fontsize=10, color=INK, fontweight="bold")
+        if ci > 0:
+            ax1.axhline(y_base - 0.12, color=HAIRLINE, lw=0.8)
+
+    # legend inline top
+    for bi, (co_label, co_mask, co_color) in enumerate(cohorts):
+        n = int(co_mask.sum())
+        ax1.text(14 * bi + 1, len(channels) * grp_h + 0.06,
+                 f"{co_label} (n={n})", fontsize=8.5, color=co_color)
+
+    ax1.set_yticks([]); ax1.set_xticks([])
+    for s in ("top", "right", "left", "bottom"): ax1.spines[s].set_visible(False)
+    title(ax1, "Kontaktní kanál před předplacením — kohorta")
+
+    # --- Panel 2: trend podle délky předplatného (jen ≤5 let, 6+ = N/A) ---
+    all_ch = [stank, web, pod, site]
+    short  = ["Stánek", "Web", "Podcast", "Sítě"]
+    delka_g = [(0, "<1 rok\n(n=151)", RED), (1, "1–5 let\n(n=721)", GRAYBAR)]
+    bw = 0.32
+    xs = [0, 1.1, 2.2, 3.3]
+    for di, (dv, dl, dc) in enumerate(delka_g):
+        mask_d = delka == dv
+        for xi, ch_mask in enumerate(all_ch):
+            v = pct(ch_mask, mask_d)
+            xpos = xs[xi] + di * bw
+            ax2.bar(xpos, v, width=bw * 0.86, color=dc, zorder=2)
+            ax2.text(xpos + bw * 0.43, v + 1.5, f"{v:.0f}%",
+                     ha="center", fontsize=8, color=INK)
+
+    ax2.set_xticks([x + bw / 2 for x in xs])
+    ax2.set_xticklabels(short, fontsize=10)
+    ax2.set_xlim(-0.2, xs[-1] + bw * 2 + 0.3)
+    ax2.set_ylim(0, 80)
+    ax2.set_yticks([])
+    for s in ("top", "right", "left"): ax2.spines[s].set_visible(False)
+    ax2.spines["bottom"].set_color(HAIRLINE)
+    ax2.tick_params(length=0)
+
+    # legend for panel 2
+    for di, (dv, dl, dc) in enumerate(delka_g):
+        ax2.text(xs[-1] + bw * 2 + 0.4 + di * 1.4, 60, dl.replace("\n", " "),
+                 fontsize=8.5, color=dc, ha="left")
+
+    ax2.annotate("6+ let: N/A — kanály tehdy nebyly relevantní", xy=(0.5, -0.38),
+                 xycoords="axes fraction", fontsize=8, color=GRAY, ha="center")
+    ax2.set_title("Posun k digitálním kanálům u novějších předplatitelů",
+                  fontsize=11, color=INK, loc="left", pad=8)
+
+    save(fig, "akvizicni_kanaly.png")
+
+
 def chart_chyby_textu():
     items = [
         ("Kvalita psaní / jazyk chválena (Q155)", 370),
@@ -425,4 +529,5 @@ if __name__ == "__main__":
     chart_chvala(); chart_vytky(); chart_zdroje(); chart_digital(); chart_app_prani()
     chart_poslech_app(); chart_vyhledavani(); chart_tisk_ritual(); chart_churneri_overindex()
     chart_churn_korelace(); chart_reklama(); chart_chyby_textu()
+    chart_akvizicni_kanaly()
     print("Hotovo.")
