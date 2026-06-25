@@ -5,65 +5,6 @@
 <p class="meta">N = 2 139 dokončených odpovědí · export 20. 6. 2026</p>
 </div>
 
-<!-----
-
-## Exekutivní shrnutí
-
-- **Báze je spokojená a loajální** — 92 % vysoké setrvání, jen 12,8 % zvažuje odchod. Kotvou je hodnota a kvalita, ne cena.
-- **Riziko je v rozložení, ne v průměru** — churn se koncentruje: první rok (17 %), pasivní digitál (19 %), mladší muži (18 %).
-- **Tři produktové páky** — audio / AI hlas, vyhledávání a archiv, přehlednost aplikace.
-- **Redakční signály** jsou menšinové, ale hlasité — kultura, vnímaná jednostrannost, „depresivní" tón, délka.
-
-> **Top 5:** 
-> - onboarding 1. roku 
-> - aktivace pasivních (frekvence = early-warning) 
-> - audio 
-> - vyhledávání + přehlednost 
-> - chránit jádro a komunikovat hodnotu.-->
-
-
----
-Rado
-
-- Jadro do 10 rokov! ?
-- segmentácia: v čom sú iní mladší?
-- Ak klesá print, ako nahradíme najčastejší vstupný produkt? Case for online reach / trial
-- Youtube nie je vstupnou bránou (aspoň nie teraz)
-- četl jsem cizí výtisk Sila printu sa multiplikuje cirkuláciou - pořád silné!
-- Newslettre nie sú asi silný akvizičný benefit? Nemali by sme ich používať v komunikácii?
-- audio = pohodlnost, důraz na přístupnost a ux
-- sdílení v rodině - klub/rodičovské
-- Zopakujme si to: nie sme rychlé shrnutí
-- V akvizičnej komunikácii spomínajme úlohu média, konkrétnych silných autorov a audio?
-- Lákadlom na web / app je archív, odtiaľ môžeme budovať online návyky
-- "heldám nové zaujímavé čtení" - discover tab (personalizované)?
-- potvrdenie: aplikácia je silnejší retenčný nástroj ako web - graf přidat
-- app Most pre budovanie online návyku: vlastnosti printu a audia
-- app chybí Jasné: vyhľadávanie, označovnanie (fajka od Economistu určite?)
-- Jadro sú politika a komentáre (vieme), ale pritom stále ide o pozitívny, oddychový rituál (vzácne!)
-- AI hlas je najväčší produktový problém celého prieskumu — ale dáta ho rozkladajú na tri opraviteľné vrstvy. V hlavných možnostiach je „audiočlánky zní moc uměle" tretia najčastejšia bariéra (273). „Jiné" k tomu pridáva ~30 hlasov, ktoré sa delia na: (a) opraviteľné defekty — chýbajúce pauzy medzi článkami, „uřízlé" začiatky, splývanie nadpisov, výslovnosť mien/čísloviek/skratiek, kolísanie hlasitosti, jeden ženský hlas s vysokofrekvenčným šumom (konkrétny audio bug!); (b) UX návrhy — dvojhlas pre rozhovory, striedanie hlasov, nastaviteľná medzera; (c) principiálny smútok za ľuďmi — s elegantným kompromisom priamo od respondenta: „hlavní článek čísla přečtený od člověka, jeden týdně by možná šel, ne?". A dôležitý protihlas: „Teď, když jsou všechny články načteny AI, nemám se svým očním handicapem žádné bariéry. Dříve velké." — AI audio je zároveň prístupnosť a škálovateľnosť. Záver pre Respekt: nie návrat k ľuďom, ale QA vrstva + hybridný model.
-- poslech kde - výborný podiel aplikácie (sedia aj čísla?) - ověřit
-- strata pozície prehrávania pri prerušení (~9 — najčastejší jednotlivý bug), autoplay/playlist problémy (~5), neprehľadnosť a orientácia (~12), chýbajúce vyhľadávanie (4), offline sťahovanie s absurdným UX (3 — „pro stažení musím nejdřív spustit přehrávání"), nefunkčné ovládanie na zamknutej obrazovke/cez Bluetooth (~4), chýbajúca kontinuita poslchu web↔app (1, pekne opísaná).
-- Existuje aj tretia cesta — a respondenti ju sami navrhujú: privátny RSS feed pre predplatiteľov. „Ideální by bylo mít RSS zdroj i pro své audio předplatné, abych si ho mohl přidat do své aplikace."
-- 
-
----
-ChatGPT
-
-- Respekt je vnímán jako důvěryhodná instituce, analytické médium a hodnotový projekt.
-- Důvěra a témata jsou silnější než objem obsahu.
-- Převaha dlouhodobých a vysokoškolsky vzdělaných předplatitelů.
-- Nezávislá žurnalistika je dominantní motiv.
-- Velmi vysoká deklarovaná retence.
-- Pět hodnotových segmentů publika.
--- Analytici a opinion leaders - 28 % publika. Hledají interpretaci a kontext.
--- Hodnotoví podporovatelé - 21 % publika. Platí za existenci nezávislé žurnalistiky.
--- Kulturně-intelektuální čtenáři - 20 % publika. Eseje, kultura, inspirace.
--- Tradiční věrní - 19 % publika. Silná vazba na tisk a značku.
--- Hledači orientace - 12 % publika. Přehled, orientace, audio.
-
----
-
 ## 1 · Báze je spokojená a loajální — kotvou je hodnota, ne cena
 
 - 92 % udává vysokou/velmi vysokou pravděpodobnost setrvání; jen **12,8 %** zvažovalo odchod
@@ -193,7 +134,7 @@ ChatGPT
 
 ---
 
-<!-- .slide: data-background-color="#1f2a37" -->
+<!-- .slide: data-background-color="#222222" -->
 <div class="dark divider">
 <p class="kicker">11–20 · JEMNĚJŠÍ VZORCE A PRODUKTOVÉ DETAILY</p>
 <h1>Hlubší zjištění</h1>
@@ -328,7 +269,104 @@ ChatGPT
 
 ---
 
-<!-- .slide: data-background-color="#1f2a37" -->
+## 21 · Co přimělo k předplatnému — mise táhne všechny kohorty
+
+- „Podpořit nezávislá média": **73,7 % mladší muž, 72,0 % mladší žena** — nejsilnější motiv
+- Akční nabídka / sleva výrazně silnější u mladších (22 %) než u starších (8–12 %)
+- Doporučení od známého: vyšší u mladších (10–14 %) → peer efekt funguje
+
+![](charts/heat_konv.png)
+
+> Akvizice stojí na misijním argumentu pro všechny; slevu cílit na mladé, referral program rozvíjet jako kanál.
+
+---
+
+## 22 · Co jim na Respektu vadí — profil výtek podle kohorty
+
+- „Nic nevadí": starší ženy **20,8 %** vs. mladší muži jen **5,4 %** — nejkritičtější kohorta
+- Audio / AI hlas: mladší muži 7,7 % a mladší ženy 7,4 % — 2× více než u starších
+- Aplikace / technika: mladší muži 6,7 % vs. starší ženy 1,4 %
+- Vyhledávání: neobvyklý spike mladší ženy 4,9 % (vs. 0,4–1,4 % jinde)
+
+![](charts/heat_vytky_kohort.png)
+
+> Produktové opravy (audio, aplikace, vyhledávání) jsou téma mladší kohorty; starší ženy jsou nejspokojenější.
+
+---
+
+## 23 · Bariéry při čtení/poslechu — audio a UX jsou mladší problém
+
+- Nejčastější bariéra: **Nepřišlo včas 17–19 %** — rovnoměrně napříč kohortami (problém distribuce, ne segmentu)
+- Audio zní uměle: mladší muži **21 %**, mladší ženy **19 %** vs. starší ~10 %
+- UX / ovládání: mladší muži 16 %, u starší ženy jen 4 %
+
+![](charts/heat_bariera.png)
+
+> „Nepřišlo včas" = tiskový výtisk nedorazil do schránky — systémový doručovací problém bez věkového profilu. Audio a UX jsou naopak generační výzva.
+
+---
+
+## 24 · Reklama — konkrétní stížnost, malá škála
+
+<p class="stat">103×</p>
+
+- Rušivé reklamy (bariéra checkbox): **90 osob (4,2 %)** — nejčastější signál
+- Nespokojenost s množstvím reklamy (škála): 72 / 1 582 (4,5 % z těch, co odpověděli)
+- Q156 výtka „reklamy": **21 osob (1,0 %)** — na dně 16 témat
+- Vyskakovací / self-promo bannery zmíněny výslovně v textu: ~5 lidí
+
+![](charts/reklama.png)
+
+> Signál je malý, ale konkrétní: **předplatitelé nechápou, proč jim jako platícím zákazníkům vyskakují bannery na vlastní akce Respektu.** Vypnutí self-promo pro přihlášené je nízkonákladová výhra.
+
+---
+
+## 25 · Chyby v textech — korektura obsahu je vzorná; audio zaostává
+
+<p class="stat">370 × 4</p>
+
+- Q155 chvála „Kvalita psaní / jazyk / úroveň": **370 zmínek** — 3. nejčastěji chválená věc
+- Gramatika / překlepy v textu (Q156): pouze **4 zmínky**
+- Audio chyby výslovnosti / AI hlas: **102 zmínek** — 26× více než text
+
+![](charts/chyby_textu.png)
+
+> Redakce si drží vysoký jazykový standard — čtenáři to oceňují. Korekturní pozornost přenést na AI čtení: tam je chybovost vnímána silně a opakovaně.
+
+---
+
+## 26 · Koreláty rizika odchodu — redakční osy předčí produktové
+
+- Nejsilnější signál: **nespokojenost s výběrem témat** (+11,8 pp mezi churners vs. zbytek)
+- **Vyváženost / objektivita** těsně za ní (+10,8 pp) — stejná osa, stejný riskantní segment
+- Produktové problémy (délka, audio, UX) jsou reálné, ale efekt je menší (+5–7 pp)
+- **Tisk nepřišel včas** (+5,0 pp) — i distribuční výpadek koreluje s churnEM
+
+![](charts/churn_korelace.png)
+
+> Dvě osy churnu jsou nezávislé: produktová (opravitelná) a redakční/hodnotová (výběr témat, vyváženost — nelze vyřešit featury). Retence musí adresovat obě zvlášť.
+
+---
+
+
+
+## Exekutivní shrnutí
+
+- **Báze je spokojená a loajální** — 92 % vysoké setrvání, jen 12,8 % zvažuje odchod. Kotvou je hodnota a kvalita, ne cena.
+- **Riziko je v rozložení, ne v průměru** — churn se koncentruje: první rok (17 %), pasivní digitál (19 %), mladší muži (18 %).
+- **Tři produktové páky** — audio / AI hlas, vyhledávání a archiv, přehlednost aplikace.
+- **Redakční signály** jsou menšinové, ale hlasité — kultura, vnímaná jednostrannost, „depresivní" tón, délka.
+
+> **Top 5:** 
+> - onboarding 1. roku 
+> - aktivace pasivních (frekvence = early-warning) 
+> - audio 
+> - vyhledávání + přehlednost 
+> - chránit jádro a komunikovat hodnotu.
+
+---
+
+<!-- .slide: data-background-color="#222222" -->
 <div class="dark closing">
 <h1>Tři priority do akce</h1>
 <ol>

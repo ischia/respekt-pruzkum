@@ -261,11 +261,12 @@ def chart_churneri_overindex():
 
 
 # ---------- heatmapy: zaoblené buňky s mezerami ----------
-def chart_heatmap(title_match, fname, figsize):
+def chart_heatmap(title_match, fname, figsize, top_n=None):
     h = next(x for x in DATA["heatmaps"] if x["title"] == title_match)
     cmap = {"good_high": CMAP_GR, "bad_high": CMAP_GR_R}.get(h["mode"], CMAP_BLUE)
-    rlabs = [r["label"] for r in h["rows"]]
-    mat = [r["vals"] for r in h["rows"]]
+    hrows = h["rows"][:top_n] if top_n else h["rows"]
+    rlabs = [r["label"] for r in hrows]
+    mat = [r["vals"] for r in hrows]
     clabs = h["cohorts"]
     nC, nR = len(clabs), len(rlabs)
     vmin, vmax = h["vmin"], h["vmax"]; rng = (vmax - vmin) or 1
@@ -294,6 +295,104 @@ def chart_heatmap(title_match, fname, figsize):
     save(fig, fname)
 
 
+def chart_churn_korelace():
+    import pandas as pd, numpy as np
+    df = pd.read_csv(os.path.join(ROOT, "data", "processed", "respekt_analyticky.csv"), dtype=str)
+    N = len(df)
+    churn_mask = df["uvazoval_zruseni_ord"].isin(["1.0", "2.0"])
+    df_c = df[churn_mask]; df_nc = df[~churn_mask]
+
+    def pct(sub, mask): return 100 * mask[sub.index].astype(float).mean()
+
+    items = [
+        ("Výběr témat — nespokojenost",    df["spok_vyber_temat"].astype(str) == "0.0"),
+        ("Vyváženost — nespokojenost",      df["spok_vyvazenost"].astype(str) == "0.0"),
+        ("Délka — články moc dlouhé",       df.iloc[:, 132].str.strip().str.lower() == "x"),
+        ("Audio zní uměle (bariéra)",       df.iloc[:, 131].str.strip().str.lower() == "x"),
+        ("Kvalita audia — nespokojenost",   df["spok_kvalita_nacteni_audioc"].astype(str) == "0.0"),
+        ("UX / ovládání (bariéra)",         df.iloc[:, 130].str.strip().str.lower() == "x"),
+        ("Přehlednost — nespokojenost",     df["spok_prehlednost"].astype(str) == "0.0"),
+        ("Tisk nepřišel včas",              df.iloc[:, 135].str.strip().str.lower() == "x"),
+        ("Jednostrannost / bias (výtka)",   df["156_jednostrannost_bias_aktivism"].astype(str).str.lower() == "true"),
+    ]
+    items_data = []
+    for label, mask in items:
+        pc = pct(df_c, mask); pnc = pct(df_nc, mask)
+        items_data.append((label, pc, pnc, pc - pnc))
+    items_data.sort(key=lambda x: x[3])
+
+    labels = [a for a, *_ in items_data]
+    cv = [b for _, b, *_ in items_data]
+    av = [c for _, _, c, *_ in items_data]
+    diff = [d for *_, d in items_data]
+
+    fig, ax = plt.subplots(figsize=(8.2, 4.8))
+    ax.set_xlim(0, max(cv) * 1.28); ax.set_ylim(-0.6, len(labels) - 0.4)
+    th = 0.33
+    for i in range(len(labels)):
+        round_rect(ax, 0, i + 0.19 - th / 2, av[i], th, GRAYBAR, corners="tr,br", R=7)
+        round_rect(ax, 0, i - 0.19 - th / 2, cv[i], th, RED, corners="tr,br", R=7)
+        ax.text(cv[i] + 0.2, i - 0.19, f"{cv[i]:.1f} %", va="center", fontsize=9, color=INK, fontweight="bold")
+        ax.text(av[i] + 0.2, i + 0.19, f"{av[i]:.1f} %", va="center", fontsize=9, color=GRAY)
+        ax.text(max(cv) * 1.22, i, f"+{diff[i]:.1f} pp", va="center", ha="right",
+                fontsize=8.5, color=RED, fontweight="bold")
+    ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels, fontsize=10.5)
+    ax.set_xlabel("% skupiny", fontsize=10.5)
+    ax.legend(handles=[mp.Patch(color=RED, label="zvažuje zrušení (n=274)"),
+                       mp.Patch(color=GRAYBAR, label="nezwažuje (n=1 865)")],
+              loc="lower right", frameon=False, fontsize=9.5)
+    style_ax(ax)
+    title(ax, "Koreláty rizika odchodu — co předpovídá zrušení")
+    save(fig, "churn_korelace.png")
+
+
+def chart_reklama():
+    items = [
+        ("Spokojeni s množstvím reklamy", 1510),
+        ("Bariéra: rušivé reklamy (checkbox)", 90),
+        ("Nespokojenost (škála)", 72),
+        ('Q156 výtka „reklamy“', 21),
+        ("Vyskakovací / self-promo (text)", 5),
+    ]
+    labels = [a for a, _ in items][::-1]
+    vals = [b for _, b in items][::-1]
+    cols = [GREEN] + [AMBER] * 3 + [RED]
+    cols = cols[::-1]
+    fig, ax = plt.subplots(figsize=(7.6, 3.1))
+    ax.set_xlim(0, max(vals) * 1.18); ax.set_ylim(-0.6, len(labels) - 0.4)
+    th = 0.58
+    for i, (v, c) in enumerate(zip(vals, cols)):
+        round_rect(ax, 0, i - th / 2, v, th, c, corners="tr,br", R=8)
+        ax.text(v + max(vals) * 0.013, i, f"{v}", va="center", fontsize=10.5, color=INK, fontweight="bold")
+    ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels, fontsize=10.5)
+    ax.set_xlabel("počet osob", fontsize=10.5)
+    style_ax(ax)
+    title(ax, "Reklama: menšinový, ale konkrétní problém předplatitelů")
+    save(fig, "reklama.png")
+
+
+def chart_chyby_textu():
+    items = [
+        ("Kvalita psaní / jazyk chválena (Q155)", 370),
+        ("Audio chyby výslovnosti / AI hlas (Q156)", 102),
+        ("Gramatika / překlepy v textu (Q156)", 4),
+    ]
+    labels = [a for a, _ in items][::-1]
+    vals = [b for _, b in items][::-1]
+    cols = [AMBER, AMBER, GREEN]
+    fig, ax = plt.subplots(figsize=(7.6, 2.5))
+    ax.set_xlim(0, max(vals) * 1.2); ax.set_ylim(-0.6, len(labels) - 0.4)
+    th = 0.58
+    for i, (v, c) in enumerate(zip(vals, cols)):
+        round_rect(ax, 0, i - th / 2, v, th, c, corners="tr,br", R=8)
+        ax.text(v + max(vals) * 0.013, i, f"{v}×", va="center", fontsize=11, color=INK, fontweight="bold")
+    ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels, fontsize=10.5)
+    ax.set_xlabel("počet zmínek", fontsize=10.5)
+    style_ax(ax)
+    title(ax, "Chyby v textech: chválíme psaní, chybí korektura audia")
+    save(fig, "chyby_textu.png")
+
+
 if __name__ == "__main__":
     print("Generuji grafy do charts/:")
     chart_churn_tenure(); chart_churn_segments(); chart_delka_preference()
@@ -301,6 +400,9 @@ if __name__ == "__main__":
     chart_heatmap("Zájem o okruhy obsahu", "heat_zajmy.png", (7.0, 4.4))
     chart_heatmap("Riziko odchodu", "heat_riziko.png", (7.0, 2.5))
     chart_heatmap("Co přimělo k předplatnému", "heat_konv.png", (7.0, 5.2))
+    chart_heatmap("Co vám na Respektu vadí", "heat_vytky_kohort.png", (7.0, 5.8), top_n=10)
+    chart_heatmap("Bariéry při čtení/poslechu", "heat_bariera.png", (7.0, 3.4))
     chart_chvala(); chart_vytky(); chart_zdroje(); chart_digital(); chart_app_prani()
     chart_poslech_app(); chart_vyhledavani(); chart_tisk_ritual(); chart_churneri_overindex()
+    chart_churn_korelace(); chart_reklama(); chart_chyby_textu()
     print("Hotovo.")
