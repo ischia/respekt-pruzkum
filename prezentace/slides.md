@@ -84,6 +84,19 @@ ChatGPT
 
 ---
 
+## 3b · Aplikace = nejsilnější nástroj budování návyku
+
+- App má výrazně více pravidelných uživatelů: **40 % Několikrát/týden** vs web 24 %
+- Denní uživatelé app: **9,3 %** báze — vs web 7 %; app méně "Nepoužívám" (15,5 % vs 26,5 %)
+- Churn gradient app je strmý: **denní 7,5 %** → **měsíční 20,7 %** (2,8× rozdíl); web gradient je plošší
+- App = analogie tiskovému rituálu v digitálu — pravidelnost chrání retenci
+
+![](charts/frekv_web_app.png)
+
+> Dostat předplatitele do denní/týdenní smyčky v appce = silnější ochrana před churnEM než webová návštěva. App jako primární platforma pro budování návyku (archiv, audio, offline, notifikace).
+
+---
+
 ## 4 · Mladší muži jsou nejrizikovější kohorta — táhne to produkt
 
 - Churn mladší muži **18 %** vs. starší ženy **8,5 %**

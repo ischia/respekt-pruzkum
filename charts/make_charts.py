@@ -391,6 +391,126 @@ def chart_reklama():
     save(fig, "reklama.png")
 
 
+def chart_frekv_web_app():
+    import pandas as pd
+    df = pd.read_csv(os.path.join(ROOT, "data", "processed", "respekt_analyticky.csv"), dtype=str)
+
+    def num(c): return pd.to_numeric(df[c], errors="coerce")
+
+    fweb  = num("frekvence_web_ord")
+    fapp  = num("frekvence_app_ord")
+    churn = num("uvazoval_zruseni_ord").isin([1, 2])
+
+    # Frekvence kategorie (0=Nepoužívám .. 4=Každý den) — počítat jen respondenty
+    cats_hi2lo = [4, 3, 2, 1, 0]
+    cat_labels  = {4: "Každý den", 3: "Několikrát/týden",
+                   2: "Každý týden", 1: "Několikrát/měsíc", 0: "Nepoužívám"}
+    cat_colors  = [GRAPHITE, BLUE, AMBER, GRAYBAR, "#D8DCE2"]
+
+    def dist(ser):
+        valid = ser.dropna()
+        n = len(valid)
+        return {v: (valid == v).sum() / n * 100 for v in cats_hi2lo}, n
+
+    web_d, web_n = dist(fweb)
+    app_d, app_n = dist(fapp)
+
+    def churn_by_frekv(ser):
+        result = {}
+        for v in cats_hi2lo:
+            mask = ser == v
+            n = int(mask.sum())
+            result[v] = (churn[mask].sum() / n * 100 if n > 5 else None, n)
+        return result
+
+    app_ch = churn_by_frekv(fapp)
+    web_ch = churn_by_frekv(fweb)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.5, 4.0),
+                                    gridspec_kw={"wspace": 0.50})
+
+    # ---- Levý panel: stacked horizontal bars distribuce ----
+    row_labels = [f"Web  (n={web_n})", f"App  (n={app_n})"]
+    datasets   = [web_d, app_d]
+    bar_h = 0.42
+    ax1.set_xlim(0, 100)
+    ax1.set_ylim(-0.6, len(row_labels) - 0.4)
+
+    for ri, (label, data) in enumerate(zip(row_labels, datasets)):
+        x = 0
+        for v, color in zip(cats_hi2lo, cat_colors):
+            w = data[v]
+            ax1.barh(ri, w, left=x, height=bar_h, color=color, zorder=2)
+            if w >= 7:
+                ax1.text(x + w / 2, ri, f"{w:.0f} %",
+                         ha="center", va="center", fontsize=9.5,
+                         color="white" if color in (GRAPHITE, BLUE) else INK,
+                         fontweight="bold")
+            x += w
+
+    ax1.set_yticks([0, 1])
+    ax1.set_yticklabels(row_labels, fontsize=11)
+    ax1.set_xticks([])
+    for s in ("top", "right", "bottom", "left"): ax1.spines[s].set_visible(False)
+    ax1.tick_params(length=0)
+
+    # legenda
+    for i, (v, color) in enumerate(zip(cats_hi2lo, cat_colors)):
+        ax1.plot([], [], color=color, linewidth=10, solid_capstyle="round",
+                 label=cat_labels[v])
+    ax1.legend(fontsize=8.5, frameon=False, loc="lower center",
+               bbox_to_anchor=(0.5, -0.28), ncol=3, handlelength=1.0)
+
+    ax1.set_title("Frekvence návštěv: app má více pravidelných uživatelů",
+                  fontsize=12, fontweight="bold", color=INK, loc="left", pad=14)
+
+    # ---- Pravý panel: churn rate podle frekvence (app vs web) ----
+    x_pos  = list(range(len(cats_hi2lo)))
+    bw     = 0.35
+    labels_short = ["Každý\nden", "Nkrát/\ntýden", "Každý\ntýden", "Nkrát/\nměsíc", "Nepoužívám"]
+
+    for di, (ser_ch, color, series_label) in enumerate(
+            [(app_ch, GRAPHITE, "App"), (web_ch, GRAYBAR, "Web")]):
+        for xi, v in enumerate(cats_hi2lo):
+            val, n = ser_ch[v]
+            if val is None:
+                continue
+            xpos = xi + di * bw - bw / 2
+            bar_color = RED if val > 16 else (AMBER if val > 12 else GREEN)
+            bar_color = bar_color if di == 0 else GRAYBAR
+            ax2.bar(xpos, val, width=bw * 0.88, color=bar_color, zorder=2,
+                    label=series_label if xi == 0 else "")
+            if di == 0:
+                ax2.text(xpos, val + 0.4, f"{val:.0f} %",
+                         ha="center", fontsize=9, color=INK, fontweight="bold")
+            else:
+                ax2.text(xpos, val + 0.4, f"{val:.0f}",
+                         ha="center", fontsize=8, color=GRAY)
+
+    ax2.set_xticks([i for i in x_pos])
+    ax2.set_xticklabels(labels_short, fontsize=9.5)
+    ax2.set_xlim(-0.6, len(cats_hi2lo) - 0.4)
+    ax2.set_ylim(0, 27)
+    ax2.set_yticks([])
+    for s in ("top", "right", "left"): ax2.spines[s].set_visible(False)
+    ax2.spines["bottom"].set_color(HAIRLINE)
+    ax2.tick_params(length=0)
+
+    ax2.axhline(12.8, color=GRAPHITE, ls=(0, (4, 3)), lw=1.1)
+    ax2.text(len(cats_hi2lo) - 0.45, 13.4, "průměr 12,8 %",
+             ha="right", fontsize=8.5, color=GRAPHITE)
+
+    # legenda pro pravý panel
+    ax2.plot([], [], color=GRAPHITE, linewidth=9, solid_capstyle="round", label="App (výška sloupce)")
+    ax2.plot([], [], color=GRAYBAR,  linewidth=9, solid_capstyle="round", label="Web (číslo)")
+    ax2.legend(fontsize=8.5, frameon=False, loc="upper left", handlelength=1.0)
+
+    ax2.set_title("Churn podle frekvence (app = silnější gradient)",
+                  fontsize=12, fontweight="bold", color=INK, loc="left", pad=14)
+
+    save(fig, "frekv_web_app.png")
+
+
 def chart_akvizicni_kanaly():
     import pandas as pd
     df = pd.read_csv(os.path.join(ROOT, "data", "processed", "respekt_analyticky.csv"), dtype=str)
@@ -530,5 +650,5 @@ if __name__ == "__main__":
     chart_chvala(); chart_vytky(); chart_zdroje(); chart_digital(); chart_app_prani()
     chart_poslech_app(); chart_vyhledavani(); chart_tisk_ritual(); chart_churneri_overindex()
     chart_churn_korelace(); chart_reklama(); chart_chyby_textu()
-    chart_akvizicni_kanaly()
+    chart_frekv_web_app(); chart_akvizicni_kanaly()
     print("Hotovo.")
