@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Respekt — klíčová zjištění</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#1f2937; --red:#c0392b; --muted:#6b7280; --dark:#1f2a37; --tint:#f8ecea; }
+  .reveal{ font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+           font-size:30px; color:var(--ink); }
+  html,body{ background:#fff; }
+  .reveal .slides{ text-align:left; }
+  .reveal .slides section{ height:100%; }
+
+  /* nadpisy zjištění */
+  .reveal h2{ font-size:30px; font-weight:800; color:var(--ink); text-transform:none;
+              margin:0 0 18px; line-height:1.12; letter-spacing:-0.01em; }
+  .reveal ul{ display:block; margin:0 0 14px; }
+  .reveal li{ font-size:20px; line-height:1.35; margin:0 0 7px; color:var(--ink); }
+  .reveal li::marker{ color:var(--red); }
+  .reveal strong{ color:var(--ink); font-weight:700; }
+
+  /* obrázky grafů */
+  .reveal section img{ display:block; margin:6px auto 14px; max-height:290px; max-width:86%;
+                       border-radius:8px; box-shadow:0 2px 14px rgba(0,0,0,.10); background:#fff; }
+
+  /* „Co s tím" callout */
+  .reveal blockquote{ width:100%; box-sizing:border-box; margin:0; padding:12px 18px 12px 16px;
+                      background:var(--tint); border-radius:9px; box-shadow:none;
+                      font-size:19px; font-style:normal; color:var(--ink); line-height:1.32; }
+  .reveal blockquote::before{ content:"CO S TÍM  "; color:var(--red); font-weight:800;
+                              font-size:13px; letter-spacing:.04em; }
+
+  /* velké číslo u zjištění bez grafu */
+  .reveal .stat{ font-size:88px; font-weight:800; color:var(--red); text-align:center;
+                 margin:6px 0 18px; line-height:1; letter-spacing:-0.02em; }
+
+  /* tmavé snímky: titul / předěl / závěr */
+  .reveal .dark{ color:#fff; }
+  .reveal .dark .kicker{ color:#c9b0ac; font-weight:800; letter-spacing:.06em; font-size:17px;
+                         text-transform:uppercase; margin:0 0 14px; }
+  .reveal .dark h1{ color:#fff; font-weight:800; font-size:54px; line-height:1.08;
+                    letter-spacing:-0.02em; margin:0; text-transform:none; }
+  .reveal .title .lead{ color:#c9cfd6; font-size:24px; margin:26px 0 0; }
+  .reveal .title .meta{ color:#9aa3ad; font-size:16px; margin:34px 0 0; }
+  .reveal .divider h1{ font-size:60px; }
+  .reveal .closing ol{ margin:34px 0 0; padding:0; counter-reset:p; list-style:none; }
+  .reveal .closing li{ color:#c9cfd6; font-size:20px; line-height:1.4; margin:0 0 20px;
+                       padding-left:52px; position:relative; }
+  .reveal .closing li::before{ counter-increment:p; content:counter(p); position:absolute; left:0; top:-4px;
+                               color:var(--red); font-weight:800; font-size:34px; }
+  .reveal .closing strong{ color:#fff; }
+
+  /* progress / ovládání v barvě Respektu */
+  .reveal .progress{ color:var(--red); height:4px; }
+  .reveal .controls{ color:var(--red); }
+  .reveal .slide-number{ background:transparent; color:#9aa3ad; }
+</style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+    <section data-markdown="slides.md"
+             data-separator="\r?\n---\r?\n"
+             data-separator-vertical="\r?\n>>>\r?\n"
+             data-charset="utf-8">
+    </section>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/markdown/markdown.js"></script>
+<script>
+  Reveal.initialize({
+    width: 1120, height: 760, margin: 0.035, minScale: 0.2, maxScale: 1.6,
+    hash: true, slideNumber: 'c/t', controls: true, progress: true,
+    transition: 'slide', plugins: [ RevealMarkdown ],
+  });
+</script>
+</body>
+</html>
