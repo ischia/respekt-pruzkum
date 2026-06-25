@@ -5,6 +5,49 @@
 <p class="meta">N = 2 139 dokončených odpovědí · export 20. 6. 2026</p>
 </div>
 
+---
+
+Rado
+
+- Jadro do 10 rokov! ?
+- segmentácia: v čom sú iní mladší?
+- Ak klesá print, ako nahradíme najčastejší vstupný produkt? Case for online reach / trial
+- Youtube nie je vstupnou bránou (aspoň nie teraz)
+- četl jsem cizí výtisk Sila printu sa multiplikuje cirkuláciou - pořád silné!
+- Newslettre nie sú asi silný akvizičný benefit? Nemali by sme ich používať v komunikácii?
+- audio = pohodlnost, důraz na přístupnost a ux
+- sdílení v rodině - klub/rodičovské
+- Zopakujme si to: nie sme rychlé shrnutí
+- V akvizičnej komunikácii spomínajme úlohu média, konkrétnych silných autorov a audio?
+- Lákadlom na web / app je archív, odtiaľ môžeme budovať online návyky
+- "heldám nové zaujímavé čtení" - discover tab (personalizované)?
+- potvrdenie: aplikácia je silnejší retenčný nástroj ako web - graf přidat
+- app Most pre budovanie online návyku: vlastnosti printu a audia
+- app chybí Jasné: vyhľadávanie, označovnanie (fajka od Economistu určite?)
+- Jadro sú politika a komentáre (vieme), ale pritom stále ide o pozitívny, oddychový rituál (vzácne!)
+- AI hlas je najväčší produktový problém celého prieskumu — ale dáta ho rozkladajú na tri opraviteľné vrstvy. V hlavných možnostiach je „audiočlánky zní moc uměle" tretia najčastejšia bariéra (273). „Jiné" k tomu pridáva ~30 hlasov, ktoré sa delia na: (a) opraviteľné defekty — chýbajúce pauzy medzi článkami, „uřízlé" začiatky, splývanie nadpisov, výslovnosť mien/čísloviek/skratiek, kolísanie hlasitosti, jeden ženský hlas s vysokofrekvenčným šumom (konkrétny audio bug!); (b) UX návrhy — dvojhlas pre rozhovory, striedanie hlasov, nastaviteľná medzera; (c) principiálny smútok za ľuďmi — s elegantným kompromisom priamo od respondenta: „hlavní článek čísla přečtený od člověka, jeden týdně by možná šel, ne?". A dôležitý protihlas: „Teď, když jsou všechny články načteny AI, nemám se svým očním handicapem žádné bariéry. Dříve velké." — AI audio je zároveň prístupnosť a škálovateľnosť. Záver pre Respekt: nie návrat k ľuďom, ale QA vrstva + hybridný model.
+- poslech kde - výborný podiel aplikácie (sedia aj čísla?) - ověřit
+- strata pozície prehrávania pri prerušení (~9 — najčastejší jednotlivý bug), autoplay/playlist problémy (~5), neprehľadnosť a orientácia (~12), chýbajúce vyhľadávanie (4), offline sťahovanie s absurdným UX (3 — „pro stažení musím nejdřív spustit přehrávání"), nefunkčné ovládanie na zamknutej obrazovke/cez Bluetooth (~4), chýbajúca kontinuita poslchu web↔app (1, pekne opísaná).
+- Existuje aj tretia cesta — a respondenti ju sami navrhujú: privátny RSS feed pre predplatiteľov. „Ideální by bylo mít RSS zdroj i pro své audio předplatné, abych si ho mohl přidat do své aplikace."
+
+---
+
+ChatGPT
+
+- Respekt je vnímán jako důvěryhodná instituce, analytické médium a hodnotový projekt.
+- Důvěra a témata jsou silnější než objem obsahu.
+- Převaha dlouhodobých a vysokoškolsky vzdělaných předplatitelů.
+- Nezávislá žurnalistika je dominantní motiv.
+- Velmi vysoká deklarovaná retence.
+- Pět hodnotových segmentů publika.
+-- Analytici a opinion leaders - 28 % publika. Hledají interpretaci a kontext.
+-- Hodnotoví podporovatelé - 21 % publika. Platí za existenci nezávislé žurnalistiky.
+-- Kulturně-intelektuální čtenáři - 20 % publika. Eseje, kultura, inspirace.
+-- Tradiční věrní - 19 % publika. Silná vazba na tisk a značku.
+-- Hledači orientace - 12 % publika. Přehled, orientace, audio.
+
+---
+
 ## 1 · Báze je spokojená a loajální — kotvou je hodnota, ne cena
 
 - 92 % udává vysokou/velmi vysokou pravděpodobnost setrvání; jen **12,8 %** zvažovalo odchod
