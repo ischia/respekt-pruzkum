@@ -126,16 +126,17 @@ def chart_churn_tenure():
 # ---------- 2. churn podle segmentu (vodorovné) ----------
 def chart_churn_segments():
     items = [
-        ("Pasivní digitál", rate(lambda r: vi(r, "frekv_app") in (0, 1) and vi(r, "frekv_web") in (0, 1))),
+        ("Pasivní digitál ¹", rate(lambda r: vi(r, "frekv_app") in (0, 1) and vi(r, "frekv_web") in (0, 1))),
         ("Mladší muži (18–44)", rate(lambda r: vi(r, "vek") in (1, 2, 3) and vi(r, "pohlavi") == _g("Muž"))),
         ("Noví (< 1 rok)", rate(lambda r: vi(r, "delka") == 0)),
         ("CELEK", 12.8),
+        ("Tisk + digitál", rate(lambda r: mv(r, "cte_tisk_i_digital") == 1)),
         ("Digitální jádro (aktivní app)", rate(lambda r: vi(r, "frekv_app") in (3, 4))),
         ("Dlouholetí (16–20 let)", rate(lambda r: vi(r, "delka") == 4)),
     ]
     items.sort(key=lambda x: x[1])
     labels = [a for a, _ in items]; vals = [b for _, b in items]
-    fig, ax = plt.subplots(figsize=(7.8, 3.7))
+    fig, ax = plt.subplots(figsize=(7.8, 4.2))
     ax.set_xlim(0, max(vals) + 3); ax.set_ylim(-0.6, len(labels) - 0.4)
     th = 0.58
     for i, (l, v) in enumerate(zip(labels, vals)):
@@ -144,6 +145,8 @@ def chart_churn_segments():
         ax.text(v + 0.3, i, f"{v:.0f} %", va="center", fontsize=11, color=INK, fontweight="bold")
     ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels, fontsize=11)
     ax.set_xlabel("uvažuje o zrušení", fontsize=10.5)
+    ax.annotate("¹ web i app max několikrát/měsíc", xy=(0, -0.55), xycoords="data",
+                fontsize=8.5, color=GRAY, ha="left")
     style_ax(ax)
     title(ax, "Zapojení a kohorta předpovídají churn")
     save(fig, "churn_segments.png")
@@ -218,7 +221,18 @@ def chart_vytky():
 def chart_zdroje():
     hbar(group_items("q154", top=10), "Jaké jiné zdroje sledují (Q154) — konkurence", BLUE, "zdroje.png", (7.6, 4.3))
 def chart_digital():
-    hbar(group_items("digital", top=8), "Co přimělo přejít na digitál (Q60)", GRAPHITE, "digital_drivers.png", (7.6, 3.7))
+    g = next(x for x in DATA["metric_groups"] if x["key"] == "digital")
+    keep = ["Pohodlnost", "Audio", "Praktické", "Ekologické", "Cena"]
+    items = []
+    for mk in g["metrics"]:
+        lab = DATA["metric_labels"][mk]
+        if any(k in lab for k in keep):
+            cnt = sum(1 for r in rows if mv(r, mk) == 1)
+            display = lab.replace("Praktické důvody (bydlím v zahraničí, nestíhám číst fyzicky)",
+                                  "Praktické (v zahraničí, nestíhám číst fyzicky)")
+            items.append((display, cnt))
+    items.sort(key=lambda x: x[1], reverse=True)
+    hbar(items, "Co přimělo přejít na digitál", GRAPHITE, "digital_drivers.png", (7.8, 2.8))
 def chart_app_prani():
     hbar(group_items("appchybi", top=9, drop=("nic nechybí", "Nic ")), "Co nejvíce chybí v aplikaci (přání)", PURPLE, "app_prani.png", (7.6, 4.1))
 def chart_poslech_app():
@@ -227,8 +241,14 @@ def chart_vyhledavani():
     hbar([("Přání: vyhledávání v aplikaci", 229), ("Výtka „chybí vyhledávání“ (Q156)", 32), ("Nevyžádaně v poli bariéry", 13)],
          "Poptávka po vyhledávání se objevuje všude", BLUE, "vyhledavani.png", (7.4, 2.6))
 def chart_tisk_ritual():
-    hbar([("Digitál jen jako doplněk", 20), ("Aktivně preferuje tisk", 15), ("Tištěné posílá rodině", 12)],
-         "Tisk jako rituál a sdílení (volný text)", GRAPHITE, "tisk_ritual.png", (7.4, 2.6))
+    hbar([
+        ("Dříve četl/a tiskové vydání (Q)", 1330),
+        ("Spokojenost s doručováním 4–5/5", 1086),
+        ("Čte tisk i digitál souběžně", 94),
+        ("Digitál jen jako doplněk (text)", 20),
+        ("Aktivně preferuje tisk (text)", 15),
+        ("Tištěné posílá rodině (text)", 12),
+    ], "Tisk: tradice, rituál, kotva — podloženo uzavřenými i textem", GRAPHITE, "tisk_ritual.png", (7.8, 3.4))
 
 
 def chart_churneri_overindex():

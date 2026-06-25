@@ -1,7 +1,7 @@
 <!-- .slide: data-background-color="#222222" -->
 <div class="dark title">
 <p class="kicker">PŘEDPLATITELSKÝ PRŮZKUM</p>
-<h1>Klíčová zjištění</h1>
+<h1>predplatiteľský prieskum určený na zisťovanie nálady v predplatiteľskom kmeni, smerovanie vývoja a marketingu a cieľom je udržanie retencie resp. prezícnejší pozicioning online produktu.Klíčová zjištění</h1>
 <p class="meta">N = 2 139 dokončených odpovědí · export 20. 6. 2026</p>
 </div>
 
@@ -74,15 +74,13 @@ ChatGPT
 
 ## 3 · Zapojení = retence; pasivní digitál je tichý odchod
 
-- Pasivní digitál (178): churn **19 %** vs. digitální jádro (688): **10 %**
-- Web vůbec nepoužívá 23–27 % mladších kohort
+- **Pasivní digitál** (178): digitální předplatitelé bez pravidelné návyku — web i app max několikrát/měsíc; churn **19 %**
+- Digitální jádro (aktivní app, 688): churn **10 %** — poloviční riziko
+- **Tisk + digitál** (94): churn jen **4 %** — tisk jako kotva i v hybridním modelu
 
 ![](charts/churn_segments.png)
 
 > Frekvenci návštěv brát jako early-warning churnu; reaktivovat utlumené (newsletter, notifikace, audio).
-
-- DODEFINOVAT PASIVNÍ DIGITÁL
-- PŘIDAT DO GRAFU PRINT?
 
 ---
 
@@ -130,14 +128,14 @@ ChatGPT
 
 ## 7 · Tisk není setrvačnost — je to rituál a kotva retence
 
-- Část digitál aktivně odmítá: preferuje tisk (15), digitál jako doplněk (20)
-- „Tištěné posílám rodině" (12) — opakovaný vzorec
+- **88 %** tiskových předplatitelů dříve četlo papírové vydání — tradice, ne náhoda
+- Spokojenost s doručováním **85 %** (hodnocení 4–5/5, n = 1 279)
+- 94 čte tisk i digitál souběžně; volný text: posílají rodině (12), doplněk (20), rituál (15)
 
 ![](charts/tisk_ritual.png)
 
 > Nehnat všechny do digitálu; chránit tištěný zážitek. Potenciál pro dárkové a rodinné předplatné.
 
-- TADY PŘIDAT I NĚCO Z UZAVŘENÝCH ODPOVĚDÍ
 - KLUB - RODIČOVSKÉ
 
 ---
@@ -185,16 +183,15 @@ ChatGPT
 
 ---
 
-## 11 · Cena není churn páka — citlivost na cenu je minimální
+## 11 · Cena není churn páka — ale hraje roli při přechodu na digitál
 
-<p class="stat">11×</p>
+<p class="stat">11× / 136</p>
 
 - Cena / paywall ve výtkách jen **11×** — prakticky na dně 16 témat
-- Sleva jako konverzní motiv hraje roli hlavně u mladých a nových
+- Ale: „Digitál je levnější" jako důvod přechodu uvádí **136 lidí (6,4 %)** — třetí funkční motiv po pohodlnosti a audiu
+- Sleva jako konverzní motiv hraje roli hlavně u mladých (22 %) vs. starší (8–12 %)
 
-> Zdražení nese menší riziko, než se obvykle čeká, pokud zůstane hodnota. Slevu cíleně na mladé, ne plošně.
-
-- TOHLE JEŠTĚ VZTÁHNOUT K UZAVŘENÝM
+> Zdražení nese menší riziko, než se obvykle čeká — stávající předplatitelé cenu neřeší. Ale cena/sleva je relevantní akvizičním argumentem, zvlášť při přechodu z tisku.
 
 ---
 
@@ -224,56 +221,49 @@ ChatGPT
 
 ## 14 · Homepage není vstupní bod — distribuce přes newsletter a sítě
 
-<p class="stat">15 + 8</p>
+<p class="stat">30 %</p>
 
-- Část přichází přes externí odkaz (newsletter, sítě, RSS, QR z tisku) — 15
-- Část homepage prakticky nepoužívá — 8 (jde rovnou na audio, RSS, papír)
+- Web Nepoužívá nebo max Několikrát/měsíc: **30 % předplatitelů** (uzavřená otázka, n = 2 139)
+- Z volného textu: část přichází přes odkaz (newsletter, sítě, RSS, QR z tisku) — 15 zmínek
+- Část jde rovnou na audio, EPUB nebo přímo do aplikace — 8 zmínek
 
 > Brát newsletter a sociální sítě jako distribuční kanál, ne marketingovou ozdobu — investovat do nich.
-
-- STOJÍ JEN NA OTEVŘENÝCH?
 
 ---
 
 ## 15 · Audio a offline jsou tahouny přechodu na digitál
 
-- Důvody přechodu: pohodlí 529, **audio jen digitálně 344**, praktické 298, ekologie 200
+- Pohodlnost (vše v telefonu): **529** · Audio jen digitálně: **344** · Ekologie: 200 · Cena levnější: 136
+- **Praktické důvody** (298) = bydlím v zahraničí, nestíhám číst fyzicky, manuální výpis
 - Offline: stáhnout vydání 366, „lepší offline režim" 93
 
 ![](charts/digital_drivers.png)
 
-> Audio a offline čtení = on-ramp na digitál; propagovat je jako důvod vyzkoušet appku, doladit offline režim.
-
-- CO JSOU PRAKTICKÉ DŮVODY
-- NEPŘEŠEL VYHODIT A DALŠÍ TAKY
-- SLOVNÍK
-- VZTAH K 17
+> Audio a offline čtení = on-ramp na digitál; propagovat jako důvod vyzkoušet appku, doladit offline režim.
 
 ---
 
 ## 16 · Přístupnost (velikost písma) je snadná výhra vzhledem k věku
 
-<p class="stat">45+</p>
+<p class="stat">66 %</p>
 
-- Nevyžádaně: přístupnost (velikost písma, zoom, čtení bez brýlí) **10×**
-- Věkový profil báze je starší — dopad je nadproporční
+- **66 % báze je 45+** (1 413 z 2 139); 23 % je 65 a více — uzavřená otázka, ne odhad
+- Nevyžádaně v textu: přístupnost (velikost písma, zoom, čtení bez brýlí) **10×**
+- Vzorek otevřených je malý, ale profil báze jednoznačně potvrzuje, že dopad je nadproporční
 
 > Nastavitelná velikost písma a zoom obrázků = low-effort / high-fit zásah do aplikace.
-
-- MALÝ VZOREK?
 
 ---
 
 ## 17 · Top přání v aplikaci: odlišit přečtené, offline, vlastní playlist
 
-- Odlišení přečteného **251**, offline 366, otevírat ze sítí 126, playlist 120, CarPlay 118
+- Odlišení přečteného **251**, offline 366, otevírat ze sítí 126, playlist 120, **CarPlay 118**
+- CarPlay/Android Auto srovnatelné s playlistem a sítěmi — samostatný use-case poslechu v autě
 - Z volného textu: přehlednost UI (12), výkon / stabilita (10)
 
 ![](charts/app_prani.png)
 
-> App roadmapa: orientace ve vydání (co už jsem četl), offline, audio playlist a CarPlay.
-
-- MOC TOHO CARPLAY?
+> App roadmapa: orientace ve vydání (co už jsem četl), offline, audio playlist a CarPlay. CarPlay = audio v autě — odlišný kontext, ne nadhodnocení.
 
 ---
 
@@ -364,21 +354,7 @@ ChatGPT
 
 ---
 
-## 25 · Chyby v textech — korektura obsahu je vzorná; audio zaostává
-
-<p class="stat">370 × 4</p>
-
-- Q155 chvála „Kvalita psaní / jazyk / úroveň": **370 zmínek** — 3. nejčastěji chválená věc
-- Gramatika / překlepy v textu (Q156): pouze **4 zmínky**
-- Audio chyby výslovnosti / AI hlas: **102 zmínek** — 26× více než text
-
-![](charts/chyby_textu.png)
-
-> Redakce si drží vysoký jazykový standard — čtenáři to oceňují. Korekturní pozornost přenést na AI čtení: tam je chybovost vnímána silně a opakovaně.
-
----
-
-## 26 · Koreláty rizika odchodu — redakční osy předčí produktové
+## 25 · Koreláty rizika odchodu — redakční osy předčí produktové
 
 - Nejsilnější signál: **nespokojenost s výběrem témat** (+11,8 pp mezi churners vs. zbytek)
 - **Vyváženost / objektivita** těsně za ní (+10,8 pp) — stejná osa, stejný riskantní segment
