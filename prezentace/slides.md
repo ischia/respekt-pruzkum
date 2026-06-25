@@ -130,13 +130,13 @@ ChatGPT
 
 - **88 %** tiskových předplatitelů dříve četlo papírové vydání — tradice, ne náhoda
 - Spokojenost s doručováním **85 %** (hodnocení 4–5/5, n = 1 279)
-- 94 čte tisk i digitál souběžně; volný text: posílají rodině (12), doplněk (20), rituál (15)
+- Velká část digitál **aktivně odmítá**: haptika, „pondělní rituál s kávou", únava z obrazovky — ne setrvačnost
+- Digitál je pro mnohé **doplněk, ne náhrada**: doma papír, na cestách digitál/audio (20 zmínek)
+- „**Tištěné posílám rodičům**" — opakovaný vzorec (12), relevantní pro dárkové předplatné i sdílenou retenci
 
 ![](charts/tisk_ritual.png)
 
 > Nehnat všechny do digitálu; chránit tištěný zážitek. Potenciál pro dárkové a rodinné předplatné.
-
-- KLUB - RODIČOVSKÉ
 
 ---
 
@@ -157,21 +157,24 @@ ChatGPT
 
 - Mladší ženy: reportáže 42 %, rodina a vztahy 15 %, míň politiky; mladší muži politika 44 %
 - Konverze mladých: podpora médií 73 % a sleva 22 % (vs. 9–12 % u starších)
+- Skrytý motiv z volného textu (Q28): **kvalita obsahu 151×, dlouholetý vztah ke značce 96×** — žádný checkbox je nenabízel
+- „**Hodnotová podpora je rámec, kvalita je spouštěč**" — „podpořit média" = deklarovaný důvod, kvalita = co spustilo klik
 
 ![](charts/heat_zajmy.png)
 
-> Cílený obsah a marketing pro mladší; slevová akvizice funguje, ale bez onboardingu prvního roku je ztratíme.
+> Akviziční messaging: mise a nezávislost jako rámec, konkrétní kvalita / autoři jako spouštěč. Slevová akvizice funguje u mladých, ale bez onboardingu prvního roku je ztratíme.
 
 ---
 
 ## 10 · Konkurence je Deník N a veřejnoprávní; publikum je náročné
 
 - Nejčastější jiný zdroj: Deník N **549**, iRozhlas 414, Seznam 403, ČT 374
-- Předplatitelé kombinují domácí + veřejnoprávní + zahraniční zdroje
+- **Podcast (obecně) 491** — druhý nejčastější typ zdroje; formátový, ne mediální konkurent (boj o čas a uši)
+- Předplatitelé kombinují domácí + veřejnoprávní + zahraniční zdroje; překlady (Atlantic, NYT, FT) = konkrétní a propagovatelná výhoda (66)
 
 ![](charts/zdroje.png)
 
-> Sledovat Deník N jako přímého konkurenta; odlišení stavět na hloubce, kurátorství a překladech (66).
+> Deník N jako přímý konkurent; podcast agregátory jako formátový konkurent — argument pro vlastní silné audio v appce. Překlady zahraniční žurnalistiky = unikátní USP ke komunikaci.
 
 ---
 
@@ -260,6 +263,7 @@ ChatGPT
 - Odlišení přečteného **251**, offline 366, otevírat ze sítí 126, playlist 120, **CarPlay 118**
 - CarPlay/Android Auto srovnatelné s playlistem a sítěmi — samostatný use-case poslechu v autě
 - Z volného textu: přehlednost UI (12), výkon / stabilita (10)
+- Niche, ale konkrétní: **poznat, který článek vyjde v tištěném vydání** — aby ho čtenáři nečetli digitálně dřív (5 zmínek; hybridní čtenáři)
 
 ![](charts/app_prani.png)
 
@@ -307,10 +311,11 @@ ChatGPT
 - „Podpořit nezávislá média": **73,7 % mladší muž, 72,0 % mladší žena** — nejsilnější motiv
 - Akční nabídka / sleva výrazně silnější u mladších (22 %) než u starších (8–12 %)
 - Doporučení od známého: vyšší u mladších (10–14 %) → peer efekt funguje
+- **Skrytý motiv z textu**: kvalita obsahu **151×**, dlouholetý vztah ke značce **96×** — žádný checkbox je nenabízel; spontánní konverzní spouštěče, které baterie přehlíží
 
 ![](charts/heat_konv.png)
 
-> Akvizice stojí na misijním argumentu pro všechny; slevu cílit na mladé, referral program rozvíjet jako kanál.
+> Mise je deklarovaný rámec — kvalita a osobní vztah jsou reálné spouštěče. Referral a kontext „silného článku" jsou akvizičně podceněné.
 
 ---
 
@@ -330,12 +335,13 @@ ChatGPT
 ## 23 · Bariéry při čtení/poslechu — audio a UX jsou mladší problém
 
 - Nejčastější bariéra: **Nepřišlo včas 17–19 %** — rovnoměrně napříč kohortami (problém distribuce, ne segmentu)
+- Doručení má **dvě osy**: pozdní příchod (383) + poškozená zásilka — „bez obalu, promočený deštěm" (+19 z textu)
 - Audio zní uměle: mladší muži **21 %**, mladší ženy **19 %** vs. starší ~10 %
 - UX / ovládání: mladší muži 16 %, u starší ženy jen 4 %
 
 ![](charts/heat_bariera.png)
 
-> „Nepřišlo včas" = tiskový výtisk nedorazil do schránky — systémový doručovací problém bez věkového profilu. Audio a UX jsou naopak generační výzva.
+> „Nepřišlo včas" = systémový doručovací problém (ČP); „promočené/bez obalu" = vlastní logistický proces — dvě různé páky. Audio a UX jsou generační výzva.
 
 ---
 
