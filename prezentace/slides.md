@@ -1,50 +1,9 @@
 <!-- .slide: data-background-color="#222222" -->
 <div class="dark title">
 <p class="kicker">PŘEDPLATITELSKÝ PRŮZKUM</p>
-<h1>predplatiteľský prieskum určený na zisťovanie nálady v predplatiteľskom kmeni, smerovanie vývoja a marketingu a cieľom je udržanie retencie resp. prezícnejší pozicioning online produktu.Klíčová zjištění</h1>
+<h1>Klíčová zjištění</h1>
 <p class="meta">N = 2 139 dokončených odpovědí · export 20. 6. 2026</p>
 </div>
-
----
-
-Rado
-
-- Jadro do 10 rokov! ?
-- segmentácia: v čom sú iní mladší?
-- Ak klesá print, ako nahradíme najčastejší vstupný produkt? Case for online reach / trial
-- Youtube nie je vstupnou bránou (aspoň nie teraz)
-- četl jsem cizí výtisk Sila printu sa multiplikuje cirkuláciou - pořád silné!
-- Newslettre nie sú asi silný akvizičný benefit? Nemali by sme ich používať v komunikácii?
-- audio = pohodlnost, důraz na přístupnost a ux
-- sdílení v rodině - klub/rodičovské
-- Zopakujme si to: nie sme rychlé shrnutí
-- V akvizičnej komunikácii spomínajme úlohu média, konkrétnych silných autorov a audio?
-- Lákadlom na web / app je archív, odtiaľ môžeme budovať online návyky
-- "heldám nové zaujímavé čtení" - discover tab (personalizované)?
-- potvrdenie: aplikácia je silnejší retenčný nástroj ako web - graf přidat
-- app Most pre budovanie online návyku: vlastnosti printu a audia
-- app chybí Jasné: vyhľadávanie, označovnanie (fajka od Economistu určite?)
-- Jadro sú politika a komentáre (vieme), ale pritom stále ide o pozitívny, oddychový rituál (vzácne!)
-- AI hlas je najväčší produktový problém celého prieskumu — ale dáta ho rozkladajú na tri opraviteľné vrstvy. V hlavných možnostiach je „audiočlánky zní moc uměle" tretia najčastejšia bariéra (273). „Jiné" k tomu pridáva ~30 hlasov, ktoré sa delia na: (a) opraviteľné defekty — chýbajúce pauzy medzi článkami, „uřízlé" začiatky, splývanie nadpisov, výslovnosť mien/čísloviek/skratiek, kolísanie hlasitosti, jeden ženský hlas s vysokofrekvenčným šumom (konkrétny audio bug!); (b) UX návrhy — dvojhlas pre rozhovory, striedanie hlasov, nastaviteľná medzera; (c) principiálny smútok za ľuďmi — s elegantným kompromisom priamo od respondenta: „hlavní článek čísla přečtený od člověka, jeden týdně by možná šel, ne?". A dôležitý protihlas: „Teď, když jsou všechny články načteny AI, nemám se svým očním handicapem žádné bariéry. Dříve velké." — AI audio je zároveň prístupnosť a škálovateľnosť. Záver pre Respekt: nie návrat k ľuďom, ale QA vrstva + hybridný model.
-- poslech kde - výborný podiel aplikácie (sedia aj čísla?) - ověřit
-- strata pozície prehrávania pri prerušení (~9 — najčastejší jednotlivý bug), autoplay/playlist problémy (~5), neprehľadnosť a orientácia (~12), chýbajúce vyhľadávanie (4), offline sťahovanie s absurdným UX (3 — „pro stažení musím nejdřív spustit přehrávání"), nefunkčné ovládanie na zamknutej obrazovke/cez Bluetooth (~4), chýbajúca kontinuita poslchu web↔app (1, pekne opísaná).
-- Existuje aj tretia cesta — a respondenti ju sami navrhujú: privátny RSS feed pre predplatiteľov. „Ideální by bylo mít RSS zdroj i pro své audio předplatné, abych si ho mohl přidat do své aplikace."
-
----
-
-ChatGPT
-
-- Respekt je vnímán jako důvěryhodná instituce, analytické médium a hodnotový projekt.
-- Důvěra a témata jsou silnější než objem obsahu.
-- Převaha dlouhodobých a vysokoškolsky vzdělaných předplatitelů.
-- Nezávislá žurnalistika je dominantní motiv.
-- Velmi vysoká deklarovaná retence.
-- Pět hodnotových segmentů publika.
--- Analytici a opinion leaders - 28 % publika. Hledají interpretaci a kontext.
--- Hodnotoví podporovatelé - 21 % publika. Platí za existenci nezávislé žurnalistiky.
--- Kulturně-intelektuální čtenáři - 20 % publika. Eseje, kultura, inspirace.
--- Tradiční věrní - 19 % publika. Silná vazba na tisk a značku.
--- Hledači orientace - 12 % publika. Přehled, orientace, audio.
 
 ---
 
@@ -118,10 +77,7 @@ ChatGPT
 ![](charts/heat_spokojenost.png)
 
 > Zlepšit kvalitu AI hlasu (výslovnost, rozlišení hlasů) a aktivovat ty, kdo audio zatím míjejí.
-- MIXUJÍ SE TAM STÍŽNOSTI NA VÝSLOVNOST V PODCASTECH
-- Jeden z vašich hlasů, ženský, který často používáte na hlavní témata, má v pozadí vysokofrekvenční zvuk, který z toho dělá neposlouchatelnou věc. Slyším to v autě i ve sluchátcích a už hodně dlouho, nemyslím si, že to je problém na mojí straně
-- ČASTO ŘEŠÍ UŽ VYŘEŠENÉ - CHYBĚJÍCÍ TEXTY (AUDIOTÉKA?), STŘÍDÁNÍ HLASŮ V ROZHOVORECH, V2, 
-- ODLIŠENÍ KONCE A ZAČÁTKU, DLOUHÉ PAUZY, ZMĚNY HLASU NA ZAČÁTKU ODSTAVŮC
+
 ---
 
 ## 6 · Vyhledávání a archiv = nejkonkrétnější funkční mezera
@@ -131,11 +87,7 @@ ChatGPT
 
 ![](charts/vyhledavani.png)
 
-> Vyhledávání a orientaci v archivu vysoko na app/web roadmapu — opakovaná a řešitelná rychlá výhra.
-
-- VYHLEDÁVÁNÍ PŘIDAT RICE VÝŠ, DEEPLINKY
-- ZVÁŠŽIT FUNKCI LANDING PAGE Z IG V APP
-- 
+> Vyhledávání a orientaci v archivu vysoko na app/web roadmapu — opakovaná a řešitelná rychlá výhra. 
 
 ---
 
@@ -161,8 +113,6 @@ ChatGPT
 ![](charts/vytky.png)
 
 > Redakční reflexe kultury, vyváženosti a délky; „bias" je menšinový, ale hlasitý a hodnotově nabitý signál.
-
-- TOHLE JEŠTĚ VZTÁHNOUT K UZAVŘENÝM - DORUČOVÁNÍ MENŠÍ, DÉLKA ČLÁNKŮ ASI TAKY NEODPOVÍDÁ
 
 ---
 
@@ -230,8 +180,6 @@ ChatGPT
 ![](charts/churneri_overindex.png)
 
 > Retence musí mířit na obě osy zvlášť — produktové opravy neudrží toho, kdo odchází kvůli vnímané jednostrannosti.
-
-- DIVNÝ SLOVNÍK
 
 ---
 
@@ -315,8 +263,6 @@ ChatGPT
 
 > Vizuální identita má emoční vazbu ke značce; zvážit konstruktivní / řešení-orientovaný obsah jako protiváhu.
 
-- OPATRNĚJŠÍ FORMULACE
-
 ---
 
 ## 21 · Co přimělo k předplatnému — mise táhne všechny kohorty
@@ -332,16 +278,16 @@ ChatGPT
 
 ---
 
-## 21b · Kontaktní kanál před předplacením: stánek táhne, digitál roste
+## 21b · Stánek přivedl jednu generaci — digitál musí přivést příští
 
-- **Stánek** zůstává dominantním kontaktem (24,5 % celkem) — mladší ženy výrazně nad průměrem (37 %)
-- Web: 9 %, podcasty: 4 %, soc. sítě: 6 % — ale u mladší kohorty 2–3× silnější
-- **Posun u nových předplatitelů**: ti z posledního roku přichází výrazně více přes web (29 %) a podcast (19 %) než ti z 1–5 let (22 % / 8 %) — digitální kanály rostou
-- Konverzní spouštěč: **konkrétní článek** 15,7 % (rovnoměrně přes kohorty); podcast→konverze jen 2,6 %; soc. sítě→konverze 0,9 %
+- **Posun za 5 let**: podcast 8 % → **19 %**, web 22 % → **29 %**, sítě 13 % → **18 %** u nejnovějších; stánek klesá z 62 % → 53 %
+- **Věkový profil je strukturální signál**: soc. sítě 19 % a podcast 13 % u 18–34letých vs. 3 % u 55+ — 4–6× rozdíl
+- Konverzní spouštěč zůstává stejný napříč kanály: **konkrétní článek** 16 %, podpora médií 64 %
+- Kanál přivede ke dveřím — hodnota obsahu zkonvertuje
 
 ![](charts/akvizicni_kanaly.png)
 
-> Stánek stále relevantní (zejm. u žen), ale u nových předplatitelů web a podcast přebírají roli vstupu. Signál pro distribuci obsahu na webu a audio jako akvizičního kanálu.
+> Stánek nebude nahrazen jedním kanálem. Web a podcast jsou nejrychleji rostoucí vstupní body pro novou generaci — investice do distribuovatelného obsahu (articles za paywallem, audioklipy, sítě) je akvizice, ne jen marketing.
 
 ---
 

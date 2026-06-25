@@ -523,95 +523,89 @@ def chart_akvizicni_kanaly():
     web   = xc(df.columns[14])
     pod   = xc(df.columns[15])
     site  = xc(df.columns[17])
-
-    vek     = num("vek_ord")
-    pohlavi = df["Jaké je vaše pohlaví?"].str.strip()
-    delka   = num("delka_predplatneho_ord")
-
-    mladi  = vek.isin([1, 2, 3])
-    starsi = vek.isin([4, 5, 6])
-    mm = mladi  & (pohlavi == "Muž")
-    mz = mladi  & (pohlavi == "Žena")
-    sm = starsi & (pohlavi == "Muž")
-    sz = starsi & (pohlavi == "Žena")
+    vek   = num("vek_ord")
+    delka = num("delka_predplatneho_ord")
 
     def pct(mask_n, mask_d):
         n = mask_d.sum()
         return mask_n[mask_d].sum() / n * 100 if n else 0
 
-    cohorts  = [("Ml. muž",   mm, RED),     ("Ml. žena",   mz, AMBER),
-                ("St. muž",   sm, GRAPHITE), ("St. žena",   sz, GRAYBAR)]
-    channels = [("Stánek / stánkový prodej", stank),
-                ("Články na webu Respektu",  web),
-                ("Podcasty Respektu",         pod),
-                ("Sociální sítě",             site)]
+    all_ch    = [stank, web, pod, site]
+    ch_labels = ["Stánek", "Web / články", "Podcasty", "Soc. sítě"]
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.5, 4.6),
-                                    gridspec_kw={"wspace": 0.55})
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.5, 4.2),
+                                    gridspec_kw={"wspace": 0.52})
 
-    # --- Levý panel: grouped horizontal bars channel × cohort ---
-    bar_h = 0.17
-    grp_h = len(cohorts) * bar_h + 0.30
-    ax1.set_xlim(0, 52)
-    ax1.set_ylim(-0.25, len(channels) * grp_h)
-    for ci, (ch_label, ch_mask) in enumerate(channels):
-        y_base = ci * grp_h
-        for bi, (co_label, co_mask, co_color) in enumerate(cohorts):
-            y = y_base + bi * bar_h
-            v = pct(ch_mask, co_mask)
-            round_rect(ax1, 0, y, max(v, 0.3), bar_h * 0.82, co_color, corners="tr,br", R=5)
-            ax1.text(v + 0.8, y + bar_h * 0.41, f"{v:.0f} %",
-                     va="center", fontsize=9, color=INK)
-        ax1.text(-0.6, y_base + len(cohorts) * bar_h / 2,
-                 ch_label, va="center", ha="right", fontsize=9.5, color=INK, fontweight="bold")
-        if ci > 0:
-            ax1.axhline(y_base - 0.14, color=HAIRLINE, lw=0.8)
-
-    # legenda nahoře
-    for bi, (co_label, co_mask, co_color) in enumerate(cohorts):
-        n = int(co_mask.sum())
-        ax1.text(13 * bi + 0.5, len(channels) * grp_h + 0.08,
-                 f"{co_label} (n={n})", fontsize=8, color=co_color)
-
-    ax1.set_yticks([]); ax1.set_xticks([])
-    for s in ("top", "right", "left", "bottom"): ax1.spines[s].set_visible(False)
-    ax1.set_title("Kontaktní kanál — kohorta", fontsize=12, fontweight="bold",
-                  color=INK, loc="left", pad=14)
-
-    # --- Pravý panel: trend <1 rok vs 1–5 let ---
-    all_ch = [stank, web, pod, site]
-    short  = ["Stánek", "Web", "Podcast", "Sítě"]
-    delka_g = [(0, "<1 rok (n=151)", RED), (1, "1–5 let (n=721)", GRAYBAR)]
+    # ---- Levý panel: čas — <1 rok vs 1–5 let ----
+    delka_g = [
+        (0, "<1 rok\n(n=151)",  RED),
+        (1, "1–5 let\n(n=721)", GRAYBAR),
+    ]
     bw = 0.34
-    xs = [0, 1.1, 2.2, 3.3]
+    xs = [0, 1.15, 2.30, 3.45]
 
     for di, (dv, dl, dc) in enumerate(delka_g):
         mask_d = delka == dv
         for xi, ch_mask in enumerate(all_ch):
             v = pct(ch_mask, mask_d)
             xpos = xs[xi] + di * bw
-            ax2.bar(xpos, v, width=bw * 0.88, color=dc, zorder=2)
-            ax2.text(xpos + bw * 0.44, v + 1.5, f"{v:.0f}%",
-                     ha="center", fontsize=9, color=INK)
+            ax1.bar(xpos, v, width=bw * 0.88, color=dc, zorder=2)
+            ax1.text(xpos + bw * 0.44, v + 1.2, f"{v:.0f} %",
+                     ha="center", fontsize=9,
+                     color=INK if di == 0 else GRAY,
+                     fontweight="bold" if di == 0 else "normal")
 
-    ax2.set_xticks([x + bw / 2 for x in xs])
-    ax2.set_xticklabels(short, fontsize=10.5)
-    ax2.set_xlim(-0.2, xs[-1] + bw * 2 + 0.2)
+    ax1.set_xticks([x + bw / 2 for x in xs])
+    ax1.set_xticklabels(ch_labels, fontsize=10.5)
+    ax1.set_xlim(-0.2, xs[-1] + bw * 2 + 0.2)
+    ax1.set_ylim(0, 80)
+    ax1.set_yticks([])
+    for s in ("top", "right", "left"): ax1.spines[s].set_visible(False)
+    ax1.spines["bottom"].set_color(HAIRLINE)
+    ax1.tick_params(length=0)
+    for di, (dv, dl, dc) in enumerate(delka_g):
+        ax1.plot([], [], color=dc, linewidth=8, solid_capstyle="round",
+                 label=dl.replace("\n", " "))
+    ax1.legend(fontsize=9, frameon=False, loc="upper right", handlelength=1.0)
+    ax1.annotate("Pro 6+ letou bázi otázka nebyla položena",
+                 xy=(0.5, -0.16), xycoords="axes fraction",
+                 fontsize=8, color=GRAY, ha="center")
+    ax1.set_title("Posun za posledních 5 let: digitál roste, stánek klesá",
+                  fontsize=12, fontweight="bold", color=INK, loc="left", pad=14)
+
+    # ---- Pravý panel: věk — 18–34 vs 35–54 vs 55+ ----
+    age_g = [
+        (vek.isin([1, 2]),    "18–34\n(n=189)",   RED),
+        (vek.isin([3, 4]),    "35–54\n(n=1 153)", AMBER),
+        (vek.isin([5, 6]),    "55+\n(n=792)",      GRAYBAR),
+    ]
+    bw2 = 0.26
+    xs2 = [0, 1.05, 2.10, 3.15]
+
+    for di, (age_mask, al, ac) in enumerate(age_g):
+        for xi, ch_mask in enumerate(all_ch):
+            v = pct(ch_mask, age_mask)
+            xpos = xs2[xi] + di * bw2
+            ax2.bar(xpos, v, width=bw2 * 0.88, color=ac, zorder=2)
+            if v >= 5:
+                ax2.text(xpos + bw2 * 0.44, v + 1.2, f"{v:.0f} %",
+                         ha="center", fontsize=8.5,
+                         color=INK if di == 0 else GRAY,
+                         fontweight="bold" if di == 0 else "normal")
+
+    ax2.set_xticks([x + bw2 for x in xs2])
+    ax2.set_xticklabels(ch_labels, fontsize=10.5)
+    ax2.set_xlim(-0.15, xs2[-1] + bw2 * 3 + 0.15)
     ax2.set_ylim(0, 80)
     ax2.set_yticks([])
     for s in ("top", "right", "left"): ax2.spines[s].set_visible(False)
     ax2.spines["bottom"].set_color(HAIRLINE)
     ax2.tick_params(length=0)
-
-    # legenda pravého panelu
-    for di, (dv, dl, dc) in enumerate(delka_g):
-        ax2.plot([], [], color=dc, linewidth=8, solid_capstyle="round", label=dl)
-    ax2.legend(fontsize=9, frameon=False, loc="upper right", handlelength=1.2)
-
-    ax2.annotate("6+ let: otázka nebyla v anketě (kanály tehdy neexistovaly)",
-                 xy=(0.5, -0.14), xycoords="axes fraction",
-                 fontsize=8, color=GRAY, ha="center")
-    ax2.set_title("Posun k webu a podcastům u nejnovějších",
+    for di, (age_mask, al, ac) in enumerate(age_g):
+        ax2.plot([], [], color=ac, linewidth=8, solid_capstyle="round",
+                 label=al.replace("\n", " "))
+    ax2.legend(fontsize=9, frameon=False, loc="upper right", handlelength=1.0)
+    ax2.set_title("Věkový profil: mladší = 4× více digitálních kanálů",
                   fontsize=12, fontweight="bold", color=INK, loc="left", pad=14)
 
     save(fig, "akvizicni_kanaly.png")
