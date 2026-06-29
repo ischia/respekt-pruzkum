@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
-(function(){var k=sessionStorage.getItem('rpk');if(k!=='Pruzkum2026'){var p=prompt('Heslo:');if(p!=='Pruzkum2026'){document.documentElement.innerHTML='<body style="font:16px sans-serif;padding:2rem">Nesprávné heslo.</body>';throw'';} sessionStorage.setItem('rpk',p);}})();
+(function(){var k=sessionStorage.getItem('rpk');if(k!=='JednouRespektVzdyckyRespekt'){var p=prompt('Heslo:');if(p!=='JednouRespektVzdyckyRespekt'){document.documentElement.innerHTML='<body style="font:16px sans-serif;padding:2rem">Nesprávné heslo.</body>';throw'';} sessionStorage.setItem('rpk',p);}})();
 </script>
 <title>Respekt – průzkum předplatitelů (prototyp)</title>
 <style>
@@ -197,6 +197,13 @@
 <header>
   <h1><span class="r">Respekt</span> · průzkum předplatitelů <span style="color:var(--muted);font-weight:400;font-size:13px">— prototyp dashboardu</span></h1>
   <div class="sub">Definuj vlevo až tři segmenty (A/B/C) a porovnej je vedle sebe. U každého tématu je podíl osob v segmentu; svislá ryska = celek (baseline). „Řadit podle rozdílu" vynese nahoru témata, kde se segmenty nejvíc liší.</div>
+  <div id="upload-bar" style="margin-top:10px;display:flex;align-items:center;gap:10px">
+    <label style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px;background:var(--accent);color:#fff;border-radius:6px;cursor:pointer;font-size:12.5px;font-weight:600">
+      📂 Nahrát data.json
+      <input type="file" accept=".json" style="display:none" onchange="loadFile(this)">
+    </label>
+    <span id="upload-status" style="font-size:12px;color:var(--muted)">Data nejsou načtena — nahraj soubor data.json</span>
+  </div>
 </header>
 <div class="wrap">
   <aside>
@@ -257,9 +264,29 @@ const segs=[
 ];
 let active=0, showBase=false, denom='all', sortMode='base';
 
-fetch('data.json').then(r=>r.json()).then(d=>{DATA=d;init();})
-  .catch(()=>{document.getElementById('panels').innerHTML=
-    '<div class="panel">Nepodařilo se načíst <code>data.json</code>. Spusť přes <code>python3 dashboard/serve.py</code> a otevři http://localhost:8731/.</div>';});
+function loadFile(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      DATA=JSON.parse(e.target.result);
+      document.getElementById('upload-status').textContent='✓ '+file.name+' načten ('+DATA.rows.length+' respondentů)';
+      document.getElementById('upload-status').style.color='#15a05a';
+      init();
+    }catch(err){
+      document.getElementById('upload-status').textContent='Chyba: soubor není platný JSON.';
+      document.getElementById('upload-status').style.color='var(--accent)';
+    }
+  };
+  reader.readAsText(file);
+}
+
+fetch('data.json').then(r=>r.json()).then(d=>{
+  DATA=d;
+  document.getElementById('upload-status').textContent='✓ data.json načten lokálně';
+  document.getElementById('upload-status').style.color='#15a05a';
+  init();
+}).catch(()=>{});
 
 function init(){
   DATA.filters.forEach((f,i)=>{FI[f.key]=i;FMETA[f.key]=f;});
