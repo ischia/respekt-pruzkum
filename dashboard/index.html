@@ -3,8 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{visibility:hidden}</style>
 <script>
-(function(){var k=sessionStorage.getItem('rpk');if(k!=='JednouRespektVzdyckyRespekt'){var p=prompt('Heslo:');if(p!=='JednouRespektVzdyckyRespekt'){document.documentElement.innerHTML='<body style="font:16px sans-serif;padding:2rem">Nesprávné heslo.</body>';throw'';} sessionStorage.setItem('rpk',p);}})();
+(function(){
+  var PWD='JednouRespektVzdyckyRespekt';
+  function unlock(){document.addEventListener('DOMContentLoaded',function(){document.body.style.visibility='';})}
+  function deny(){document.addEventListener('DOMContentLoaded',function(){document.body.style.visibility='';document.body.innerHTML='<p style="font:16px sans-serif;padding:2rem">Nesprávné heslo.</p>';})}
+  if(sessionStorage.getItem('rpk')===PWD){unlock();return;}
+  var p=prompt('Heslo:');
+  if(p===PWD){sessionStorage.setItem('rpk',p);unlock();}else{deny();}
+})();
 </script>
 <title>Respekt – průzkum předplatitelů (prototyp)</title>
 <style>
