@@ -104,13 +104,29 @@
   .panel .hint{color:var(--muted);font-size:11px;margin:0 0 9px}
   .panel .cap{font-size:11px;color:#8a6d00;background:#fbf3d6;border:1px solid #efe0a8;
     border-radius:6px;padding:4px 9px;margin:0 0 9px;cursor:help}
+  /* přepínač pohledů (taby v hlavičce) */
+  .views{display:flex;gap:6px;margin-top:13px}
+  .vtab{padding:7px 16px;border:1px solid var(--line);border-radius:8px;background:var(--bg);
+    cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)}
+  .vtab:hover{border-color:#bbb}
+  .vtab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* pohled Kohorty (statické heatmapy na plnou šířku) */
+  .kview{padding:18px 28px 70px;max-width:1180px;margin:0 auto}
+  .kintro{color:var(--muted);font-size:12.5px;max-width:760px;margin:0 0 18px;line-height:1.55}
+
+  /* rychlé starty (sbalené presety) */
+  .quickstart{margin:2px 0 6px;border:1px solid var(--line);border-radius:9px;background:var(--bg);padding:0 10px}
+  .quickstart summary{cursor:pointer;font-size:12px;font-weight:700;padding:9px 2px;list-style:none;
+    text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .quickstart summary::-webkit-details-marker{display:none}
+  .quickstart summary::before{content:"▸ "}
+  .quickstart[open] summary::before{content:"▾ "}
+  .quickstart .ftitle{margin-top:8px}
+
   /* kohortové heatmapy */
-  .hm-head{font-size:13px;font-weight:600;cursor:pointer;user-select:none;margin:6px 0 10px;
-    color:var(--ink)}
-  .hm-head .hm-caret{display:inline-block;transition:transform .15s;font-size:11px}
-  .hm-head.collapsed .hm-caret{transform:rotate(-90deg)}
-  #heatmaps{display:grid;grid-template-columns:repeat(auto-fit,minmax(440px,1fr));gap:14px;margin-bottom:14px}
-  #heatmaps.hidden{display:none}
+  #heatmaps{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:16px;margin-bottom:14px}
+  .kview .hm-cell{height:48px;font-size:13px}
   .hm-panel h2{margin:0 0 1px;font-size:13.5px}
   .hm-grid{display:grid;gap:3px;margin-top:8px;font-variant-numeric:tabular-nums}
   .hm-coh{text-align:center;font-size:11px;font-weight:500;padding:0 0 3px;line-height:1.25}
@@ -207,7 +223,7 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
 </script>
 <header>
   <h1><span class="r">Respekt</span> · průzkum předplatitelů <span style="color:var(--muted);font-weight:400;font-size:13px">— prototyp dashboardu</span></h1>
-  <div class="sub">Definuj vlevo až tři segmenty (A/B/C) a porovnej je vedle sebe. U každého tématu je podíl osob v segmentu; svislá ryska = celek (baseline). „Řadit podle rozdílu" vynese nahoru témata, kde se segmenty nejvíc liší.</div>
+  <div class="sub">Definuj vlevo až dva segmenty (A/B) a porovnej je vedle sebe i proti celku. U každého tématu je podíl osob v segmentu; svislá ryska = celek (baseline). „Řadit podle rozdílu" vynese nahoru témata, kde se segmenty nejvíc liší.</div>
   <div id="upload-bar" style="margin-top:10px;display:flex;align-items:center;gap:10px">
     <label style="display:inline-flex;align-items:center;gap:7px;padding:6px 12px;background:var(--accent);color:#fff;border-radius:6px;cursor:pointer;font-size:12.5px;font-weight:600">
       📂 Nahrát data.json
@@ -215,19 +231,25 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
     </label>
     <span id="upload-status" style="font-size:12px;color:var(--muted)">Data nejsou načtena — nahraj soubor data.json</span>
   </div>
+  <nav class="views" id="viewNav">
+    <button class="vtab active" data-view="explorer">Průzkumník</button>
+    <button class="vtab" data-view="kohorty">Kohorty (heatmapy)</button>
+  </nav>
 </header>
-<div class="wrap">
+<div class="wrap" id="explorerView">
   <aside>
     <div class="ftitle">Segmenty</div>
     <div class="tabs" id="tabs"></div>
     <label class="baseline-row"><input type="checkbox" id="showBase"> ukázat celek (baseline)</label>
     <button class="share" id="share">🔗 zkopírovat odkaz na tento pohled</button>
 
-    <div class="ftitle">Předdefinované segmenty (kanál)</div>
-    <div class="presets" id="presets"></div>
-
-    <div class="ftitle">Podle vztahu / zapojení</div>
-    <div class="presets" id="presets2"></div>
+    <details class="quickstart" id="quickstart">
+      <summary>Rychlé starty</summary>
+      <div class="ftitle">Předdefinované segmenty (kanál)</div>
+      <div class="presets" id="presets"></div>
+      <div class="ftitle">Podle vztahu / zapojení</div>
+      <div class="presets" id="presets2"></div>
+    </details>
 
     <div class="editor" id="editor"></div>
 
@@ -246,12 +268,16 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
   <main>
     <div class="topbar" id="topbar"></div>
     <div id="insights"></div>
-    <div class="hm-head" id="heatToggle"><span class="hm-caret">▾</span> Kohortové heatmapy (věk × pohlaví)</div>
-    <div id="heatmaps"></div>
     <div class="legend" id="legend"></div>
     <div id="panels"></div>
   </main>
 </div>
+
+<section class="kview" id="kohortyView" style="display:none">
+  <p class="kintro">Statické přehledy podle kohorty (věk × pohlaví). Na rozdíl od Průzkumníku se nemění
+    podle vybraných segmentů — jde o pevný referenční pohled na celý vzorek (N = 2 139).</p>
+  <div id="heatmaps"></div>
+</section>
 
 <div class="overlay" id="overlay">
   <div class="modal">
@@ -271,9 +297,8 @@ const COLORS={A:'#e2342f',B:'#2f6fe2',C:'#15a05a'};
 const segs=[
   {id:'A',color:COLORS.A,on:true,cons:{}},
   {id:'B',color:COLORS.B,on:false,cons:{}},
-  {id:'C',color:COLORS.C,on:false,cons:{}},
 ];
-let active=0, showBase=false, denom='all', sortMode='base';
+let active=0, showBase=true, denom='all', sortMode='base';
 
 function loadFile(input){
   const file=input.files[0]; if(!file) return;
@@ -329,11 +354,8 @@ function init(){
       b.textContent='✓ zkopírováno do schránky'; setTimeout(()=>b.textContent=t,1600);
     });
   };
-  // přepínač heatmap
-  document.getElementById('heatToggle').onclick=()=>{
-    document.getElementById('heatToggle').classList.toggle('collapsed');
-    document.getElementById('heatmaps').classList.toggle('hidden');
-  };
+  // přepínač pohledů (Průzkumník / Kohorty)
+  document.querySelectorAll('#viewNav .vtab').forEach(b=>b.onclick=()=>setView(b.dataset.view));
   buildPresets(); buildPresets2(); renderHeatmaps();
   buildTabs(); renderEditor(); renderPanels();
 }
@@ -367,6 +389,13 @@ function loadBehaviorPreset(i){
   const p=DATA.behavior_presets[i], s=segs[active];
   s.on=true; s.cons=JSON.parse(JSON.stringify(p.cons));
   buildTabs(); renderEditor(); renderPanels(); syncURL();
+}
+
+/* ---------- přepínač pohledů ---------- */
+function setView(v){
+  document.querySelectorAll('#viewNav .vtab').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+  document.getElementById('explorerView').style.display = v==='kohorty'?'none':'';
+  document.getElementById('kohortyView').style.display  = v==='kohorty'?'':'none';
 }
 
 /* ---------- kohortové heatmapy ---------- */
