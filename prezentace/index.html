@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){var k=sessionStorage.getItem('rpk');if(k!=='Pruzkum2026'){var p=prompt('Heslo:');if(p!=='Pruzkum2026'){document.documentElement.innerHTML='<body style="font:16px sans-serif;padding:2rem">Nesprávné heslo.</body>';throw'';} sessionStorage.setItem('rpk',p);}})();
+</script>
 <title>Respekt — klíčová zjištění</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
 <style>
@@ -84,6 +87,50 @@
   .reveal .controls{ color:var(--red); }
   .reveal .slide-number{ background:transparent; color:var(--gray); font-family:var(--font-sans);
                          left:12px; right:auto; bottom:10px; top:auto; font-size:14px; }
+
+  /* ---- Dvousloupcové slajdy (h2 přes celou šířku, vlevo graf, vpravo text, dole callout) ---- */
+  .reveal section.two-col {
+    display: grid !important;
+    grid-template-areas:
+      "hdr hdr"
+      "vis txt"
+      "cta cta";
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 52% 44%;
+    column-gap: 28px;
+    row-gap: 18px;
+    align-content: start;
+  }
+  .reveal section.two-col > h2 { grid-area: hdr; }
+  .reveal section.two-col > ul  { grid-area: txt; align-self: start; margin-bottom: 0; }
+  .reveal section.two-col > blockquote { grid-area: cta; margin-top: 4px; }
+  .reveal section.two-col > p:has(img) { grid-area: vis; align-self: center; margin: 0; }
+  .reveal section.two-col > p:has(img) > img {
+    max-width: 100% !important;
+    max-height: 460px !important;
+    margin: 0 auto;
+  }
+  /* lehce zmenšený font pro dvousloupcové slajdy */
+  .reveal section.two-col li { font-size: 18px; margin-bottom: 11px; }
+  .reveal section.two-col blockquote { font-size: 16px; }
+
+  /* ---- RICE tabulka (appendix) ---- */
+  .reveal section table{ font-family:var(--font-sans); border-collapse:collapse; width:100%;
+                         margin:6px 0 14px; background:#fff; border-radius:8px; overflow:hidden;
+                         box-shadow:0 6px 20px rgba(24,29,39,.07); font-size:15px; }
+  .reveal section thead th{ background:var(--ink); color:#fff; font-weight:700; font-size:11px;
+                            text-transform:uppercase; letter-spacing:.04em; padding:9px 12px;
+                            text-align:left; border:none; }
+  .reveal section tbody td{ padding:6px 12px; border:none; border-bottom:1px solid var(--hairline);
+                            color:var(--graphite); vertical-align:middle; }
+  .reveal section tbody tr:last-child td{ border-bottom:none; }
+  .reveal section tbody td strong{ color:var(--red); font-weight:700; }
+  .reveal section td:not(:first-child), .reveal section th:not(:first-child){ text-align:center; }
+  .reveal section table abbr[title]{ color:var(--red); cursor:help; text-decoration:none;
+                                     font-weight:800; border:none; margin-left:3px; }
+  .reveal section .rice-note{ font-family:var(--font-serif); font-size:15px; color:var(--graphite);
+                              line-height:1.45; margin:6px 0 0; }
+  .reveal section .rice-note .dagger{ color:var(--red); font-weight:800; }
 </style>
 </head>
 <body>
