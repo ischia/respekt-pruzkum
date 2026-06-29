@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>body{visibility:hidden}</style>
 <script>
 (function(){
   var PWD='JednouRespektVzdyckyRespekt';
-  function unlock(){document.addEventListener('DOMContentLoaded',function(){document.body.style.visibility='';})}
-  function deny(){document.addEventListener('DOMContentLoaded',function(){document.body.style.visibility='';document.body.innerHTML='<p style="font:16px sans-serif;padding:2rem">Nesprávné heslo.</p>';})}
-  if(sessionStorage.getItem('rpk')===PWD){unlock();return;}
-  var p=prompt('Heslo:');
-  if(p===PWD){sessionStorage.setItem('rpk',p);unlock();}else{deny();}
+  var el=document.documentElement;
+  el.style.visibility='hidden';
+  var ok=sessionStorage.getItem('rpk')===PWD;
+  if(!ok){var p=prompt('Heslo:');if(p===PWD){sessionStorage.setItem('rpk',p);ok=true;}}
+  if(ok){el.style.visibility='';}
+  else{document.addEventListener('DOMContentLoaded',function(){document.body.innerHTML='<p style="font:16px sans-serif;padding:2rem">Nesprávné heslo.</p>';el.style.visibility='';});}
 })();
 </script>
 <title>Respekt — klíčová zjištění</title>
