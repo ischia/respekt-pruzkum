@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Respekt — klíčová zjištění</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
 <style>
@@ -127,6 +127,15 @@
                          background:var(--ink);
                          -webkit-mask:url('assets/respekt-wordmark.svg') no-repeat center/contain;
                          mask:url('assets/respekt-wordmark.svg') no-repeat center/contain; }
+
+  /* ---- Mobil ---- */
+  @media (max-width: 700px) {
+    /* R monogram skrýt — na mobilu není zarovnané */
+    .reveal .corner-r { display: none !important; }
+    /* Více prostoru kolem grafů */
+    .reveal section img { margin: 20px auto; padding: 12px; }
+    .reveal section.two-col > p:has(img) { margin: 12px 0; }
+  }
 </style>
 </head>
 <body>
