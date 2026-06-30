@@ -235,7 +235,7 @@
 <body>
 <div id="rpk-gate" style="position:fixed;inset:0;background:#faf9f7;z-index:99999;display:flex;align-items:center;justify-content:center;font-family:sans-serif">
   <form onsubmit="rpkCheck(event)" style="text-align:center;max-width:320px;width:90%">
-    <div style="font-size:1.3em;font-weight:700;margin-bottom:.3em">Respekt</div>
+    <div style="width:150px;height:46px;margin:0 auto .8em;background:#181D27;-webkit-mask:url('../prezentace/assets/respekt-wordmark.svg') no-repeat center/contain;mask:url('../prezentace/assets/respekt-wordmark.svg') no-repeat center/contain"></div>
     <div style="color:#666;margin-bottom:1.2em;font-size:.9em">Průzkum předplatitelů — interní materiál</div>
     <input id="rpk-in" type="password" placeholder="Heslo" autofocus style="width:100%;padding:9px 12px;border:1px solid #ccc;border-radius:7px;font-size:1em;box-sizing:border-box;margin-bottom:.6em">
     <button type="submit" style="width:100%;padding:9px;background:#CE0B24;color:#fff;border:none;border-radius:7px;font-size:1em;cursor:pointer;font-weight:600">Vstoupit</button>
@@ -243,7 +243,7 @@
   </form>
 </div>
 <script>
-var RPK_PWD='JednouRespektVzdyckyRespekt';
+var RPK_PWD='Lucerna';
 function rpkCheck(e){e.preventDefault();if(document.getElementById('rpk-in').value===RPK_PWD){sessionStorage.setItem('rpk',RPK_PWD);document.getElementById('rpk-gate').remove();}else{document.getElementById('rpk-err').textContent='Nesprávné heslo.';document.getElementById('rpk-in').value='';document.getElementById('rpk-in').focus();}}
 if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').remove();}
 </script>
