@@ -204,6 +204,32 @@
   .mcount{padding:2px 18px 8px;color:var(--muted);font-size:12px}
   .mlist{overflow:auto;padding:0 18px 16px}
   .mlist .ans{padding:8px 0;border-top:1px solid #f1efec;font-size:13px;line-height:1.5;white-space:pre-wrap}
+
+  /* ---- RICE audit tab ---- */
+  #riceView h2{font-size:16px;margin:0 0 4px}
+  .rlead{font-size:13px;color:#444;max-width:840px;margin:0 0 16px;line-height:1.6}
+  .rlead b{color:var(--ink)}
+  .rtable{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
+    border-radius:11px;overflow:hidden;font-size:13px;margin:0 0 6px}
+  .rtable th{background:#2b2b2b;color:#fff;font-weight:700;font-size:10.5px;text-transform:uppercase;
+    letter-spacing:.5px;padding:9px 12px;text-align:left}
+  .rtable th.num{text-align:center}
+  .rtable td{padding:7px 12px;border-top:1px solid var(--line);color:#333}
+  .rtable tr:first-child td{border-top:none}
+  .rtable td.init{color:var(--ink);font-weight:600}
+  .rtable td.num{text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .rtable tbody tr:hover td{background:var(--bg)}
+  .r-hi{color:var(--accent);font-weight:700}
+  .rtable abbr[title]{color:var(--accent);cursor:help;text-decoration:none;font-weight:800;margin-left:3px}
+  .r-dagger{color:var(--accent);font-weight:800}
+  .r-pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px}
+  .r-pill.hi{background:#2b2b2b;color:#fff}
+  .r-pill.mid{background:#e6e3de;color:#555}
+  .r-pill.lo{background:#f0ede8;color:#999}
+  .rnote{color:var(--muted);font-size:11.5px;margin:6px 0 20px}
+  .rhowto{background:#fbf3d6;border:1px solid #efe0a8;border-radius:9px;padding:11px 15px;
+    font-size:12.5px;color:#5c4d12;line-height:1.6;margin-top:8px}
+  .rhowto b{color:#3d3308}
 </style>
 </head>
 <body>
@@ -234,6 +260,7 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
   <nav class="views" id="viewNav">
     <button class="vtab active" data-view="explorer">Průzkumník</button>
     <button class="vtab" data-view="kohorty">Kohorty (heatmapy)</button>
+    <button class="vtab" data-view="rice">RICE audit</button>
   </nav>
 </header>
 <div class="wrap" id="explorerView">
@@ -277,6 +304,10 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
   <p class="kintro">Statické přehledy podle kohorty (věk × pohlaví). Na rozdíl od Průzkumníku se nemění
     podle vybraných segmentů — jde o pevný referenční pohled na celý vzorek (N = 2 139).</p>
   <div id="heatmaps"></div>
+</section>
+
+<section class="kview" id="riceView" style="display:none">
+  <div id="riceBody"></div>
 </section>
 
 <div class="overlay" id="overlay">
@@ -323,6 +354,9 @@ fetch('data.json').then(r=>r.json()).then(d=>{
   document.getElementById('upload-status').style.color='#15a05a';
   init();
 }).catch(()=>{});
+
+// přepínač pohledů wirovat nezávisle na data.json (RICE tab funguje i bez něj, vč. GH Pages)
+document.querySelectorAll('#viewNav .vtab').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 
 function init(){
   DATA.filters.forEach((f,i)=>{FI[f.key]=i;FMETA[f.key]=f;});
@@ -394,8 +428,65 @@ function loadBehaviorPreset(i){
 /* ---------- přepínač pohledů ---------- */
 function setView(v){
   document.querySelectorAll('#viewNav .vtab').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
-  document.getElementById('explorerView').style.display = v==='kohorty'?'none':'';
+  document.getElementById('explorerView').style.display = v==='explorer'?'':'none';
   document.getElementById('kohortyView').style.display  = v==='kohorty'?'':'none';
+  document.getElementById('riceView').style.display     = v==='rice'?'':'none';
+  if(v==='rice') ensureRice();
+}
+
+/* ---------- RICE audit (nezávislé na data.json) ---------- */
+let RICE=null;
+function ensureRice(){
+  if(RICE){return;}
+  fetch('rice.json').then(r=>r.json()).then(d=>{RICE=d;renderRice();})
+    .catch(()=>{document.getElementById('riceBody').innerHTML=
+      '<p class="rlead">Soubor <code>rice.json</code> se nepodařilo načíst. Vygeneruj ho příkazem '+
+      '<code>python3 dashboard/build_rice.py</code>.</p>';});
+}
+function renderRice(){
+  const d=RICE; if(!d) return;
+  const PILL={'vysoká':'hi','střední':'mid','nízká':'lo'};
+  const pill=c=>`<span class="r-pill ${PILL[c]||'lo'}">${c}</span>`;
+  const info=n=>n?` <abbr title="${esc(n).replace(/"/g,'&quot;')}">ⓘ</abbr>`:'';
+  const liftCell=v=>{
+    if(v==null) return '<td class="num">—</td>';
+    const s=v.toFixed(1).replace('.',',')+'×';
+    return `<td class="num${v>=1.2?' r-hi':''}">${s}</td>`;
+  };
+  const row=o=>{
+    let reach,lifts,name;
+    if(o.text){
+      reach=o.n!=null?'~'+o.n:'—';
+      lifts='<td class="num">—</td><td class="num">—</td>';
+      name=esc(o.init)+' <span class="r-dagger">†</span>';
+    }else{
+      reach=o.n+' / '+Math.round(o.pct)+' %';
+      lifts=liftCell(o.churn_lift)+liftCell(o.young_lift);
+      name=esc(o.init);
+    }
+    return `<tr><td class="init">${name}${info(o.note)}</td>`+
+      `<td class="num">${reach}</td>${lifts}<td class="num">${pill(o.conf)}</td></tr>`;
+  };
+  const head=lbl=>`<tr><th>Iniciativa</th><th class="num">${lbl}</th>`+
+    `<th class="num">Churn-lift</th><th class="num">Mladší-lift</th><th class="num">Conf.</th></tr>`;
+  const measured=d.items.filter(o=>!o.text), text=d.items.filter(o=>o.text);
+  document.getElementById('riceBody').innerHTML=
+    `<h2>RICE audit — vstupy z průzkumu</h2>`+
+    `<p class="rlead"><b>Co survey dodává:</b> Reach (osoby, OR napříč zdroji) + dva Impact-signály + Confidence. `+
+    `<b>Effort, finální Impact a RICE skóre doplní produkt/eng tým.</b><br>`+
+    `N = ${d.N.toLocaleString('cs')} · mladší &lt;44 = ${d.nY.toLocaleString('cs')} · `+
+    `uvažovali o zrušení = ${d.nC.toLocaleString('cs')}. `+
+    `Lift &gt;1× = nadprůměr; churn-lift mezi těmi, kdo zvažovali odchod, mladší-lift mezi &lt;44.</p>`+
+    `<table class="rtable"><thead>${head('Reach (n / %)')}</thead><tbody>${measured.map(row).join('')}</tbody></table>`+
+    `<p class="rnote">Reach = osoby (logické NEBO napříč zdroji). Lift &gt;1× = nadprůměr vůči celku.</p>`+
+    `<h2 style="margin-top:24px">Z volného textu a doporučení <span class="r-dagger">†</span></h2>`+
+    `<table class="rtable"><thead>${head('Reach')}</thead><tbody>${text.map(row).join('')}</tbody></table>`+
+    `<p class="rnote"><span class="r-dagger">†</span> Z volného textu / doporučení — nemají vlastní otázku `+
+    `v dotazníku, survey je nevyčísluje; Reach = ruční odhad počtu zmínek nebo „—". Najetím na ⓘ se zobrazí zdroj.</p>`+
+    `<div class="rhowto"><b>Jak číst dál (RICE):</b> Reach = osoby/rok (případně škálovat na celou bázi); `+
+    `Impact dle cíle (retence → churn-lift, akvizice/návyk → mladší-lift); Confidence = velikost vzorku + `+
+    `shoda víc zdrojů; Effort doplní tým → <code>RICE = Reach × Impact × Confidence / Effort</code>. `+
+    `Část baterií měla v dotazníku strop 2 voleb → Reach je konzervativní spodní odhad (top-2 priority).</div>`;
 }
 
 /* ---------- kohortové heatmapy ---------- */
