@@ -128,13 +128,32 @@
                          -webkit-mask:url('assets/respekt-wordmark.svg') no-repeat center/contain;
                          mask:url('assets/respekt-wordmark.svg') no-repeat center/contain; }
 
-  /* ---- Mobil ---- */
+  /* ---- Mobil (Reveal width=390) ---- */
   @media (max-width: 700px) {
-    /* R monogram skrýt — na mobilu není zarovnané */
+    /* R monogram skrýt */
     .reveal .corner-r { display: none !important; }
-    /* Více prostoru kolem grafů */
-    .reveal section img { margin: 20px auto; padding: 12px; }
-    .reveal section.two-col > p:has(img) { margin: 12px 0; }
+    /* Větší fonty pro 390px slide koordináty */
+    .reveal h2 { font-size: 22px; margin-bottom: 10px; padding-bottom: 8px; }
+    .reveal li { font-size: 15px; margin-bottom: 6px; }
+    .reveal blockquote { font-size: 13px; padding: 10px 14px; }
+    .reveal .stat { font-size: 64px; }
+    /* Dvousloupcové → jeden sloupec: h2 → graf → text → callout */
+    .reveal section.two-col {
+      grid-template-areas: "hdr" "vis" "txt" "cta";
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto auto;
+      row-gap: 10px;
+    }
+    .reveal section.two-col li { font-size: 14px; margin-bottom: 5px; }
+    .reveal section.two-col blockquote { font-size: 12px; }
+    /* Grafy na plnou šířku */
+    .reveal section img {
+      max-width: 100% !important; max-height: 260px !important;
+      margin: 8px auto; padding: 10px;
+    }
+    .reveal section.two-col > p:has(img) > img {
+      max-width: 100% !important; max-height: 240px !important;
+    }
   }
 </style>
 </head>
@@ -166,8 +185,10 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/markdown/markdown.js"></script>
 <script>
+  var _mob = window.innerWidth <= 700;
   Reveal.initialize({
-    width: 1120, height: 760, margin: 0.035, minScale: 0.2, maxScale: 1.6,
+    width: _mob ? 390 : 1120, height: _mob ? 700 : 760,
+    margin: _mob ? 0.03 : 0.035, minScale: 0.2, maxScale: _mob ? 1.0 : 1.6,
     hash: true, slideNumber: 'c/t', controls: true, progress: true,
     transition: 'slide', plugins: [ RevealMarkdown ],
   });
@@ -179,7 +200,9 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
     document.querySelector('.corner-r').classList.toggle('hide', dark);
   }
   // R, šipky a číslo zarovnat k okrajům obsahu (referenece = .slides, stabilní přes všechny slidy)
+  // Na mobilu přeskočit — chrome v default pozici, R skryté přes CSS
   function layoutChrome(){
+    if(window.innerWidth <= 700) return;
     var vw=window.innerWidth, vh=window.innerHeight;
     var box=document.querySelector('.reveal .slides').getBoundingClientRect();
     var leftInset=Math.max(0,Math.round(box.left));
