@@ -1,5 +1,6 @@
 <!-- .slide: data-background-color="#222222" -->
 <div class="dark title">
+<div class="wordmark"></div>
 <p class="kicker">PŘEDPLATITELSKÝ PRŮZKUM</p>
 <h1>Klíčová zjištění</h1>
 <p class="meta">N = 2 139 dokončených odpovědí · export 20. 6. 2026</p>
@@ -80,7 +81,7 @@
 
 ![](charts/churneri_overindex.png)
 
-> Retence musí mířit na obě osy zvlášť — produktové opravy neudrží toho, kdo odchází kvůli vnímané jednostrannosti.
+> Je dobré vnímat tu hodnotovou osu, ale ona je klíčová pro tu majoritu, takže doporučení je zaměřit se nyní na produktovou.
 
 ---
 
@@ -273,8 +274,6 @@
 - Z volného textu: část přichází přes odkaz (newsletter, sítě, RSS, QR z tisku) — 15 zmínek
 - Část jde rovnou na audio, EPUB nebo přímo do aplikace — 8 zmínek
 
-> Brát newsletter a sociální sítě jako distribuční kanál, ne marketingovou ozdobu — investovat do nich.
-
 ---
 
 ## 21 · Cena hraje roli při přechodu na digitál
@@ -291,7 +290,7 @@
 
 <!-- .slide: data-background-color="#222222" -->
 <div class="dark divider">
-<p class="kicker">22–28 · OBSAH, REDAKCE A REKLAMA</p>
+<p class="kicker">22–27 · OBSAH, REDAKCE A REKLAMA</p>
 <h1>Redakční signály</h1>
 </div>
 
@@ -304,8 +303,6 @@
 - Hodnotové souznění je v chvále (173) i ve výtce (bias 64) — stejná osa, opačná valence
 
 ![](charts/vytky.png)
-
-> Redakční reflexe kultury, vyváženosti a délky; „bias" je menšinový, ale hlasitý a hodnotově nabitý signál.
 
 ---
 
@@ -324,20 +321,7 @@
 ---
 
 <!-- .slide: class="two-col" -->
-## 24 · Chyby v textech: chválíme psaní, chybí korektura audia
-
-- Kvalita psaní / jazyk chválena (Q155): **370×**
-- Audio chyby výslovnosti / AI hlas (Q156): **102×**
-- Gramatika / překlepy v textu (Q156): jen **4×**
-
-![](charts/chyby_textu.png)
-
-> Textové korektury nejsou problém. Prioritou je audio QA — výslovnost, předěly, rozlišení hlasů v rozhovorech.
-
----
-
-<!-- .slide: class="two-col" -->
-## 25 · Publikum chce delší obsah, ne kratší
+## 24 · Publikum chce delší obsah, ne kratší
 
 - U textů: **67 % spíše delší**, jen 17 % kratší → 4 z 5 lidí s názorem chtějí delší
 
@@ -347,7 +331,7 @@
 
 ---
 
-## 26 · Loajalita stojí na dvou osách: důvěra/fakta vs. vyváženost
+## 25 · Loajalita stojí na dvou osách: důvěra/fakta vs. vyváženost
 
 <p class="stat">194 : 170</p>
 
@@ -358,19 +342,17 @@
 
 ---
 
-## 27 · Drobné, ale opakované značkové signály: obálka a tón
+## 26 · Drobné, ale opakované značkové signály: obálka a tón
 
 <p class="stat">39 + 28</p>
 
 - Grafika / obálka / ilustrace 39 — opakované „chybí Reisenauer"
 - Tón / víc pozitivního 28 — „depresivní", chybí naděje a řešení
 
-> Vizuální identita má emoční vazbu ke značce.
-
 ---
 
 <!-- .slide: class="two-col" -->
-## 28 · Reklama — konkrétní stížnost, malá škála
+## 27 · Reklama — konkrétní stížnost, malá škála
 
 - Rušivé reklamy (bariéra checkbox): **90 osob (4,2 %)** — nejčastější signál; celkem 103 explicitních zmínek
 - Nespokojenost s množstvím reklamy (škála): 72 / 1 582 (4,5 % z těch, co odpověděli)
@@ -379,83 +361,18 @@
 
 ![](charts/reklama.png)
 
-> Signál je malý, ale konkrétní: **předplatitelé nechápou, proč jim jako platícím zákazníkům vyskakují bannery na vlastní akce Respektu.** Vypnutí self-promo pro přihlášené je nízkonákladová výhra.
+> Signál je malý, ale konkrétní: **předplatitelé nechápou, proč jim jako platícím zákazníkům vyskakují bannery na vlastní akce Respektu.** Možnost regulace self-promo pro přihlášené (Klubaře?) je nízkonákladová výhra.
 
 ---
 
-## Exekutivní shrnutí
+<!-- .slide: class="summary" -->
+## Shrnutí
 
 - **Báze je spokojená a loajální** — 92 % vysoké setrvání, jen 12,8 % zvažuje odchod. Kotvou je hodnota a kvalita, ne cena.
 - **Riziko je v rozložení, ne v průměru** — churn se koncentruje: první rok (17 %), pasivní digitál (19 %), mladší muži (18 %).
-- **Tři produktové páky** — audio / AI hlas, vyhledávání a archiv, přehlednost aplikace.
+- **Tři produktové páky** — audio / AI hlas, vyhledávání, UI / odlišení přečteného (konečnost).
 - **Redakční signály** jsou menšinové, ale hlasité — kultura, vnímaná jednostrannost, „depresivní" tón, délka.
 
-> **Top 5:**
-> - onboarding 1. roku
-> - aktivace pasivních (frekvence = early-warning)
-> - audio
-> - vyhledávání + přehlednost
-> - chránit jádro a komunikovat hodnotu.
-
----
-
-<!-- .slide: data-background-color="#222222" -->
-<div class="dark closing">
-<h1>Tři priority do akce</h1>
-<ol>
-<li><strong>Udržet nové a utlumené</strong> — onboarding 1. roku + aktivace pasivního digitálu; frekvence jako early-warning.</li>
-<li><strong>Produktové páky</strong> — audio / AI hlas, vyhledávání a archiv, přehlednost aplikace.</li>
-<li><strong>Chránit jádro a hodnotu</strong> — hloubka, nezávislost, tištěný rituál; komunikovat hodnotu, ne slevu.</li>
-</ol>
-</div>
-
----
-
-<!-- .slide: data-background-color="#222222" -->
-<div class="dark divider">
-<p class="kicker">APPENDIX</p>
-<h1>RICE audit — vstupy z průzkumu</h1>
-</div>
-
-<!-- Zdroj čísel: dashboard/build_rice.py → RICE_vstupy.md. Při změně dat slidy ručně srovnat. -->
-
----
-
-## RICE audit — měřené produktové iniciativy
-
-<table>
-<thead><tr><th>Iniciativa</th><th>Reach (n / %)</th><th>Churn-lift</th><th>Mladší-lift</th><th>Conf.</th></tr></thead>
-<tbody>
-<tr><td>Audiočlánky ladění (kvalita / AI hlas)</td><td>336 / 16 %</td><td><strong>1,4×</strong></td><td><strong>1,4×</strong></td><td>vysoká</td></tr>
-<tr><td>Výraznější odlišení přečteného</td><td>256 / 12 %</td><td>0,9×</td><td><strong>1,3×</strong></td><td>vysoká</td></tr>
-<tr><td>Přehlednost / navigace UI</td><td>254 / 12 %</td><td><strong>1,4×</strong></td><td><strong>1,5×</strong></td><td>vysoká</td></tr>
-<tr><td>Vyhledávání (v appce / archiv)</td><td>247 / 12 %</td><td>0,8×</td><td><strong>1,3×</strong></td><td>vysoká</td></tr>
-<tr><td>Souhrny / kratší verze článků</td><td>187 / 9 %</td><td><strong>1,8×</strong></td><td><strong>1,2×</strong></td><td>střední</td></tr>
-<tr><td>Deeplinky (otevírat články z odkazů v appce)</td><td>126 / 6 %</td><td>1,2×</td><td><strong>1,7×</strong></td><td>střední</td></tr>
-<tr><td>CarPlay / Android Auto</td><td>126 / 6 %</td><td><strong>1,2×</strong></td><td><strong>1,3×</strong></td><td>střední</td></tr>
-<tr><td>Audio: playlist / ovládání</td><td>125 / 6 %</td><td><strong>1,2×</strong></td><td><strong>1,4×</strong></td><td>střední</td></tr>
-<tr><td>Výkon / stabilita appky</td><td>122 / 6 %</td><td><strong>1,3×</strong></td><td><strong>1,4×</strong></td><td>střední</td></tr>
-<tr><td>Lepší offline režim</td><td>93 / 4 %</td><td><strong>1,6×</strong></td><td><strong>1,3×</strong></td><td>střední</td></tr>
-<tr><td>Notifikace – automatizace, podcasty/témata/autoři</td><td>47 / 2 %</td><td>0,8×</td><td>1,1×</td><td>nízká</td></tr>
-<tr><td>Vypnout self-promo bannery pro přihlášené<abbr title="Měřeno přes výtku „reklamy“ (Q156); ~5 zmínek explicitně self-promo, low-effort">ⓘ</abbr></td><td>21 / 1 %</td><td><strong>1,9×</strong></td><td>0,3×</td><td>nízká</td></tr>
-<tr><td>Přístupnost (velikost písma)</td><td>10 / 0 %</td><td>0,0×</td><td>0,3×</td><td>nízká</td></tr>
-</tbody>
-</table>
-
-<p class="rice-note">Reach = osoby (logické NEBO napříč zdroji). Lift &gt;1× = nadprůměr mezi těmi, kdo zvažovali odchod (churn) / je jim &lt;44 (mladší). <strong>Effort a finální RICE skóre doplní produkt/eng tým.</strong></p>
-
----
-
-## RICE audit — z volného textu a doporučení <span style="color:var(--red)">†</span>
-
-<table>
-<thead><tr><th>Iniciativa</th><th>Reach</th><th>Churn-lift</th><th>Mladší-lift</th><th>Conf.</th></tr></thead>
-<tbody>
-<tr><td>Příznak „vyjde v tištěném vydání“<abbr title="5 zmínek v textu (Q153) – aby čtenáři článek nečetli digitálně dřív">ⓘ</abbr></td><td>~5</td><td>—</td><td>—</td><td>nízká</td></tr>
-<tr><td>Kopírování textu<abbr title="Z volného textu (Q156), počet zmínek nevyčíslen">ⓘ</abbr></td><td>—</td><td>—</td><td>—</td><td>nízká</td></tr>
-<tr><td>Landing page pro Instagram<abbr title="Doporučení (slide 12 decku), survey nevyčísluje">ⓘ</abbr></td><td>—</td><td>—</td><td>—</td><td>nízká</td></tr>
-<tr><td>Připomínací newslettery (zvýšení frekvence návštěv)<abbr title="Doporučení z chování segmentů (reaktivace pasivních), survey nevyčísluje">ⓘ</abbr></td><td>—</td><td>—</td><td>—</td><td>nízká</td></tr>
-</tbody>
-</table>
-
-<p class="rice-note"><span class="dagger">†</span> Položky z volného textu / doporučení — nemají vlastní otázku v dotazníku, survey je nevyčísluje. <em>Reach</em> je ruční odhad počtu zmínek, nebo „—“ (nevyčísleno). Reach i Effort doplní tým. Najetím na <abbr title="takhle">ⓘ</abbr> se zobrazí zdroj.</p>
+> - <strong>Udržet nové a utlumené</strong> — onboarding 1. roku + aktivace pasivního digitálu; frekvence jako early-warning.
+> - <strong>Produktové páky</strong> — audio / AI hlas, vyhledávání a archiv, přehlednost aplikace.
+> - <strong>Chránit jádro a hodnotu</strong> — hloubka, nezávislost, tištěný rituál; komunikovat hodnotu, ne slevu.

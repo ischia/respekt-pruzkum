@@ -80,10 +80,21 @@
   /* progress bar nahoře, tlustší, v barvě Respektu */
   .reveal .progress{ position:fixed; top:0; bottom:auto; height:6px; color:var(--red); background:rgba(24,29,39,.08); }
   .reveal .progress span{ height:6px; }
-  /* šipky vpravo dole, stránkovač vlevo dole — ať se nepřekrývají */
+  /* šipky vpravo dole, číslo strany uprostřed šipek; R monogram vlevo dole */
   .reveal .controls{ color:var(--red); }
+  /* číslo strany — pozici (nalevo od levé šipky, vert. střed) řídí JS layoutChrome() */
   .reveal .slide-number{ background:transparent; color:var(--gray); font-family:var(--font-sans);
-                         left:12px; right:auto; bottom:10px; top:auto; font-size:14px; }
+                         left:auto; top:auto; font-size:13px; pointer-events:none; z-index:35;
+                         font-variant-numeric:tabular-nums; }
+  /* R monogram — černé, výška = šipky; levý okraj řídí JS (zarovnání s obsahem slidu);
+     na tmavých slidech se skrývá (.corner-r.hide) */
+  .reveal .corner-r{ position:fixed; bottom:22px; width:17px; height:36px; z-index:35;
+                     background:var(--ink); pointer-events:none;
+                     -webkit-mask:url('assets/respekt-r.svg') no-repeat center/contain;
+                     mask:url('assets/respekt-r.svg') no-repeat center/contain; }
+  .reveal .corner-r.hide{ display:none; }
+  /* poslední slide (Shrnutí): štítek callotu = „Priority" místo „Co s tím" */
+  .reveal section.summary blockquote::before{ content:"Priority"; }
 
   /* ---- Dvousloupcové slajdy (h2 přes celou šířku, vlevo graf, vpravo text, dole callout) ---- */
   .reveal section.two-col {
@@ -111,29 +122,17 @@
   .reveal section.two-col li { font-size: 18px; margin-bottom: 11px; }
   .reveal section.two-col blockquote { font-size: 16px; }
 
-  /* ---- RICE tabulka (appendix) ---- */
-  .reveal section table{ font-family:var(--font-sans); border-collapse:collapse; width:100%;
-                         margin:6px 0 14px; background:#fff; border-radius:8px; overflow:hidden;
-                         box-shadow:0 6px 20px rgba(24,29,39,.07); font-size:15px; }
-  .reveal section thead th{ background:var(--ink); color:#fff; font-weight:700; font-size:11px;
-                            text-transform:uppercase; letter-spacing:.04em; padding:9px 12px;
-                            text-align:left; border:none; }
-  .reveal section tbody td{ padding:6px 12px; border:none; border-bottom:1px solid var(--hairline);
-                            color:var(--graphite); vertical-align:middle; }
-  .reveal section tbody tr:last-child td{ border-bottom:none; }
-  .reveal section tbody td strong{ color:var(--red); font-weight:700; }
-  .reveal section td:not(:first-child), .reveal section th:not(:first-child){ text-align:center; }
-  .reveal section table abbr[title]{ color:var(--red); cursor:help; text-decoration:none;
-                                     font-weight:800; border:none; margin-left:3px; }
-  .reveal section .rice-note{ font-family:var(--font-serif); font-size:15px; color:var(--graphite);
-                              line-height:1.45; margin:6px 0 0; }
-  .reveal section .rice-note .dagger{ color:var(--red); font-weight:800; }
+  /* logo na přihlašovací obrazovce (tmavý wordmark na světlém pozadí) */
+  #rpk-gate .login-logo{ width:150px; height:46px; margin:0 auto 1.1em;
+                         background:var(--ink);
+                         -webkit-mask:url('assets/respekt-wordmark.svg') no-repeat center/contain;
+                         mask:url('assets/respekt-wordmark.svg') no-repeat center/contain; }
 </style>
 </head>
 <body>
 <div id="rpk-gate" style="position:fixed;inset:0;background:#faf9f7;z-index:99999;display:flex;align-items:center;justify-content:center;font-family:sans-serif">
   <form onsubmit="rpkCheck(event)" style="text-align:center;max-width:320px;width:90%">
-    <div style="font-size:1.3em;font-weight:700;margin-bottom:.3em">Respekt</div>
+    <div class="login-logo" aria-label="Respekt"></div>
     <div style="color:#666;margin-bottom:1.2em;font-size:.9em">Průzkum předplatitelů — interní materiál</div>
     <input id="rpk-in" type="password" placeholder="Heslo" autofocus style="width:100%;padding:9px 12px;border:1px solid #ccc;border-radius:7px;font-size:1em;box-sizing:border-box;margin-bottom:.6em">
     <button type="submit" style="width:100%;padding:9px;background:#CE0B24;color:#fff;border:none;border-radius:7px;font-size:1em;cursor:pointer;font-weight:600">Vstoupit</button>
@@ -141,7 +140,7 @@
   </form>
 </div>
 <script>
-var RPK_PWD='JednouRespektVzdyckyRespekt';
+var RPK_PWD='Lucerna';
 function rpkCheck(e){e.preventDefault();if(document.getElementById('rpk-in').value===RPK_PWD){sessionStorage.setItem('rpk',RPK_PWD);document.getElementById('rpk-gate').remove();}else{document.getElementById('rpk-err').textContent='Nesprávné heslo.';document.getElementById('rpk-in').value='';document.getElementById('rpk-in').focus();}}
 if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').remove();}
 </script>
@@ -153,6 +152,7 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
              data-charset="utf-8">
     </section>
   </div>
+  <div class="corner-r" aria-hidden="true"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/markdown/markdown.js"></script>
@@ -162,6 +162,36 @@ if(sessionStorage.getItem('rpk')===RPK_PWD){document.getElementById('rpk-gate').
     hash: true, slideNumber: 'c/t', controls: true, progress: true,
     transition: 'slide', plugins: [ RevealMarkdown ],
   });
+  // R monogram skrýt na tmavých slidech (title / předěly)
+  function syncCornerR(){
+    var s=Reveal.getCurrentSlide(); if(!s) return;
+    var bg=(s.getAttribute('data-background-color')||'').replace(/\s/g,'').toLowerCase();
+    var dark = bg==='#222222' || s.classList.contains('has-dark-background');
+    document.querySelector('.corner-r').classList.toggle('hide', dark);
+  }
+  // R, šipky a číslo zarovnat k okrajům obsahu (referenece = .slides, stabilní přes všechny slidy)
+  function layoutChrome(){
+    var vw=window.innerWidth, vh=window.innerHeight;
+    var box=document.querySelector('.reveal .slides').getBoundingClientRect();
+    var leftInset=Math.max(0,Math.round(box.left));
+    var rightInset=Math.max(0,Math.round(vw-box.right));
+    document.querySelector('.corner-r').style.left=leftInset+'px';
+    var ctr=document.querySelector('.controls');
+    ctr.style.right=rightInset+'px';
+    var ra=document.querySelector('.controls .navigate-right').getBoundingClientRect();
+    ctr.style.right=Math.round(rightInset-(box.right-ra.right))+'px';
+    var la=document.querySelector('.controls .navigate-left');
+    var sn=document.querySelector('.slide-number');
+    if(la && sn){
+      var lab=la.getBoundingClientRect();
+      sn.style.right=Math.round(vw-lab.left+8)+'px';
+      var snr=sn.getBoundingClientRect();
+      sn.style.bottom=Math.round(vh-(lab.top+lab.height/2)-snr.height/2)+'px';
+    }
+  }
+  Reveal.on('ready', function(){ layoutChrome(); syncCornerR(); });
+  Reveal.on('slidechanged', syncCornerR);   // jen R skrýt/ukázat při změně slidu
+  window.addEventListener('resize', layoutChrome);
 </script>
 </body>
 </html>
