@@ -27,42 +27,60 @@ OUTHTML = os.path.join(os.path.dirname(os.path.abspath(__file__)), "RICE_vstupy.
 OUTJSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rice.json")
 
 INIT = [
+    # impact / certainty: ruční odhad podle dopadu na engagement a tvorbu návyku
     {"init": "Vyhledávání (v appce / archiv)",
-     "cols": ["Vyhledávání", "156_vyhledavani", "bariera_vyhledavani"]},
+     "cols": ["Vyhledávání", "156_vyhledavani", "bariera_vyhledavani"],
+     "impact": 1, "certainty": 3},   # utility, nedává důvod se vracet; data silná
     {"init": "Přehlednost / navigace UI",
      "cols": ["app_prehlednost", "156_prehlednost_archiv_orientace", "156_web_navigace",
-              "Problémy s uživatelským rozhraním (špatné ovládání aplikace, nepřehledný web)"]},
+              "Problémy s uživatelským rozhraním (špatné ovládání aplikace, nepřehledný web)"],
+     "impact": 3, "certainty": 3},   # UI friction = největší tichý zabiják denního otevírání
     {"init": "Výraznější odlišení přečteného",
-     "cols": ["Výraznější odlišení přečteného/poslouchaného", "app_odliseni_tisk"]},
+     "cols": ["Výraznější odlišení přečteného/poslouchaného", "app_odliseni_tisk"],
+     "impact": 2, "certainty": 2},   # progress tracking → pocit postupu, jemný engagement loop
     {"init": "Výkon / stabilita appky",
-     "cols": ["app_vykon", "tech_problemy_vc_text"]},
+     "cols": ["app_vykon", "tech_problemy_vc_text"],
+     "impact": 2, "certainty": 2},   # crash zničí návyk, ale oprava ho sama nevytvoří
     {"init": "Přístupnost (velikost písma)",
-     "cols": ["app_pristupnost"]},
+     "cols": ["app_pristupnost"],
+     "impact": 1, "certainty": 1},   # pomáhá segmentu, ne celkové bázi
     {"init": "Notifikace – automatizace, podcasty/témata/autoři",
-     "cols": ["app_personalizace", "Častější notifikace (autoři, rubriky)"]},
+     "cols": ["app_personalizace", "Častější notifikace (autoři, rubriky)"],
+     "impact": 3, "certainty": 2},   # primární re-engagement mechanismus; data slabá, teorie silná
     {"init": "Deeplinky (otevírat články z odkazů v appce)",
-     "cols": ["Možnost otevírat články Respektu ze sociálních sítí rovnou v aplikaci"]},
+     "cols": ["Možnost otevírat články Respektu ze sociálních sítí rovnou v aplikaci"],
+     "impact": 3, "certainty": 2},   # sdílení → discovery loop → přechod občasný čtenář → uživatel appky
     {"init": "Lepší offline režim",
-     "cols": ["Lepší offline režim"]},
+     "cols": ["Lepší offline režim"],
+     "impact": 3, "certainty": 2},   # záměrné stažení = plánovaný rituál
     {"init": "Audio: playlist / ovládání",
-     "cols": ["Možnost sestavit si vlastní audio playlist", "app_audio_ovladani"]},
+     "cols": ["Možnost sestavit si vlastní audio playlist", "app_audio_ovladani"],
+     "impact": 3, "certainty": 2},   # fronta k poslechu = důvod se vrátit; sticky audio habit
     {"init": "CarPlay / Android Auto",
-     "cols": ["Podpora pro Carplay/Android Auto", "153_carplay_auto_bluetooth"]},
+     "cols": ["Podpora pro Carplay/Android Auto", "153_carplay_auto_bluetooth"],
+     "impact": 3, "certainty": 2},   # dojíždění = nejsilnější opakující se audio habit slot
     {"init": "Souhrny / kratší verze článků",
-     "cols": ["156_delka_clanku_moc_dlouhe", "cas_delka_vc_text"]},
+     "cols": ["156_delka_clanku_moc_dlouhe", "cas_delka_vc_text"],
+     "impact": 3, "certainty": 2},   # formát pro denní briefing; potvrzeno churn-liftem
     {"init": "Audiočlánky ladění (kvalita / AI hlas)",
-     "cols": ["156_audio_ai_hlas_smisene", "audio_umele_vc_text"]},
+     "cols": ["156_audio_ai_hlas_smisene", "audio_umele_vc_text"],
+     "impact": 3, "certainty": 3},   # nekvalitní hlas lidi z auditu vyřazuje; nejvyšší Reach
     {"init": "Vypnout self-promo bannery pro přihlášené",
      "cols": ["156_reklamy"],
+     "impact": 2, "certainty": 1,    # hygiene fix, ne habit creator; data proxy, n=21
      "note": "měřeno přes výtku „reklamy“ (Q156); ~5 zmínek explicitně self-promo, low-effort"},
     # --- textové položky (z volného textu / doporučení; survey nevyčísluje) ---
     {"init": "Příznak „vyjde v tištěném vydání“", "text": True, "reach": 5,
+     "impact": 1, "certainty": 1,
      "note": "5 zmínek v textu (Q153) – aby čtenáři článek nečetli digitálně dřív"},
     {"init": "Kopírování textu", "text": True, "reach": None,
+     "impact": 1, "certainty": 1,
      "note": "z volného textu (Q156), počet zmínek nevyčíslen"},
     {"init": "Landing page pro Instagram", "text": True, "reach": None,
+     "impact": 2, "certainty": 1,
      "note": "doporučení (slide 12 decku), survey nevyčísluje"},
     {"init": "Připomínací newslettery (zvýšení frekvence návštěv)", "text": True, "reach": None,
+     "impact": 3, "certainty": 1,
      "note": "doporučení z chování segmentů (reaktivace pasivních), survey nevyčísluje"},
 ]
 
@@ -88,7 +106,7 @@ def main():
         if it.get("text"):
             out.append({"init": it["init"], "text": True, "n": it.get("reach"),
                         "pct": None, "churn_lift": None, "young_lift": None,
-                        "conf": "nízká", "impact": None, "certainty": None,
+                        "conf": "nízká", "impact": it.get("impact"), "certainty": it.get("certainty"),
                         "src": 0, "note": it.get("note", "")})
             continue
         cols = it["cols"]
@@ -103,14 +121,16 @@ def main():
         conf = ("vysoká" if n >= 200 else "střední" if n >= 80 else "nízká")
         if len(cols) >= 3 and n >= 80:
             conf = "vysoká"
-        # Impact 1-3: 3 = silný retenční signál (churn≥1.5), 2 = střední, 1 = slabý
-        if cl >= 1.5:
+        # Impact / Certainty: ruční hodnota z INIT má přednost před výpočtem z liftů
+        if "impact" in it:
+            impact = it["impact"]
+        elif cl >= 1.5:
             impact = 3
         elif cl >= 1.2 or yl >= 1.3:
             impact = 2
         else:
             impact = 1
-        certainty = {"vysoká": 3, "střední": 2, "nízká": 1}[conf]
+        certainty = it.get("certainty", {"vysoká": 3, "střední": 2, "nízká": 1}[conf])
         out.append({"init": it["init"], "text": False, "n": n, "pct": pct,
                     "churn_lift": cl, "young_lift": yl, "conf": conf,
                     "impact": impact, "certainty": certainty,
