@@ -88,7 +88,8 @@ def main():
         if it.get("text"):
             out.append({"init": it["init"], "text": True, "n": it.get("reach"),
                         "pct": None, "churn_lift": None, "young_lift": None,
-                        "conf": "nízká", "src": 0, "note": it.get("note", "")})
+                        "conf": "nízká", "impact": None, "certainty": None,
+                        "src": 0, "note": it.get("note", "")})
             continue
         cols = it["cols"]
         miss = [c for c in cols if c not in rows[0]]
@@ -102,8 +103,17 @@ def main():
         conf = ("vysoká" if n >= 200 else "střední" if n >= 80 else "nízká")
         if len(cols) >= 3 and n >= 80:
             conf = "vysoká"
+        # Impact 1-3: 3 = silný retenční signál (churn≥1.5), 2 = střední, 1 = slabý
+        if cl >= 1.5:
+            impact = 3
+        elif cl >= 1.2 or yl >= 1.3:
+            impact = 2
+        else:
+            impact = 1
+        certainty = {"vysoká": 3, "střední": 2, "nízká": 1}[conf]
         out.append({"init": it["init"], "text": False, "n": n, "pct": pct,
                     "churn_lift": cl, "young_lift": yl, "conf": conf,
+                    "impact": impact, "certainty": certainty,
                     "src": len(cols), "note": it.get("note", "")})
 
     # měřené (dle Reach) první, textové na konci (dle ručního Reach)
@@ -184,6 +194,13 @@ def main():
                 .replace("<", "&lt;").replace(">", "&gt;"))
         return f'<abbr title="{safe}">ⓘ</abbr>'
 
+    def score_cell(v, cls="num"):
+        if v is None:
+            return f'<td class="{cls}">—</td>'
+        stars = "●" * v + "○" * (3 - v)
+        hi = " score-hi" if v == 3 else (" score-mid" if v == 2 else "")
+        return f'<td class="{cls}{hi}" title="{v}/3">{v} <span class="stars">{stars}</span></td>'
+
     def rows_html(items):
         r = []
         for o in items:
@@ -197,6 +214,7 @@ def main():
                 name = o["init"]
             r.append(f'<tr><td class="init">{name}{info_html(o["note"])}</td>'
                      f'<td class="num">{reach}</td>{lifts}'
+                     f'{score_cell(o["impact"])}{score_cell(o["certainty"])}'
                      f'<td class="conf"><span class="pill pill-{pill_cls[o["conf"]]}">'
                      f'{o["conf"]}</span></td></tr>')
         return "\n".join(r)
@@ -205,6 +223,7 @@ def main():
     textove = [o for o in out if o["text"]]
     head = ('<thead><tr><th>Iniciativa</th><th class="num">{}</th>'
             '<th class="num">Churn-lift</th><th class="num">Mladší-lift</th>'
+            '<th class="num">Impact</th><th class="num">Certainty</th>'
             '<th class="num">Conf.</th></tr></thead>')
     html = f"""<!DOCTYPE html>
 <html lang="cs">
@@ -242,6 +261,11 @@ td.init{{color:var(--ink);font-weight:600;}}
 td.num{{text-align:center;white-space:nowrap;}}
 td.conf{{text-align:center;}}
 .lift-hi{{color:var(--red);font-weight:700;}}
+.score-hi{{color:var(--red);font-weight:700;}}
+.score-mid{{color:var(--graphite);font-weight:600;}}
+.stars{{font-size:10px;letter-spacing:1px;color:#bbb;}}
+td.num.score-hi .stars{{color:var(--red);opacity:.6;}}
+td.num.score-mid .stars{{color:var(--graphite);opacity:.4;}}
 abbr[title]{{color:var(--red);cursor:help;text-decoration:none;font-weight:800;margin-left:4px;}}
 .dagger{{color:var(--red);font-weight:800;}}
 .pill{{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;}}
@@ -308,7 +332,8 @@ font-size:12px;letter-spacing:.06em;margin-bottom:8px;}}
                    "pct": round(o["pct"], 1) if o["pct"] is not None else None,
                    "churn_lift": round(o["churn_lift"], 2) if o["churn_lift"] is not None else None,
                    "young_lift": round(o["young_lift"], 2) if o["young_lift"] is not None else None,
-                   "conf": o["conf"], "note": o["note"]} for o in out],
+                   "conf": o["conf"], "impact": o["impact"], "certainty": o["certainty"],
+                   "note": o["note"]} for o in out],
     }
     with open(OUTJSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=1)

@@ -468,10 +468,18 @@ function renderRice(){
       name=esc(o.init);
     }
     return `<tr><td class="init">${name}${info(o.note)}</td>`+
-      `<td class="num">${reach}</td>${lifts}<td class="num">${pill(o.conf)}</td></tr>`;
+      `<td class="num">${reach}</td>${lifts}${scoreCell(o.impact)}${scoreCell(o.certainty)}`+
+      `<td class="num">${pill(o.conf)}</td></tr>`;
+  };
+  const scoreCell=v=>{
+    if(v==null) return '<td class="num">—</td>';
+    const s='●'.repeat(v)+'○'.repeat(3-v);
+    const cls=v===3?' r-hi':v===2?' r-score-mid':'';
+    return `<td class="num${cls}" title="${v}/3">${v} <span style="font-size:10px;letter-spacing:1px;opacity:.5">${s}</span></td>`;
   };
   const head=lbl=>`<tr><th>Iniciativa</th><th class="num">${lbl}</th>`+
-    `<th class="num">Churn-lift</th><th class="num">Mladší-lift</th><th class="num">Conf.</th></tr>`;
+    `<th class="num">Churn-lift</th><th class="num">Mladší-lift</th>`+
+    `<th class="num">Impact</th><th class="num">Certainty</th><th class="num">Conf.</th></tr>`;
   const measured=d.items.filter(o=>!o.text), text=d.items.filter(o=>o.text);
   document.getElementById('riceBody').innerHTML=
     `<h2>RICE audit — vstupy z průzkumu</h2>`+
