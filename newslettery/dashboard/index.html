@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Respekt – report newsletterů</title>
+<style>
+  :root{
+    --bg:#faf9f7; --card:#fff; --ink:#1a1a1a; --muted:#6b6b6b; --line:#e7e4df;
+    --accent:#CE0B24; --grid:#ece9e4; --chip:#f0ede8; --good:#15803D; --bad:#CE0B24;
+    --s1:#CE0B24; --s2:#2F6FE2; --s3:#15803D; --s4:#7C3AED; --s5:#B45309; --s6:#0891B2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#141413; --card:#1a1a19; --ink:#f2f0ec; --muted:#a5a29b; --line:#2f2e2b;
+      --accent:#E8515F; --grid:#2a2926; --chip:#232220; --good:#3FA268; --bad:#E8515F;
+      --s1:#E8515F; --s2:#5B93E8; --s3:#3FA268; --s4:#A97AE0; --s5:#BE8629; --s6:#2AA3C0;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{padding:16px 24px 12px;border-bottom:1px solid var(--line);background:var(--card)}
+  h1{margin:0;font-size:18px;letter-spacing:-.2px}
+  h1 .r{color:var(--accent)}
+  .sub{color:var(--muted);font-size:12.5px;margin-top:3px}
+  main{padding:16px 24px 80px;max-width:1400px}
+  section{margin-bottom:26px}
+  h2{font-size:14px;margin:0 0 3px;letter-spacing:-.1px}
+  .hint{color:var(--muted);font-size:11.5px;margin:0 0 10px}
+
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;
+    padding:12px 24px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:50}
+  .ctl{display:flex;flex-direction:column;gap:4px}
+  .ctl label{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
+  select,input[type=search]{padding:6px 9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);
+    color:var(--ink);font-size:12.5px;min-width:150px}
+  .toggle{display:flex;align-items:center;gap:6px;font-size:12.5px;padding-bottom:6px}
+
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .tile .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
+  .tile .v{font-size:25px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums;letter-spacing:-.6px}
+  .tile .n{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .up{color:var(--good)} .down{color:var(--bad)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+  .tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:11px}
+  table{border-collapse:collapse;width:100%;font-size:12.5px}
+  th,td{padding:8px 11px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child,th.l,td.l{text-align:left}
+  thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);
+    cursor:pointer;user-select:none;position:sticky;top:0;background:var(--card)}
+  thead th.sorted::after{content:" ▾";color:var(--ink)}
+  thead th.asc::after{content:" ▴"}
+  tbody tr:hover{background:var(--chip)}
+  tbody tr.sel{background:var(--chip)}
+  td.num{font-variant-numeric:tabular-nums}
+  .swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:middle}
+  .name{cursor:pointer}
+  .name:hover{text-decoration:underline}
+  .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:20px;background:var(--chip);
+    color:var(--muted);margin-left:6px}
+
+  .chartbox{position:relative;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px 14px 6px}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin:2px 0 8px;font-size:11.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);
+    border-radius:8px;padding:7px 9px;font-size:11.5px;box-shadow:0 4px 14px #0000001f;opacity:0;transition:opacity .1s;
+    min-width:140px;z-index:20}
+  .tip b{display:block;margin-bottom:3px;font-size:11px;color:var(--muted);font-weight:700}
+  .tip .row{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+  .empty{color:var(--muted);font-size:12.5px;padding:22px 0;text-align:center}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px 12px 4px;position:relative}
+  .panel .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11.5px}
+  .panel .pn{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .panel .pv{font-variant-numeric:tabular-nums;color:var(--muted)}
+  @media (max-width:1400px){.panels{grid-template-columns:1fr}}
+  @media (max-width:1000px){.grid2{grid-template-columns:1fr}}
+  .note{background:var(--chip);border:1px solid var(--line);border-radius:9px;padding:9px 12px;
+    font-size:11.5px;color:var(--muted);line-height:1.55}
+</style>
+</head>
+<body>
+
+<div id="gate" style="position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;align-items:center;justify-content:center">
+  <form onsubmit="gateCheck(event)" style="text-align:center;max-width:320px;width:90%">
+    <div style="font-size:19px;font-weight:700;margin-bottom:.2em"><span style="color:var(--accent)">Respekt</span> · newslettery</div>
+    <div style="color:var(--muted);margin-bottom:1.2em;font-size:.9em">Interní report — zadej heslo</div>
+    <input id="gate-in" type="password" placeholder="Heslo" autofocus
+      style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:7px;font-size:1em;background:var(--card);color:var(--ink)">
+    <button type="submit" style="width:100%;margin-top:.6em;padding:9px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:1em;cursor:pointer;font-weight:600">Vstoupit</button>
+    <div id="gate-err" style="color:var(--accent);margin-top:.6em;font-size:.85em;min-height:1.2em"></div>
+  </form>
+</div>
+<script>
+  var PWD='Lucerna';
+  function gateCheck(e){e.preventDefault();
+    if(document.getElementById('gate-in').value===PWD){sessionStorage.setItem('nl',PWD);document.getElementById('gate').remove();}
+    else{document.getElementById('gate-err').textContent='Nesprávné heslo.';document.getElementById('gate-in').value='';document.getElementById('gate-in').focus();}}
+  if(sessionStorage.getItem('nl')===PWD){document.addEventListener('DOMContentLoaded',()=>document.getElementById('gate')?.remove());}
+</script>
+
+<header>
+  <h1><span class="r">Respekt</span> · report newsletterů</h1>
+  <div class="sub" id="meta">načítám data…</div>
+</header>
+
+<div class="controls">
+  <div class="ctl">
+    <label for="period">Období</label>
+    <select id="period">
+      <option value="30">Posledních 30 dní</option>
+      <option value="90" selected>Posledních 90 dní</option>
+      <option value="180">Posledních 180 dní</option>
+      <option value="365">Posledních 12 měsíců</option>
+      <option value="730">Poslední 2 roky</option>
+      <option value="all">Celá historie</option>
+    </select>
+  </div>
+  <div class="ctl">
+    <label for="grain">Granularita</label>
+    <select id="grain">
+      <option value="day">Po dnech</option>
+      <option value="week" selected>Po týdnech</option>
+      <option value="month">Po měsících</option>
+    </select>
+  </div>
+  <div class="ctl">
+    <label for="metric">Graf vývoje</label>
+    <select id="metric">
+      <option value="openRate" selected>Open rate</option>
+      <option value="clickRate">Click rate</option>
+      <option value="sent">Rozesláno</option>
+      <option value="opened">Otevření</option>
+      <option value="clicked">Prokliky</option>
+    </select>
+  </div>
+  <div class="ctl">
+    <label for="q">Hledat list</label>
+    <input id="q" type="search" placeholder="název nebo kód">
+  </div>
+  <label class="toggle"><input type="checkbox" id="sys"> systémové a transakční</label>
+</div>
+
+<main>
+  <section>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <h2>Newslettery</h2>
+    <p class="hint">Zaškrtnutím vybereš, co se kreslí do grafů (max. 6). Klik na název otevře detail dole.
+      Open rate a click rate počítá mailer z rozeslaných e-mailů.</p>
+    <div class="tablewrap"><table id="lists">
+      <thead><tr>
+        <th class="l" data-k="pick"></th>
+        <th class="l" data-k="title">Newsletter</th>
+        <th data-k="subscribers">Odběratelé</th>
+        <th data-k="deltaSubs">Δ za období</th>
+        <th data-k="signups">Noví</th>
+        <th data-k="unsubscribed">Odhlášení</th>
+        <th data-k="sent">Rozesláno</th>
+        <th data-k="openRate">Open rate</th>
+        <th data-k="clickRate">Click rate</th>
+        <th data-k="lastSendDate">Poslední rozeslání</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2 id="trendTitle">Vývoj</h2>
+    <p class="hint">Vybrané newslettery v čase.</p>
+    <div class="chartbox"><div class="legend" id="trendLegend"></div><div id="trendChart"></div><div class="tip" id="trendTip"></div></div>
+  </section>
+
+  <section class="grid2">
+    <div>
+      <h2>Odběratelé v čase</h2>
+      <p class="hint" id="subsHint">Každý newsletter má vlastní měřítko – úrovně se liší řádově, na jedné ose by se nedaly porovnat.</p>
+      <div id="subsPanels" class="panels"></div>
+    </div>
+    <div>
+      <h2>Přihlášení vs. odhlášení</h2>
+      <p class="hint" id="churnHint">Součet za vybrané newslettery. Odhlášení jsou z maileru, nové přihlášky se dopočítávají z přírůstku odběratelů.</p>
+      <div class="chartbox"><div class="legend" id="churnLegend"></div><div id="churnChart"></div><div class="tip" id="churnTip"></div></div>
+    </div>
+  </section>
+
+  <section id="detailSection">
+    <h2 id="detailTitle">Detail newsletteru</h2>
+    <p class="hint" id="detailHint">Klikni v tabulce na název newsletteru.</p>
+    <div class="tablewrap"><table id="detail">
+      <thead><tr>
+        <th class="l">Období</th><th>Rozesláno</th><th>Otevření</th><th>Open rate</th>
+        <th>Prokliky</th><th>Click rate</th><th>Odhlášení</th><th>Noví</th><th>Odběratelé</th>
+      </tr></thead><tbody></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="note" id="footnote"></div>
+  </section>
+</main>
+
+<script>
+const CS = new Intl.NumberFormat('cs-CZ');
+const fmtInt = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '–' : CS.format(Math.round(v));
+const fmtPct = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '–' : `${v.toFixed(1).replace('.', ',')} %`;
+const fmtSigned = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '–' : (v > 0 ? '+' : '') + CS.format(Math.round(v));
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const SERIES_COLORS = () => ['--s1','--s2','--s3','--s4','--s5','--s6'].map(css);
+const MAX_SERIES = 6;
+
+let DATA = null;
+const state = { period: '90', grain: 'week', metric: 'openRate', query: '', system: false,
+                picked: new Set(), detail: null, sort: { key: 'subscribers', dir: -1 } };
+
+/* ---------- agregace ---------- */
+
+function isoWeek(dateStr) {
+  const date = new Date(`${dateStr}T00:00:00Z`);
+  const day = (date.getUTCDay() + 6) % 7;
+  date.setUTCDate(date.getUTCDate() - day + 3);
+  const firstThursday = new Date(Date.UTC(date.getUTCFullYear(), 0, 4));
+  const week = 1 + Math.round((date - firstThursday) / 604800000
+    - ((firstThursday.getUTCDay() + 6) % 7 - 3) / 7);
+  return `${date.getUTCFullYear()}-T${String(week).padStart(2, '0')}`;
+}
+const bucketOf = (date, grain) =>
+  grain === 'day' ? date : grain === 'month' ? date.slice(0, 7) : isoWeek(date);
+
+function periodStart() {
+  if (state.period === 'all') return '0000-01-01';
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - Number(state.period));
+  return date.toISOString().slice(0, 10);
+}
+
+/** Denní řádky jednoho listu → agregované koše (zachovává pořadí v čase). */
+function aggregate(list, grain, from) {
+  const buckets = new Map();
+  list.dates.forEach((date, i) => {
+    if (date < from) return;
+    const key = bucketOf(date, grain);
+    let bucket = buckets.get(key);
+    if (!bucket) {
+      bucket = { key, from: date, to: date, sent: 0, opened: 0, clicked: 0, unsubscribed: 0,
+                 signups: null, subscribers: null, subscribersDate: null };
+      buckets.set(key, bucket);
+    }
+    bucket.to = date;
+    bucket.sent += list.sent[i];
+    bucket.opened += list.opened[i];
+    bucket.clicked += list.clicked[i];
+    bucket.unsubscribed += list.unsubscribed[i];
+    if (list.signups[i] !== null) bucket.signups = (bucket.signups ?? 0) + list.signups[i];
+    if (list.subscribersSeries[i] !== null) {
+      bucket.subscribers = list.subscribersSeries[i];   // poslední známý den v koši
+      bucket.subscribersDate = date;
+    }
+  });
+  return [...buckets.values()].sort((a, b) => (a.key < b.key ? -1 : 1));
+}
+
+const rate = (part, whole) => (whole > 0 ? (part / whole) * 100 : null);
+
+/** Souhrn listu za období – do tabulky a dlaždic. */
+function summarize(list, from) {
+  const rows = aggregate(list, 'day', from);
+  const totals = rows.reduce((acc, row) => ({
+    sent: acc.sent + row.sent, opened: acc.opened + row.opened,
+    clicked: acc.clicked + row.clicked, unsubscribed: acc.unsubscribed + row.unsubscribed,
+    signups: row.signups === null ? acc.signups : (acc.signups ?? 0) + row.signups,
+  }), { sent: 0, opened: 0, clicked: 0, unsubscribed: 0, signups: null });
+
+  const known = rows.filter((row) => row.subscribers !== null);
+  const deltaSubs = known.length > 1 ? known[known.length - 1].subscribers - known[0].subscribers : null;
+
+  // přihlášky známe jen tam, kde známe počty odběratelů; aby čistá změna nesčítala
+  // jablka s hruškami, odhlášení k ní bereme za stejně dlouhý úsek
+  const signupsFrom = rows.find((row) => row.signups !== null)?.to ?? null;
+  const unsubscribedSinceSignups = signupsFrom === null ? null
+    : rows.filter((row) => row.to >= signupsFrom).reduce((sum, row) => sum + row.unsubscribed, 0);
+
+  return {
+    ...list, ...totals, deltaSubs, signupsFrom, unsubscribedSinceSignups,
+    openRate: rate(totals.opened, totals.sent),
+    clickRate: rate(totals.clicked, totals.sent),
+  };
+}
+
+function visibleLists() {
+  const query = state.query.trim().toLowerCase();
+  return DATA.lists.filter((list) => {
+    if (!state.system && list.isSystem) return false;
+    if (!query) return true;
+    return `${list.title} ${list.code}`.toLowerCase().includes(query);
+  });
+}
+
+const colorFor = (id) => {
+  const order = [...state.picked];
+  const index = order.indexOf(id);
+  return index === -1 ? css('--muted') : SERIES_COLORS()[index % MAX_SERIES];
+};
+
+/* ---------- grafy (SVG) ---------- */
+
+function niceStep(span) {
+  const raw = span / 4;
+  const magnitude = 10 ** Math.floor(Math.log10(raw || 1));
+  return [1, 2, 2.5, 5, 10].map((m) => m * magnitude).find((s) => s >= raw) ?? magnitude * 10;
+}
+
+/**
+ * Osa Y. baseline='zero' pro objemy a podíly, 'auto' pro hladiny (počty odběratelů),
+ * kde je nula tak daleko, že by graf byl jen rovná čára.
+ */
+function niceScale(minValue, maxValue, baseline = 'zero') {
+  if (baseline === 'zero' || !(minValue > 0)) {
+    const step = niceStep(Math.max(1, maxValue));
+    const ticks = [];
+    for (let value = 0; value <= maxValue + step / 2; value += step) ticks.push(value);
+    return { ticks, lo: 0, hi: ticks[ticks.length - 1] };
+  }
+  const span = Math.max(1, maxValue - minValue);
+  const step = niceStep(span * 1.4);
+  const lo = Math.max(0, Math.floor((minValue - span * 0.15) / step) * step);
+  const ticks = [];
+  for (let value = lo; value <= maxValue + step / 2; value += step) ticks.push(value);
+  if (ticks.length < 2) ticks.push(lo + step);
+  return { ticks, lo, hi: ticks[ticks.length - 1] };
+}
+
+function svgEl(tag, attrs, text) {
+  const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+/**
+ * Spojnicový graf. series = [{id,name,color,values:[number|null]}], labels = osa X.
+ */
+function lineChart(host, tipEl, { labels, series, fmt = fmtInt, yLabel = '', baseline = 'zero',
+                                  height = 320, width = 1000 }) {
+  host.innerHTML = '';
+  if (!labels.length || !series.length) {
+    host.innerHTML = '<div class="empty">Pro tento výběr nejsou data.</div>';
+    return;
+  }
+  const W = width, H = height, padL = 46, padR = series.length > 1 ? 74 : 12, padT = 12, padB = 26;
+  const values = series.flatMap((s) => s.values).filter((v) => v !== null && !Number.isNaN(v));
+  if (!values.length) {
+    host.innerHTML = '<div class="empty">Pro tento výběr nejsou data.</div>';
+    return;
+  }
+  const { ticks, lo, hi } = niceScale(Math.min(...values), Math.max(...values), baseline);
+  const x = (i) => padL + (labels.length === 1 ? 0 : (i * (W - padL - padR)) / (labels.length - 1));
+  const y = (v) => padT + (H - padT - padB) * (1 - (v - lo) / (hi - lo || 1));
+
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img' });
+
+  ticks.forEach((tick) => {
+    svg.appendChild(svgEl('line', { x1: padL, x2: W - padR, y1: y(tick), y2: y(tick),
+      stroke: css('--grid'), 'stroke-width': 1 }));
+    svg.appendChild(svgEl('text', { x: padL - 8, y: y(tick) + 4, 'text-anchor': 'end',
+      fill: css('--muted'), 'font-size': 11 }, fmt(tick)));
+  });
+
+  const every = Math.max(1, Math.ceil(labels.length / Math.max(3, Math.round(W / 115))));
+  labels.forEach((label, i) => {
+    if (i % every && i !== labels.length - 1) return;
+    svg.appendChild(svgEl('text', { x: x(i), y: H - 6, 'text-anchor': 'middle',
+      fill: css('--muted'), 'font-size': 11 }, label));
+  });
+
+  const endLabels = [];
+  series.forEach((serie) => {
+    let path = '';
+    let started = false;
+    serie.values.forEach((value, i) => {
+      if (value === null || Number.isNaN(value)) { started = false; return; }
+      path += `${started ? 'L' : 'M'}${x(i).toFixed(1)} ${y(value).toFixed(1)}`;
+      started = true;
+    });
+    if (path) svg.appendChild(svgEl('path', { d: path, fill: 'none', stroke: serie.color,
+      'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+
+    const lastIndex = serie.values.reduce((acc, v, i) => (v === null ? acc : i), -1);
+    if (lastIndex >= 0) endLabels.push({ serie, x: x(lastIndex), y: y(serie.values[lastIndex]) });
+  });
+
+  if (series.length > 1 && series.length <= 4) {
+    endLabels.sort((a, b) => a.y - b.y);
+    endLabels.forEach((label, index) => {   // rozestrkat popisky, ať se nepřekrývají
+      const previous = endLabels[index - 1];
+      if (previous && label.y - previous.y < 13) label.y = previous.y + 13;
+      svg.appendChild(svgEl('text', { x: label.x + 7, y: Math.min(H - padB, label.y + 4),
+        fill: label.serie.color, 'font-size': 11, 'font-weight': 600 }, label.serie.name.slice(0, 16)));
+    });
+  }
+
+  const crosshair = svgEl('line', { x1: 0, x2: 0, y1: padT, y2: H - padB, stroke: css('--muted'),
+    'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0 });
+  svg.appendChild(crosshair);
+  const markers = svgEl('g', { opacity: 0 });
+  svg.appendChild(markers);
+
+  const overlay = svgEl('rect', { x: padL, y: padT, width: W - padL - padR, height: H - padT - padB,
+    fill: 'transparent' });
+  svg.appendChild(overlay);
+  host.appendChild(svg);
+
+  overlay.addEventListener('mousemove', (event) => {
+    const box = svg.getBoundingClientRect();
+    const px = ((event.clientX - box.left) / box.width) * W;
+    const index = Math.max(0, Math.min(labels.length - 1,
+      Math.round(((px - padL) / (W - padL - padR)) * (labels.length - 1))));
+    crosshair.setAttribute('x1', x(index)); crosshair.setAttribute('x2', x(index));
+    crosshair.setAttribute('opacity', 1);
+    markers.innerHTML = '';
+    series.forEach((serie) => {
+      const value = serie.values[index];
+      if (value === null || Number.isNaN(value)) return;
+      markers.appendChild(svgEl('circle', { cx: x(index), cy: y(value), r: 4.5, fill: serie.color,
+        stroke: css('--card'), 'stroke-width': 2 }));
+    });
+    markers.setAttribute('opacity', 1);
+
+    tipEl.innerHTML = `<b>${labels[index]}${yLabel ? ` · ${yLabel}` : ''}</b>` + series.map((serie) => {
+      const value = serie.values[index];
+      return `<div class="row"><span><span class="swatch" style="background:${serie.color}"></span>${serie.name}</span><span>${value === null ? '–' : fmt(value)}</span></div>`;
+    }).join('');
+    const hostBox = host.getBoundingClientRect();
+    tipEl.style.opacity = 1;
+    const left = Math.min(hostBox.width - tipEl.offsetWidth - 8, Math.max(0, (x(index) / W) * hostBox.width + 12));
+    tipEl.style.left = `${left}px`;
+    tipEl.style.top = `${Math.max(8, event.clientY - hostBox.top - tipEl.offsetHeight - 10)}px`;
+  });
+  overlay.addEventListener('mouseleave', () => {
+    crosshair.setAttribute('opacity', 0); markers.setAttribute('opacity', 0); tipEl.style.opacity = 0;
+  });
+}
+
+/** Rozdělený sloupcový graf: nahoru přihlášení, dolů odhlášení. */
+function divergingBars(host, tipEl, { labels, positive, negative, names }) {
+  host.innerHTML = '';
+  if (!labels.length) {
+    host.innerHTML = '<div class="empty">Pro tento výběr nejsou data.</div>';
+    return;
+  }
+  const W = 1000, H = 320, padL = 56, padR = 18, padT = 12, padB = 30;
+  const maxValue = Math.max(1, ...positive.map((v) => v ?? 0), ...negative);
+  const { ticks } = niceScale(0, maxValue, 'zero');
+  const top = ticks[ticks.length - 1];
+  const mid = padT + (H - padT - padB) / 2;
+  const scale = (H - padT - padB) / 2 / top;
+  const bandWidth = (W - padL - padR) / labels.length;
+  const barWidth = Math.max(2, Math.min(26, bandWidth * 0.62));
+  const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img' });
+
+  ticks.forEach((tick) => {
+    [mid - tick * scale, mid + tick * scale].forEach((yPos) => {
+      svg.appendChild(svgEl('line', { x1: padL, x2: W - padR, y1: yPos, y2: yPos,
+        stroke: css('--grid'), 'stroke-width': 1 }));
+      svg.appendChild(svgEl('text', { x: padL - 8, y: yPos + 4, 'text-anchor': 'end',
+        fill: css('--muted'), 'font-size': 11 }, fmtInt(tick)));
+    });
+  });
+  svg.appendChild(svgEl('line', { x1: padL, x2: W - padR, y1: mid, y2: mid, stroke: css('--line'), 'stroke-width': 1.5 }));
+
+  const every = Math.max(1, Math.ceil(labels.length / 9));
+  labels.forEach((label, i) => {
+    if (i % every && i !== labels.length - 1) return;
+    svg.appendChild(svgEl('text', { x: padL + bandWidth * (i + 0.5), y: H - 8, 'text-anchor': 'middle',
+      fill: css('--muted'), 'font-size': 11 }, label));
+  });
+
+  labels.forEach((label, i) => {
+    const cx = padL + bandWidth * (i + 0.5);
+    const up = positive[i];
+    if (up !== null && up > 0) {
+      const height = up * scale;
+      svg.appendChild(svgEl('rect', { x: cx - barWidth / 2, y: mid - height - 2, width: barWidth,
+        height: Math.max(1, height), rx: 3, fill: css('--good') }));
+    }
+    const down = negative[i];
+    if (down > 0) {
+      const height = down * scale;
+      svg.appendChild(svgEl('rect', { x: cx - barWidth / 2, y: mid + 2, width: barWidth,
+        height: Math.max(1, height), rx: 3, fill: css('--bad') }));
+    }
+  });
+
+  const overlay = svgEl('rect', { x: padL, y: padT, width: W - padL - padR, height: H - padT - padB, fill: 'transparent' });
+  svg.appendChild(overlay);
+  host.appendChild(svg);
+
+  overlay.addEventListener('mousemove', (event) => {
+    const box = svg.getBoundingClientRect();
+    const px = ((event.clientX - box.left) / box.width) * W;
+    const index = Math.max(0, Math.min(labels.length - 1, Math.floor((px - padL) / bandWidth)));
+    const up = positive[index];
+    tipEl.innerHTML = `<b>${labels[index]}</b>` +
+      `<div class="row"><span><span class="swatch" style="background:${css('--good')}"></span>${names[0]}</span><span>${up === null ? '–' : fmtInt(up)}</span></div>` +
+      `<div class="row"><span><span class="swatch" style="background:${css('--bad')}"></span>${names[1]}</span><span>${fmtInt(negative[index])}</span></div>` +
+      (up === null ? '' : `<div class="row"><span>Čistá změna</span><span>${fmtSigned(up - negative[index])}</span></div>`);
+    const hostBox = host.getBoundingClientRect();
+    tipEl.style.opacity = 1;
+    tipEl.style.left = `${Math.min(hostBox.width - tipEl.offsetWidth - 8, Math.max(0, ((padL + bandWidth * (index + 0.5)) / W) * hostBox.width + 12))}px`;
+    tipEl.style.top = `${Math.max(8, event.clientY - hostBox.top - tipEl.offsetHeight - 10)}px`;
+  });
+  overlay.addEventListener('mouseleave', () => { tipEl.style.opacity = 0; });
+}
+
+/* ---------- render ---------- */
+
+function renderTiles(rows) {
+  const totals = rows.reduce((acc, row) => ({
+    subscribers: acc.subscribers + (row.subscribers ?? 0),
+    sent: acc.sent + row.sent, opened: acc.opened + row.opened, clicked: acc.clicked + row.clicked,
+    unsubscribed: acc.unsubscribed + row.unsubscribed,
+    signups: row.signups === null ? acc.signups : (acc.signups ?? 0) + row.signups,
+    unsubSince: row.unsubscribedSinceSignups === null ? acc.unsubSince : (acc.unsubSince ?? 0) + row.unsubscribedSinceSignups,
+    signupsFrom: row.signupsFrom === null ? acc.signupsFrom
+      : acc.signupsFrom === null ? row.signupsFrom : (row.signupsFrom < acc.signupsFrom ? row.signupsFrom : acc.signupsFrom),
+  }), { subscribers: 0, sent: 0, opened: 0, clicked: 0, unsubscribed: 0, signups: null, unsubSince: null, signupsFrom: null });
+
+  const net = totals.signups === null ? null : totals.signups - totals.unsubSince;
+  const since = totals.signupsFrom ? `od ${totals.signupsFrom}` : 'zatím bez dat';
+  const tile = (key, value, note, cls = '') =>
+    `<div class="tile"><div class="k">${key}</div><div class="v ${cls}">${value}</div><div class="n">${note}</div></div>`;
+
+  document.getElementById('tiles').innerHTML = [
+    tile('Odběratelé celkem', fmtInt(totals.subscribers), `${rows.length} newsletterů ve výběru`),
+    tile('Open rate', fmtPct(rate(totals.opened, totals.sent)), `${fmtInt(totals.opened)} otevření z ${fmtInt(totals.sent)} rozeslaných`),
+    tile('Click rate', fmtPct(rate(totals.clicked, totals.sent)), `${fmtInt(totals.clicked)} prokliků`),
+    tile('Odhlášení', fmtInt(totals.unsubscribed), 'z maileru, za celé období'),
+    tile('Nové přihlášky', totals.signups === null ? '–' : fmtInt(totals.signups), `dopočet, ${since}`),
+    tile('Čistá změna', fmtSigned(net), `přihlášení minus odhlášení, ${since}`,
+      net === null ? '' : net >= 0 ? 'up' : 'down'),
+  ].join('');
+}
+
+function renderTable(rows) {
+  const { key, dir } = state.sort;
+  const sorted = [...rows].sort((a, b) => {
+    const va = a[key], vb = b[key];
+    if (va === null || va === undefined) return 1;
+    if (vb === null || vb === undefined) return -1;
+    if (typeof va === 'string') return va.localeCompare(vb, 'cs') * dir;
+    return (va - vb) * dir;
+  });
+
+  document.querySelectorAll('#lists thead th').forEach((th) => {
+    th.classList.toggle('sorted', th.dataset.k === key);
+    th.classList.toggle('asc', th.dataset.k === key && dir === 1);
+  });
+
+  document.querySelector('#lists tbody').innerHTML = sorted.map((row) => {
+    const picked = state.picked.has(row.id);
+    return `<tr class="${state.detail === row.id ? 'sel' : ''}" data-id="${row.id}">
+      <td class="l"><input type="checkbox" data-pick="${row.id}" ${picked ? 'checked' : ''}></td>
+      <td class="l"><span class="swatch" style="background:${picked ? colorFor(row.id) : 'transparent'}"></span><span class="name" data-detail="${row.id}">${row.title}</span>${row.isSystem ? '<span class="tag">systémový</span>' : ''}</td>
+      <td class="num">${fmtInt(row.subscribers)}</td>
+      <td class="num ${row.deltaSubs === null ? '' : row.deltaSubs >= 0 ? 'up' : 'down'}">${fmtSigned(row.deltaSubs)}</td>
+      <td class="num">${row.signups === null ? '–' : fmtInt(row.signups)}</td>
+      <td class="num">${fmtInt(row.unsubscribed)}</td>
+      <td class="num">${fmtInt(row.sent)}</td>
+      <td class="num">${fmtPct(row.openRate)}</td>
+      <td class="num">${fmtPct(row.clickRate)}</td>
+      <td class="num">${row.lastSendDate ?? '–'}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="10" class="empty">Nic nenalezeno.</td></tr>';
+}
+
+const METRIC_LABEL = { openRate: 'Open rate', clickRate: 'Click rate', sent: 'Rozesláno', opened: 'Otevření', clicked: 'Prokliky' };
+
+function pickedLists() {
+  return DATA.lists.filter((list) => state.picked.has(list.id));
+}
+
+function unionLabels(bucketSets) {
+  return [...new Set(bucketSets.flatMap((rows) => rows.map((row) => row.key)))].sort();
+}
+
+function renderTrend(from) {
+  const lists = pickedLists();
+  const perList = lists.map((list) => aggregate(list, state.grain, from));
+  const labels = unionLabels(perList);
+  const isRate = state.metric.endsWith('Rate');
+
+  const series = lists.map((list, index) => {
+    const byKey = new Map(perList[index].map((row) => [row.key, row]));
+    return {
+      id: list.id, name: list.title, color: colorFor(list.id),
+      values: labels.map((label) => {
+        const row = byKey.get(label);
+        if (!row) return null;
+        if (state.metric === 'openRate') return rate(row.opened, row.sent);
+        if (state.metric === 'clickRate') return rate(row.clicked, row.sent);
+        return row[state.metric];
+      }),
+    };
+  });
+
+  document.getElementById('trendTitle').textContent = `Vývoj – ${METRIC_LABEL[state.metric]}`;
+  document.getElementById('trendLegend').innerHTML = series.map((serie) =>
+    `<span><span class="swatch" style="background:${serie.color}"></span>${serie.name}</span>`).join('');
+  lineChart(document.getElementById('trendChart'), document.getElementById('trendTip'),
+    { labels, series, fmt: isRate ? fmtPct : fmtInt });
+}
+
+function renderSubscribers(from) {
+  const lists = pickedLists();
+  const host = document.getElementById('subsPanels');
+  host.innerHTML = '';
+
+  // panel začíná až tam, kde vůbec známe počty odběratelů
+  const start = DATA.range.subscribersFrom && DATA.range.subscribersFrom > from ? DATA.range.subscribersFrom : from;
+
+  lists.forEach((list) => {
+    const rows = aggregate(list, state.grain, start).filter((row) => row.subscribers !== null);
+    const panel = document.createElement('div');
+    panel.className = 'panel';
+    const first = rows[0]?.subscribers ?? null;
+    const last = rows[rows.length - 1]?.subscribers ?? null;
+    const delta = first === null || last === null ? null : last - first;
+    panel.innerHTML = `<div class="ph">
+        <span class="pn"><span class="swatch" style="background:${colorFor(list.id)}"></span>${list.title}</span>
+        <span class="pv">${fmtInt(last)} <span class="${delta === null ? '' : delta >= 0 ? 'up' : 'down'}">${fmtSigned(delta)}</span></span>
+      </div><div class="chart"></div><div class="tip"></div>`;
+    host.appendChild(panel);
+
+    lineChart(panel.querySelector('.chart'), panel.querySelector('.tip'), {
+      labels: rows.map((row) => row.key),
+      series: [{ id: list.id, name: list.title, color: colorFor(list.id), values: rows.map((row) => row.subscribers) }],
+      baseline: 'auto', height: 140, width: 340,
+    });
+  });
+
+  if (!lists.length) host.innerHTML = '<div class="empty">Vyber v tabulce alespoň jeden newsletter.</div>';
+}
+
+function renderChurn(from) {
+  const lists = pickedLists();
+  const firstSignup = DATA.range.subscribersFrom;
+  document.getElementById('churnHint').textContent =
+    `Součet za vybrané newslettery. Odhlášení jsou skutečná čísla z maileru za celé období, `
+    + `nové přihlášky se dopočítávají z přírůstku odběratelů – tedy až od ${firstSignup ?? '?'}.`;
+  const perList = lists.map((list) => aggregate(list, state.grain, from));
+  const labels = unionLabels(perList);
+
+  const positive = labels.map((label) => {
+    let sum = null;
+    perList.forEach((rows) => {
+      const row = rows.find((candidate) => candidate.key === label);
+      if (row && row.signups !== null) sum = (sum ?? 0) + row.signups;
+    });
+    return sum;
+  });
+  const negative = labels.map((label) =>
+    perList.reduce((sum, rows) => sum + (rows.find((row) => row.key === label)?.unsubscribed ?? 0), 0));
+
+  document.getElementById('churnLegend').innerHTML =
+    `<span><span class="swatch" style="background:${css('--good')}"></span>Nové přihlášky (dopočet)</span>` +
+    `<span><span class="swatch" style="background:${css('--bad')}"></span>Odhlášení</span>`;
+  divergingBars(document.getElementById('churnChart'), document.getElementById('churnTip'),
+    { labels, positive, negative, names: ['Nové přihlášky', 'Odhlášení'] });
+}
+
+function renderDetail(from) {
+  const list = DATA.lists.find((candidate) => candidate.id === state.detail);
+  const body = document.querySelector('#detail tbody');
+  if (!list) {
+    document.getElementById('detailTitle').textContent = 'Detail newsletteru';
+    document.getElementById('detailHint').textContent = 'Klikni v tabulce na název newsletteru.';
+    body.innerHTML = '';
+    return;
+  }
+  const rows = aggregate(list, state.grain, from).reverse();
+  document.getElementById('detailTitle').textContent = `Detail – ${list.title}`;
+  document.getElementById('detailHint').textContent =
+    `Kód ${list.code || '–'} · aktuálně ${fmtInt(list.subscribers)} odběratelů · poslední rozeslání ${list.lastSendDate ?? '–'}`;
+
+  body.innerHTML = rows.map((row) => `<tr>
+      <td class="l">${row.key}</td>
+      <td class="num">${fmtInt(row.sent)}</td>
+      <td class="num">${fmtInt(row.opened)}</td>
+      <td class="num">${fmtPct(rate(row.opened, row.sent))}</td>
+      <td class="num">${fmtInt(row.clicked)}</td>
+      <td class="num">${fmtPct(rate(row.clicked, row.sent))}</td>
+      <td class="num">${fmtInt(row.unsubscribed)}</td>
+      <td class="num">${row.signups === null ? '–' : fmtInt(row.signups)}</td>
+      <td class="num">${row.subscribers === null ? '–' : fmtInt(row.subscribers)}</td>
+    </tr>`).join('') || '<tr><td colspan="9" class="empty">Za zvolené období nejsou data.</td></tr>';
+}
+
+function render() {
+  if (!DATA) return;
+  const from = periodStart();
+  const rows = visibleLists().map((list) => summarize(list, from));
+
+  if (!state.picked.size) {
+    // "sent > 0 v období" vyřadí technické/behaviorální listy (typicky nulový
+    // objem, ale velký počet odběratelů), aby výchozí výběr ukazoval newslettery,
+    // které se lidem skutečně posílají, ne jen ty s nejvyšším počtem odběratelů
+    rows.filter((row) => !row.isSystem && row.sent > 0).slice()
+      .sort((a, b) => (b.subscribers ?? 0) - (a.subscribers ?? 0))
+      .slice(0, 4).forEach((row) => state.picked.add(row.id));
+  }
+
+  if (state.detail === null) {
+    state.detail = [...state.picked][0] ?? null;
+  }
+
+  renderTiles(rows);
+  renderTable(rows);
+  renderTrend(from);
+  renderSubscribers(from);
+  renderChurn(from);
+  renderDetail(from);
+}
+
+/* ---------- ovládání ---------- */
+
+document.getElementById('period').addEventListener('change', (e) => { state.period = e.target.value; render(); });
+document.getElementById('grain').addEventListener('change', (e) => { state.grain = e.target.value; render(); });
+document.getElementById('metric').addEventListener('change', (e) => { state.metric = e.target.value; render(); });
+document.getElementById('q').addEventListener('input', (e) => { state.query = e.target.value; render(); });
+document.getElementById('sys').addEventListener('change', (e) => { state.system = e.target.checked; render(); });
+
+document.querySelector('#lists thead').addEventListener('click', (event) => {
+  const key = event.target.closest('th')?.dataset.k;
+  if (!key || key === 'pick') return;
+  state.sort = state.sort.key === key ? { key, dir: -state.sort.dir } : { key, dir: key === 'title' ? 1 : -1 };
+  render();
+});
+
+document.querySelector('#lists tbody').addEventListener('click', (event) => {
+  const pick = event.target.dataset.pick;
+  if (pick !== undefined) {
+    const id = Number(pick);
+    if (state.picked.has(id)) state.picked.delete(id);
+    else if (state.picked.size < MAX_SERIES) state.picked.add(id);
+    else { event.target.checked = false; return; }
+    render();
+    return;
+  }
+  const detail = event.target.dataset.detail;
+  if (detail !== undefined) { state.detail = Number(detail); render(); }
+});
+
+fetch('data.json')
+  .then((response) => response.json())
+  .then((data) => {
+    DATA = data;
+    const collected = data.collectedAt ? new Date(data.collectedAt).toLocaleString('cs-CZ') : '–';
+    document.getElementById('meta').textContent =
+      `Data z mailer.respekt.cz · poslední sběr ${collected} · rozsah ${data.range.from ?? '?'} → ${data.range.to ?? '?'}`;
+    document.getElementById('footnote').innerHTML =
+      `<b>Jak číst čísla.</b> Open rate = otevření / rozeslané e-maily, click rate = prokliky / rozeslané e-maily – přesně tak,
+       jak je počítá mailer (REMP). Odhlášení jsou skutečná data z maileru za celé období.
+       <b>Nové přihlášky mailer nikde neeviduje</b>, dopočítávají se jako přírůstek počtu odběratelů plus odhlášení za stejný interval;
+       kde počet odběratelů neznáme, je místo čísla pomlčka. Mailer zpětně ukazuje počty odběratelů jen 30 dní
+       (od ${data.range.subscribersFrom ?? '?'}), dál řadu prodlužuje každý další sběr.`;
+    render();
+  })
+  .catch(() => {
+    document.getElementById('meta').textContent =
+      'Chybí data.json – spusť `npm run newslettery:collect` a `npm run newslettery:build`.';
+  });
+</script>
+</body>
+</html>
