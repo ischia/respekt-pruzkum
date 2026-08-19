@@ -215,6 +215,8 @@ const fmtSigned = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '�
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const SERIES_COLORS = () => ['--s1','--s2','--s3','--s4','--s5','--s6'].map(css);
 const MAX_SERIES = 6;
+// co se ukáže na první pohled, dokud čtenář výběr sám nezmění
+const DEFAULT_PICK_CODES = ['dnesni_respekt', 'vzkaz_z_respektu', 'politika-spolecnost'];
 
 let DATA = null;
 const state = { period: '90', grain: 'week', metric: 'openRate', query: '', system: false,
@@ -708,12 +710,17 @@ function render() {
   const rows = visibleLists().map((list) => summarize(list, from));
 
   if (!state.picked.size) {
-    // "sent > 0 v období" vyřadí technické/behaviorální listy (typicky nulový
-    // objem, ale velký počet odběratelů), aby výchozí výběr ukazoval newslettery,
-    // které se lidem skutečně posílají, ne jen ty s nejvyšším počtem odběratelů
-    rows.filter((row) => !row.isSystem && row.sent > 0).slice()
-      .sort((a, b) => (b.subscribers ?? 0) - (a.subscribers ?? 0))
-      .slice(0, 4).forEach((row) => state.picked.add(row.id));
+    const defaults = rows.filter((row) => DEFAULT_PICK_CODES.includes(row.code));
+    if (defaults.length) {
+      defaults.forEach((row) => state.picked.add(row.id));
+    } else {
+      // záložní heuristika, kdyby se kódy listů v maileru změnily: "sent > 0
+      // v období" vyřadí technické/behaviorální listy (nulový objem, ale
+      // velký počet odběratelů) a bere nejvyšší počty odběratelů ze zbytku
+      rows.filter((row) => !row.isSystem && row.sent > 0).slice()
+        .sort((a, b) => (b.subscribers ?? 0) - (a.subscribers ?? 0))
+        .slice(0, 4).forEach((row) => state.picked.add(row.id));
+    }
   }
 
   if (state.detail === null) {
