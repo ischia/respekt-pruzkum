@@ -1,0 +1,79 @@
+name: Newslettery - sber a nasazeni
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 5 * * *"
+
+concurrency:
+  group: newslettery-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: newslettery
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: newslettery/package-lock.json
+
+      - name: Nainstalovat zavislosti a Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Obnovit ulozenou historii pokud existuje
+        run: |
+          mkdir -p data
+          if git ls-remote --exit-code --heads origin newslettery-data >/dev/null 2>&1; then
+            git fetch origin newslettery-data
+            git show origin/newslettery-data:data/history.json > data/history.json
+            echo "historie obnovena z vetve newslettery-data"
+          else
+            echo "zadna ulozena historie, sbiram od nuly"
+          fi
+
+      - name: Sber dat z mailer.respekt.cz
+        env:
+          MAILER_EMAIL: ${{ secrets.MAILER_EMAIL }}
+          MAILER_PASSWORD: ${{ secrets.MAILER_PASSWORD }}
+        run: node src/collect.js
+
+      - name: Sestavit dashboard/data.json
+        run: node src/build.js
+
+      - name: Ulozit historii do datove vetve
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git worktree add --detach /tmp/newslettery-hist
+          cd /tmp/newslettery-hist
+          git checkout --orphan newslettery-data-tmp
+          git rm -rf --quiet . >/dev/null 2>&1 || true
+          mkdir -p data
+          cp "$GITHUB_WORKSPACE/newslettery/data/history.json" data/history.json
+          git add data/history.json
+          git commit -q -m "Aktualizovat historii newsletteru"
+          git push origin HEAD:newslettery-data --force
+          cd "$GITHUB_WORKSPACE"
+          git worktree remove --force /tmp/newslettery-hist
+
+      - name: Commitnout sestaveny dashboard/data.json na main
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add -f dashboard/data.json
+          git diff --cached --quiet && echo "beze zmeny" && exit 0
+          git commit -q -m "Aktualizovat data newsletteru"
+          git push origin HEAD:main

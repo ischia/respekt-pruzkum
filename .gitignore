@@ -9,3 +9,10 @@ __pycache__/
 *.pyc
 .DS_Store
 .venv/
+
+# newslettery: syrova historie zustava mimo Git (zije v samostatne vetvi
+# newslettery-data), ale sestaveny newslettery/dashboard/data.json se
+# naopak COMMITUJE - z nej Pages servíruje report
+newslettery/data/
+newslettery/node_modules/
+!newslettery/dashboard/data.json
