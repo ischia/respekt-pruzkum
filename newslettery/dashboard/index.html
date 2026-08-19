@@ -9,12 +9,14 @@
     --bg:#faf9f7; --card:#fff; --ink:#1a1a1a; --muted:#6b6b6b; --line:#e7e4df;
     --accent:#CE0B24; --grid:#ece9e4; --chip:#f0ede8; --good:#15803D; --bad:#CE0B24;
     --s1:#CE0B24; --s2:#2F6FE2; --s3:#15803D; --s4:#7C3AED; --s5:#B45309; --s6:#0891B2;
+    --s7:#DB2777; --s8:#4D7C0F;
   }
   @media (prefers-color-scheme: dark){
     :root{
       --bg:#141413; --card:#1a1a19; --ink:#f2f0ec; --muted:#a5a29b; --line:#2f2e2b;
       --accent:#E8515F; --grid:#2a2926; --chip:#232220; --good:#3FA268; --bad:#E8515F;
       --s1:#E8515F; --s2:#5B93E8; --s3:#3FA268; --s4:#A97AE0; --s5:#BE8629; --s6:#2AA3C0;
+      --s7:#D6538C; --s8:#7A9B26;
     }
   }
   *{box-sizing:border-box}
@@ -73,12 +75,6 @@
   .tip .row{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
   .empty{color:var(--muted);font-size:12.5px;padding:22px 0;text-align:center}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .panels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px 12px 4px;position:relative}
-  .panel .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:11.5px}
-  .panel .pn{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .panel .pv{font-variant-numeric:tabular-nums;color:var(--muted)}
-  @media (max-width:1400px){.panels{grid-template-columns:1fr}}
   @media (max-width:1000px){.grid2{grid-template-columns:1fr}}
   .note{background:var(--chip);border:1px solid var(--line);border-radius:9px;padding:9px 12px;
     font-size:11.5px;color:var(--muted);line-height:1.55}
@@ -114,9 +110,9 @@
     <label for="period">Období</label>
     <select id="period">
       <option value="30">Posledních 30 dní</option>
-      <option value="90" selected>Posledních 90 dní</option>
+      <option value="90">Posledních 90 dní</option>
       <option value="180">Posledních 180 dní</option>
-      <option value="365">Posledních 12 měsíců</option>
+      <option value="365" selected>Posledních 12 měsíců</option>
       <option value="730">Poslední 2 roky</option>
       <option value="all">Celá historie</option>
     </select>
@@ -125,25 +121,15 @@
     <label for="grain">Granularita</label>
     <select id="grain">
       <option value="day">Po dnech</option>
-      <option value="week" selected>Po týdnech</option>
-      <option value="month">Po měsících</option>
-    </select>
-  </div>
-  <div class="ctl">
-    <label for="metric">Graf vývoje</label>
-    <select id="metric">
-      <option value="openRate" selected>Open rate</option>
-      <option value="clickRate">Click rate</option>
-      <option value="sent">Rozesláno</option>
-      <option value="opened">Otevření</option>
-      <option value="clicked">Prokliky</option>
+      <option value="week">Po týdnech</option>
+      <option value="month" selected>Po měsících</option>
     </select>
   </div>
   <div class="ctl">
     <label for="q">Hledat list</label>
     <input id="q" type="search" placeholder="název nebo kód">
   </div>
-  <label class="toggle"><input type="checkbox" id="sys"> systémové a transakční</label>
+  <label class="toggle"><input type="checkbox" id="sys"> archiv a systémové maily</label>
 </div>
 
 <main>
@@ -153,7 +139,7 @@
 
   <section>
     <h2>Newslettery</h2>
-    <p class="hint">Zaškrtnutím vybereš, co se kreslí do grafů (max. 6). Klik na název otevře detail dole.
+    <p class="hint">Zaškrtnutím vybereš, co se kreslí do grafů (max. 8). Klik na název otevře detail dole.
       Open rate a click rate počítá mailer z rozeslaných e-mailů.</p>
     <div class="tablewrap"><table id="lists">
       <thead><tr>
@@ -172,23 +158,23 @@
     </table></div>
   </section>
 
-  <section>
-    <h2 id="trendTitle">Vývoj</h2>
-    <p class="hint">Vybrané newslettery v čase.</p>
-    <div class="chartbox"><div class="legend" id="trendLegend"></div><div id="trendChart"></div><div class="tip" id="trendTip"></div></div>
-  </section>
-
   <section class="grid2">
     <div>
-      <h2>Odběratelé v čase</h2>
-      <p class="hint" id="subsHint">Každý newsletter má vlastní měřítko – úrovně se liší řádově, na jedné ose by se nedaly porovnat.</p>
-      <div id="subsPanels" class="panels"></div>
+      <h2>Vývoj – Open rate</h2>
+      <p class="hint">Vybrané newslettery v čase.</p>
+      <div class="chartbox"><div class="legend" id="trendOpenLegend"></div><div id="trendOpenChart"></div><div class="tip" id="trendOpenTip"></div></div>
     </div>
     <div>
-      <h2>Přihlášení vs. odhlášení</h2>
-      <p class="hint" id="churnHint">Součet za vybrané newslettery. Odhlášení jsou z maileru, nové přihlášky se dopočítávají z přírůstku odběratelů.</p>
-      <div class="chartbox"><div class="legend" id="churnLegend"></div><div id="churnChart"></div><div class="tip" id="churnTip"></div></div>
+      <h2>Vývoj – Click rate</h2>
+      <p class="hint">Vybrané newslettery v čase.</p>
+      <div class="chartbox"><div class="legend" id="trendClickLegend"></div><div id="trendClickChart"></div><div class="tip" id="trendClickTip"></div></div>
     </div>
+  </section>
+
+  <section>
+    <h2>Přihlášení vs. odhlášení</h2>
+    <p class="hint" id="churnHint">Součet za vybrané newslettery. Odhlášení jsou z maileru, nové přihlášky se dopočítávají z přírůstku odběratelů.</p>
+    <div class="chartbox"><div class="legend" id="churnLegend"></div><div id="churnChart"></div><div class="tip" id="churnTip"></div></div>
   </section>
 
   <section id="detailSection">
@@ -213,13 +199,16 @@ const fmtInt = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '–'
 const fmtPct = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '–' : `${v.toFixed(1).replace('.', ',')} %`;
 const fmtSigned = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '–' : (v > 0 ? '+' : '') + CS.format(Math.round(v));
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-const SERIES_COLORS = () => ['--s1','--s2','--s3','--s4','--s5','--s6'].map(css);
-const MAX_SERIES = 6;
-// co se ukáže na první pohled, dokud čtenář výběr sám nezmění
-const DEFAULT_PICK_CODES = ['dnesni_respekt', 'vzkaz_z_respektu', 'politika-spolecnost'];
+const SERIES_COLORS = () => ['--s1','--s2','--s3','--s4','--s5','--s6','--s7','--s8'].map(css);
+const MAX_SERIES = 8;
+// co se ukáže na první pohled, dokud čtenář výběr sám nezmění – hlavní redakční newslettery
+const DEFAULT_PICK_CODES = [
+  'vzkaz_z_respektu', 'dnesni_respekt', 'politika-spolecnost', 'zahranici',
+  'top_clanky_tydne', 'ne-bezpeci', 'v-pasti-pohlavi', 'newsletter-zelenka',
+];
 
 let DATA = null;
-const state = { period: '90', grain: 'week', metric: 'openRate', query: '', system: false,
+const state = { period: '365', grain: 'month', query: '', system: false,
                 picked: new Set(), detail: null, sort: { key: 'subscribers', dir: -1 } };
 
 /* ---------- agregace ---------- */
@@ -299,7 +288,8 @@ function summarize(list, from) {
 function visibleLists() {
   const query = state.query.trim().toLowerCase();
   return DATA.lists.filter((list) => {
-    if (!state.system && list.isSystem) return false;
+    const isArchive = list.isSystem || !DEFAULT_PICK_CODES.includes(list.code);
+    if (!state.system && isArchive) return false;
     if (!query) return true;
     return `${list.title} ${list.code}`.toLowerCase().includes(query);
   });
@@ -582,8 +572,6 @@ function renderTable(rows) {
   }).join('') || '<tr><td colspan="10" class="empty">Nic nenalezeno.</td></tr>';
 }
 
-const METRIC_LABEL = { openRate: 'Open rate', clickRate: 'Click rate', sent: 'Rozesláno', opened: 'Otevření', clicked: 'Prokliky' };
-
 function pickedLists() {
   return DATA.lists.filter((list) => state.picked.has(list.id));
 }
@@ -592,11 +580,10 @@ function unionLabels(bucketSets) {
   return [...new Set(bucketSets.flatMap((rows) => rows.map((row) => row.key)))].sort();
 }
 
-function renderTrend(from) {
+function renderTrendMetric(from, metric, ids) {
   const lists = pickedLists();
   const perList = lists.map((list) => aggregate(list, state.grain, from));
   const labels = unionLabels(perList);
-  const isRate = state.metric.endsWith('Rate');
 
   const series = lists.map((list, index) => {
     const byKey = new Map(perList[index].map((row) => [row.key, row]));
@@ -605,49 +592,20 @@ function renderTrend(from) {
       values: labels.map((label) => {
         const row = byKey.get(label);
         if (!row) return null;
-        if (state.metric === 'openRate') return rate(row.opened, row.sent);
-        if (state.metric === 'clickRate') return rate(row.clicked, row.sent);
-        return row[state.metric];
+        return metric === 'openRate' ? rate(row.opened, row.sent) : rate(row.clicked, row.sent);
       }),
     };
   });
 
-  document.getElementById('trendTitle').textContent = `Vývoj – ${METRIC_LABEL[state.metric]}`;
-  document.getElementById('trendLegend').innerHTML = series.map((serie) =>
+  document.getElementById(ids.legend).innerHTML = series.map((serie) =>
     `<span><span class="swatch" style="background:${serie.color}"></span>${serie.name}</span>`).join('');
-  lineChart(document.getElementById('trendChart'), document.getElementById('trendTip'),
-    { labels, series, fmt: isRate ? fmtPct : fmtInt });
+  lineChart(document.getElementById(ids.chart), document.getElementById(ids.tip),
+    { labels, series, fmt: fmtPct });
 }
 
-function renderSubscribers(from) {
-  const lists = pickedLists();
-  const host = document.getElementById('subsPanels');
-  host.innerHTML = '';
-
-  // panel začíná až tam, kde vůbec známe počty odběratelů
-  const start = DATA.range.subscribersFrom && DATA.range.subscribersFrom > from ? DATA.range.subscribersFrom : from;
-
-  lists.forEach((list) => {
-    const rows = aggregate(list, state.grain, start).filter((row) => row.subscribers !== null);
-    const panel = document.createElement('div');
-    panel.className = 'panel';
-    const first = rows[0]?.subscribers ?? null;
-    const last = rows[rows.length - 1]?.subscribers ?? null;
-    const delta = first === null || last === null ? null : last - first;
-    panel.innerHTML = `<div class="ph">
-        <span class="pn"><span class="swatch" style="background:${colorFor(list.id)}"></span>${list.title}</span>
-        <span class="pv">${fmtInt(last)} <span class="${delta === null ? '' : delta >= 0 ? 'up' : 'down'}">${fmtSigned(delta)}</span></span>
-      </div><div class="chart"></div><div class="tip"></div>`;
-    host.appendChild(panel);
-
-    lineChart(panel.querySelector('.chart'), panel.querySelector('.tip'), {
-      labels: rows.map((row) => row.key),
-      series: [{ id: list.id, name: list.title, color: colorFor(list.id), values: rows.map((row) => row.subscribers) }],
-      baseline: 'auto', height: 140, width: 340,
-    });
-  });
-
-  if (!lists.length) host.innerHTML = '<div class="empty">Vyber v tabulce alespoň jeden newsletter.</div>';
+function renderTrend(from) {
+  renderTrendMetric(from, 'openRate', { legend: 'trendOpenLegend', chart: 'trendOpenChart', tip: 'trendOpenTip' });
+  renderTrendMetric(from, 'clickRate', { legend: 'trendClickLegend', chart: 'trendClickChart', tip: 'trendClickTip' });
 }
 
 function renderChurn(from) {
@@ -730,7 +688,6 @@ function render() {
   renderTiles(rows);
   renderTable(rows);
   renderTrend(from);
-  renderSubscribers(from);
   renderChurn(from);
   renderDetail(from);
 }
@@ -739,7 +696,6 @@ function render() {
 
 document.getElementById('period').addEventListener('change', (e) => { state.period = e.target.value; render(); });
 document.getElementById('grain').addEventListener('change', (e) => { state.grain = e.target.value; render(); });
-document.getElementById('metric').addEventListener('change', (e) => { state.metric = e.target.value; render(); });
 document.getElementById('q').addEventListener('input', (e) => { state.query = e.target.value; render(); });
 document.getElementById('sys').addEventListener('change', (e) => { state.system = e.target.checked; render(); });
 
