@@ -1,0 +1,63 @@
+# Pravidla projektu respekt-pruzkum
+
+Tento soubor je jediný udržovaný obsah projektových pravidel pro Codex a Claude.
+
+## Rozsah, data a publikování
+
+- Implementuj pouze požadovaný výsledek. Bez vyžádání nepřidávej sloupce, sekce, funkce, interaktivitu ani příklady.
+- Pipeline a rutiny spouštěj pouze ručně na výslovné zadání; nepřidávej plánovače.
+- Volné odpovědi, identifikátory a surové exporty jsou citlivé a nesmějí do Gitu ani veřejných výstupů.
+- Veřejná prezentace smí obsahovat pouze zkontrolované agregace; zkontroluj malé skupiny, poznámky snímků a metadata.
+- Příprava výstupu sama neopravňuje k jeho publikování nebo odeslání.
+
+
+Kompletní dokumentace je v **README.md** (datový model, výstupy, taxonomie)
+a **TODO.md** (co refaktorovat a proč).
+
+## Co tento projekt dělá
+
+Pipeline zpracovává export předplatitelského průzkumu Respektu (SurveyHero CSV).
+Vstup: `data/raw/SurveyHeroResponses*.csv` (necommituje se).
+Výstupy: `data/processed/` (necommituje se).
+Spouštění: `python3 run_all.py` – vezme nejnovější raw CSV a zapíše všechny výstupy.
+
+## Klíčové principy (porušení = chyba)
+
+- **Nenadhodnocovat** – každý příznak je boolean na úrovni osoby (logické NEBO); odpověď se
+  nezapočítá víckrát jen proto, že zaškrtla i napsala totéž.
+- **Odečítat překryv** – u obohacení existujících checkboxů (`_vc_text`) se přičítá jen text,
+  který *není* pokrytý zaškrtnutým polem.
+- **Oddělit valenci** – chvála (Q155) a výtky (Q156) jsou samostatné taxonomie; témata se
+  nekódují dohromady.
+- **Poziční indexy sloupců** – skripty adresují sloupce indexem, ne názvem. Po novém exportu
+  ověřit, zda se pořadí nezměnilo.
+- **Čeština genericky neutrální** – výstupní popisy bez generického maskulina; původní znění
+  odpovědí se zachovává doslovně.
+
+## Struktura
+
+```
+src/prekodovani.py      # uzavřené otázky → 59 nových sloupců
+src/koduj_otevrene.py   # 4 otevřené otázky → taxonomie + bool příznaky
+src/spoj_dataset.py     # spojí obohaceno + kódování otevřených přes ID → respekt_analyticky.csv
+run_all.py              # spouštěč všech tří skriptů
+```
+
+## Rozpracované úkoly (vše na `main`)
+
+Dva paralelní výstupy, na kterých se pracuje:
+
+- **Klíčová zjištění pro management** → `ZJISTENI.md`: 10 stěžejních zjištění ve
+  formátu headline → evidence (čísla z průzkumu) → „co s tím" (doporučení).
+  Výsledek = delší analytický deck + 1stránkové exekutivní shrnutí.
+- **RICE audit** → `dashboard/RICE_vstupy.md` + `.csv`: tabulka 20 iniciativ
+  existuje; zbývá Effort + Impact od týmu, finální RICE skóre, případně nové
+  iniciativy. Přegenerování: `python3 dashboard/build_rice.py`.
+
+## Aktuální stav (export 2026-06-20)
+
+- N = 2 139 dokončených odpovědí, 162 původních sloupců → 221 po obohacení
+- Spojený analytický dataset: `respekt_analyticky.csv` (2 139 × 294) = obohaceno + kódování otevřených otázek přes `ID` (základ pro křížové analýzy)
+- Taxonomie: 13 témat v Q155, 16 v Q156, 10 v Q153, 10 zdrojů + 10 typů v Q154 – **retax všech 4 hotový**
+- Další krok: křížové analýzy přes `respekt_analyticky.csv` pro předplatné/redakci/aplikaci (souhrny v `SOUHRNY.md`)
+- `koduj_otevrene.py` umí téma jako dvojici `(include, exclude)` = MECE odečet užšího tématu od širšího koše

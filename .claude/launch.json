@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "respekt-dash",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/Users/ischia/ai/respekt-pruzkum/dashboard/serve.py"],
+      "port": 8731
+    },
+    {
+      "name": "prezentace",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8790", "--directory", "/Users/ischia/ai/respekt-pruzkum/prezentace"],
+      "port": 8790
+    }
+  ]
+}
